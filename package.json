@@ -1,8 +1,8 @@
 {
-  "name": "rpa-airdrop",
+  "name": "web3rpa-electron",
   "version": "1.0.0",
-  "description": "rpa airdrop",
-  "main": "main.js",
+  "description": "web3 rpa",
+  "main": "main/src/main.js",
   "author": "gold",
   "license": "MIT",
   "config": {

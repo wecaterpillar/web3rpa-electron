@@ -7,20 +7,21 @@ const path = require('path')
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 900,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, '../../preload/src/preload.js')
     }
   })
 
   ipcMain.handle('ping', () => 'pong')
 
   // 加载 index.html
-  mainWindow.loadFile('index.html')
+  //mainWindow.loadFile('renderer/src/index.html')
+  mainWindow.loadURL('http://rpa2.w3bb.cc/')
 
   // 打开开发工具
-  // mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 }
 
 const createPlaywrightWindow = (playwright) => {
@@ -29,7 +30,7 @@ const createPlaywrightWindow = (playwright) => {
     const context = await browser.newContext()
     const page = await context.newPage('https://www.baidu.com')
     await page.goto('https://www.baidu.com')
-    await page.screenshot({path:'example-chrom.png'})
+    //await page.screenshot({path:'example-chrom.png'})
     await browser.close()
   })()
 }
@@ -39,7 +40,7 @@ const createPlaywrightWindow = (playwright) => {
 app.whenReady().then(() => {
   createWindow()
   
-  createPlaywrightWindow(playwright)
+  //createPlaywrightWindow(playwright)
 
   app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
