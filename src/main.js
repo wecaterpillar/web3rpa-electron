@@ -1,8 +1,15 @@
 // Modules to control application life and create native browser window
 //require('update-electron-app')()
-const { app, ipcMain, BrowserWindow } = require('electron')
-const playwright = require('playwright')
+const { app, ipcMain, Menu, BrowserWindow } = require('electron')
+const isMac = process.platform === 'darwin'
+const fs = require("fs")
 const path = require('path')
+
+const playwright = require('playwright')
+
+
+// appUrl, read from config and change by line
+const appUrl = 'https://rpa.w3bb.cc/'
 
 const createWindow = () => {
   // Create the browser window.
@@ -14,11 +21,11 @@ const createWindow = () => {
     }
   })
 
-  ipcMain.handle('ping', () => 'pong')
+  //ipcMain.handle('ping', () => 'pong')
 
   // 加载 index.html
   //mainWindow.loadFile('renderer/src/index.html')
-  mainWindow.loadURL('http://rpa2.w3bb.cc/')
+  mainWindow.loadURL(appUrl)
 
   // 打开开发工具
   //mainWindow.webContents.openDevTools()
@@ -53,5 +60,6 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
+  if (!isMac) app.quit()
 })
+

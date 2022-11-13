@@ -1,7 +1,7 @@
 {
-  "name": "web3rpa-electron",
+  "name": "Web3RPA",
   "version": "1.0.0",
-  "description": "web3 rpa",
+  "description": "Web3 RPA client",
   "main": "src/main.js",
   "author": "gold",
   "license": "MIT",
