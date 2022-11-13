@@ -30,7 +30,7 @@ const createPlaywrightWindow = (playwright) => {
     const context = await browser.newContext()
     const page = await context.newPage('https://www.baidu.com')
     await page.goto('https://www.baidu.com')
-    //await page.screenshot({path:'example-chrom.png'})
+    await page.screenshot({path:'example-baidu.png'})
     await browser.close()
   })()
 }

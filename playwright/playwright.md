@@ -9,3 +9,11 @@ brave  executablePath
 https://playwright.dev/docs/chrome-extensions
 
 launchPersistentContext
+
+
+<a href="w3rpa://" id="gotoRpa"></a>
+#gotoRpa
+protocol: w3rpa:
+href: w3rpa://
+
+openBrowers
