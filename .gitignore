@@ -132,6 +132,10 @@ dist
 /playwright-report/
 /playwright/.cache/
 
+
+.idea
+.yarnclean
+
 ## ref
 ref_adspow/**
 ref_multilogin/**
