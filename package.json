@@ -2,7 +2,7 @@
   "name": "Web3RPA",
   "version": "1.0.0",
   "description": "Web3 RPA client",
-  "main": "src/main.js",
+  "main": "src/main/main.js",
   "author": "gold",
   "license": "MIT",
   "config": {
@@ -17,8 +17,6 @@
     "publish": "electron-forge publish"
   },
   "devDependencies": {
-    "electron": "^21.2.0",
-    "playwright": "^1.27.1",
     "@electron-forge/cli": "^6.0.0-beta.70",
     "@electron-forge/maker-deb": "^6.0.0-beta.70",
     "@electron-forge/maker-rpm": "^6.0.0-beta.70",
@@ -27,7 +25,9 @@
     "@electron-forge/plugin-webpack": "^6.0.1",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "css-loader": "^6.0.0",
+    "electron": "^21.2.0",
     "node-loader": "^2.0.0",
+    "playwright": "^1.27.1",
     "style-loader": "^3.0.0"
   },
   "dependencies": {
@@ -37,6 +37,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
     "electron-updater": "^5.0.6",
+    "express": "^4.18.2",
     "extract-zip": "2.0.0",
     "ffi-napi": "^4.0.3",
     "ps-list": "^7.2.0",
