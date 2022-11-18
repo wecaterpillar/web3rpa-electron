@@ -14,7 +14,7 @@ const { createBrowser } = require('../browser/browser')
 var localApi
 
 // appUrl, read from config and change by line
-const appUrl = 'https://rpa2.w3bb.cc/'
+const appUrl = 'https://rpa.w3bb.cc/'
 
 const createWindow = () => {
   // Create the browser window.
