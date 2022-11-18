@@ -1,7 +1,6 @@
 # rpa-airdrop
 electron + playwright + brave
 
-
 # getting start
 
 ## yarn
