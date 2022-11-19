@@ -12,9 +12,10 @@ var browserDefaultConfig = {}
 
 const getBrowserExtensions = (extensions) => {
   // TODO 插件配置检查,以及配置文件是否存在
+  // 插件服务下载后解压
   // https://playwright.dev/docs/chrome-extensions
   var  browserExtensions = [
-    //path.join(rpaConfig.appDataPath, 'extensions/metamask-chrome-10.22.2.zip')   //MetaMask
+    path.join(rpaConfig.appDataPath, 'lib/extensions/metamask-chrome-10.22.2')   //MetaMask
   ]
   return browserExtensions
 }
@@ -60,7 +61,7 @@ const getBrowserUserDataDir = (browserId) => {
 }
 
 const browserInitDefaultConfig = () => {
-
+  let extensions = getBrowserExtensions()
   browserDefaultConfig = {
     indexUrl: 'https://www.sogou.com',  //主页地址
     options: {
@@ -71,7 +72,9 @@ const browserInitDefaultConfig = () => {
       executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app/Contents/MacOS/Brave Browser'),
       ignoreDefaultArgs: ['--enable-automation'],
         args: [
-            '--disable-blink-features=AutomationControlled'
+            '--disable-blink-features=AutomationControlled',
+            `--disable-extensions-except=${extensions}`,
+            `--load-extension=${extensions}`
         ],
     }
   }
@@ -107,6 +110,7 @@ const openBrowser = (config) => {
     if(config){
       Object.assign(browserConfig, config)
     }
+    // 输入config转换为指纹的options,参考ads
     console.debug(browserConfig);
 
     // load context
@@ -162,11 +166,13 @@ const openBrowser = (config) => {
 }
 
 const frontBrowser = (browserId) => {
+  // 显示到front
 
 }
 
 const closeBrowser = (browserId) => {
-
+  // 关闭浏览器
+  
 }
 
 

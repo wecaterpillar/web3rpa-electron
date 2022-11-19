@@ -18,6 +18,8 @@ app.get('/api/browsers', (req, res) => {
 
 app.post('/api/browser/open', (req, res) => {
   // 打开浏览器
+  // req.body => json
+  openBrowser({})
   res.send('createBrowser done')
 })
 
