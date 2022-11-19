@@ -33,6 +33,10 @@ const loadLocalApi = () => {
   localApi = require("./localApi")
 }
 
+// RPA 计划
+// 1 获取分配给当前节点的计划任务，启用本地定时任务
+// 2 检查本地分配任务或者远程分配任务，并维护状态
+// 3 执行任务脚本-获取脚本，获取账号，执行任务，更新结果
 
 exports = module.exports = {
     rpaConfig: rpaConfig,
