@@ -139,3 +139,10 @@ dist
 ## ref
 ref_adspow/**
 ref_multilogin/**
+
+# user data
+default/*
+lib/chrome_*/*
+lib/extensions/*
+logs
+

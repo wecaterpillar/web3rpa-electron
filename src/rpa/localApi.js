@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const port = 3500
 
-var rpa
+const {openBrowser, frontBrowser, closeBrowser} = require('./browser')
 
 app.get('/', (req, res) => {
   res.send('Hello World! Local API')
@@ -19,6 +19,7 @@ app.post('/api/browser/open', (req, res) => {
 
 app.get('/api/browser/open', (req, res) => {
   // 打开浏览器, test only
+  openBrowser({})
   res.send('createBrowser done')
 })
 

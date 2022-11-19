@@ -14,7 +14,7 @@
 const playwright = require('playwright')
 console.debug("rpa load playwright")
 
-
+const { browserInit, openBrowser, frontBrowser, closeBrowser} = require('./browser')
 
 
 const rpaConfig = {}
@@ -22,6 +22,7 @@ const rpaConfig = {}
 const startRpa = () => {
     console.debug('start rpa ...')
     console.debug(rpaConfig)
+    browserInit(rpaConfig)
     loadLocalApi()
 }
 
@@ -31,7 +32,6 @@ var localApi
 const loadLocalApi = () => {
   localApi = require("./localApi")
 }
-
 
 
 exports = module.exports = {
