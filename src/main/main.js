@@ -1,20 +1,44 @@
 // Modules to control application life and create native browser window
 //require('update-electron-app')()
 const { app, ipcMain, Menu, BrowserWindow } = require('electron')
+const store = require('electron-store');
+
+// os: mac vs linux vs win
 const isMac = process.platform === 'darwin'
+const isLinux = process.platform === 'linux'
+
+// app path
 const fs = require("fs")
 const path = require('path')
+const appExecPath = app.getAppPath();
+const appDataPath = appExecPath;
+if(app.isPackaged){
+  appExecPath = path.dirname(app.getPath('exe'));
+  appDataPath = path.join(app.getPath('userData'), 'web3rpa');
+}else{
+  // for dev
+  console.debug('isPackaged appExecPath='+path.dirname(app.getPath('exe')));
+  console.debug('isPackaged appDataPath='+path.dirname(path.join(app.getPath('userData'), 'web3rpa')));
+}
+console.log('appExecPath='+appExecPath);
+console.log('appDataPath='+appDataPath);
 
+// looad config 
+// configFilePath = [appDataPath]/config.json
+var configJson = {};
+const configPath = path.join(appDataPath, 'config.json');
+if(fs.existsSync(configPath)){
+  let configStr = fs.readFileSync(configPath);
+  configJson = JSON.parse(configStr);
+}
+console.debug(configJson);
 
-const { createBrowser } = require('../browser/browser')
-
-// user data path
-
-// localApi, load port 
+// localAPI server
 var localApi
 
 // appUrl, read from config and change by line
-const appUrl = 'https://rpa.w3bb.cc/'
+const appUrl = configJson['appUrl']
+
 
 const createWindow = () => {
   // Create the browser window.
@@ -49,8 +73,6 @@ app.whenReady().then(() => {
 
   createWindow()
   
-  //createPlaywrightWindow(playwright)
-  //createBrowser()
 
   app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the

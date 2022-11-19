@@ -1,9 +1,8 @@
 const express = require('express')
-const { createBrowser } = require('../browser/browser')
 const app = express()
 const port = 3500
 
-const browser = require('../browser/browser')
+const { createBrowser } = require('../browser/browser')
 
 app.get('/', (req, res) => {
   res.send('Hello World! Local API')
@@ -31,7 +30,7 @@ app.post('/api/browser/front', (req, res) => {
 
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`local API server listening on port ${port}`)
 })
 
 //export { app as default };

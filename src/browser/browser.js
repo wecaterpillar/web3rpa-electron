@@ -1,6 +1,9 @@
 
 const playwright = require('playwright')
 
+console.debug("load playwright")
+// for dev
+
 const createBrowser = () => {
     (async () => {
       const browser = await playwright.chromium.launch({headless:false})

@@ -7,6 +7,24 @@
   - stopNode
   
 ## 数据目录
+  - 检查目录
+
+const fs = require("fs")
+const path = require('path')
+
+const appExecPath = app.getAppPath();
+const appDataPath = path.join(appPath, 'userData');
+if(app.isPackaged){
+  appExecPath = path.dirname(app.getPath('exe'));
+  appDataPath = path.join(app.getPath('userData'), 'web3rpa');
+}else{
+  // for dev
+  console.log('isPackaged appExecPath='+path.dirname(app.getPath('exe')));
+  console.log('isPackaged appDataPath='+path.dirname(path.join(app.getPath('userData'), 'web3rpa')));
+}
+console.log('appExecPath='+appExecPath);
+console.log('appDataPath='+appDataPath);
+
   - 应用数据根目录，例 /Users/xxx/Library/Application Support/Web3RPA
     - config.json 环境配置
     - lib
