@@ -5,7 +5,7 @@ const path = require('path')
 
 
 // context pool
-const mapBrowser = new Map();  // browserId -> browserObject { }
+const mapBrowser = new Map();  // browserId -> browser
 
 var rpaConfig
 var browserDefaultConfig = {}
@@ -30,8 +30,8 @@ const getBrowserExecutablePath = (browserType, version, browserName) => {
     //executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app/Contents/MacOS/Brave Browser'),
     // 2 playwright默认配置
     // ~/Library/Caches/ms-playwright/chromium-1028/chrome-mac/Chromium.app
-    // 3 系统默认配置
     let bravePath = path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app/Contents/MacOS/Brave Browser')
+    // 3 系统默认配置
     let chromeDefault = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     if(fs.existsSync(bravePath)){
       executablePath = bravePath;
@@ -110,6 +110,7 @@ const openBrowser = (config) => {
     console.debug(browserConfig);
 
     // load context
+    let browser
     let context
     
     // 根据browserId检查是否有同id的browser正在运行
@@ -121,6 +122,9 @@ const openBrowser = (config) => {
       if(mapBrowser.has(browserId)){
         context = mapBrowser.get(browserId)
         // TODO 检查是否有效无效则剔除
+        if(context.pages().length==0){
+          context = null
+        }
       }
       browserUserDataDir = getBrowserUserDataDir(browserId)
       console.debug(browserUserDataDir);
@@ -135,7 +139,7 @@ const openBrowser = (config) => {
       console.debug(browserConfig);
 
       if(!!browserUserDataDir){
-        context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options);
+        context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
         mapBrowser.set(browserId, context)
       }else{
         const browser = await playwright.chromium.launch(browserConfig.options)
