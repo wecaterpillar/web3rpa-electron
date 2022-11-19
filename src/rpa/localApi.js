@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const port = 3500
 
-const { createBrowser } = require('../browser/browser')
+var rpa
 
 app.get('/', (req, res) => {
   res.send('Hello World! Local API')
@@ -14,13 +14,11 @@ app.get('/api/browsers', (req, res) => {
 
 app.post('/api/browser/open', (req, res) => {
   // 打开浏览器
-  createBrowser()
   res.send('createBrowser done')
 })
 
 app.get('/api/browser/open', (req, res) => {
   // 打开浏览器, test only
-  createBrowser()
   res.send('createBrowser done')
 })
 
@@ -33,4 +31,6 @@ app.listen(port, () => {
   console.log(`local API server listening on port ${port}`)
 })
 
-//export { app as default };
+exports = module.exports = () => {
+  return this
+}
