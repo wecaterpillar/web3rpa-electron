@@ -40,6 +40,8 @@ const loadRpaServer = () => {
   rpaConfig.appExecPath = appExecPath
   rpaConfig.appDataPath = appDataPath
   rpaConfig.appConfig = appConfig;
+  rpaConfig.isMac = isMac
+  rpaConfig.isLinux = isLinux
   startRpaServer()
 }
 

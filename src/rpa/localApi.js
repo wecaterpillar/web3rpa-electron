@@ -19,7 +19,7 @@ app.post('/api/browser/open', (req, res) => {
 
 app.get('/api/browser/open', (req, res) => {
   // 打开浏览器, test only
-  openBrowser({})
+  openBrowser({'browserId':'a001'})
   res.send('createBrowser done')
 })
 
