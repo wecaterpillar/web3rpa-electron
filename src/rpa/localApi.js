@@ -4,6 +4,10 @@ const port = 3500
 
 const {openBrowser, frontBrowser, closeBrowser} = require('./browser')
 
+var bodyParser = require('body-parser')
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: false}))
+
 app.get('/', (req, res) => {
   res.send('Hello World! Local API')
 })
@@ -19,7 +23,11 @@ app.post('/api/browser/open', (req, res) => {
 
 app.get('/api/browser/open', (req, res) => {
   // 打开浏览器, test only
-  openBrowser({'browserId':'a001'})
+  let browserId = req.query.browserId
+  if(!browserId){
+    browserId = 'a001'
+  }
+  openBrowser({'browserId':browserId})
   res.send('createBrowser done')
 })
 
