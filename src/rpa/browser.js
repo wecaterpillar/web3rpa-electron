@@ -13,24 +13,23 @@ var browserDefaultConfig = {}
 const browserInitDefaultConfig = () => {
   // extensions
   browserDefaultExtensions = [
-    path.join(rpaConfig.appDataPath, 'extensions/metamask-chrome-10.22.2.zip')   //MetaMask
+    //path.join(rpaConfig.appDataPath, 'extensions/metamask-chrome-10.22.2.zip')   //MetaMask
   ]
 
   browserDefaultConfig = {
     indexUrl: 'https://www.sogou.com',  //主页地址
     userDataDir: path.join(rpaConfig.appDataPath, 'default'),
     options: {
-      headless: false,//是否无头浏览器
+      headless: false, //是否无头浏览器
       //slowMo: 1000,//延迟
-      //executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_105/SunBrowser.app'),
-      //executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app'),
+      //executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_105/SunBrowser.app/Contents/MacOS/SunBrowser'),
+      executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app/Contents/MacOS/Brave Browser'),
       ignoreDefaultArgs: ['--enable-automation'],
-          args: [
-              '--disable-blink-features=AutomationControlled',
-              //`--disable-extensions-except=${browserDefaultExtensions}`,
-              //`--load-extension=${browserDefaultExtensions}`,
-              '--unhandled-rejections=strict'
-          ],
+        args: [
+            '--disable-blink-features=AutomationControlled',
+            `--disable-extensions-except=${browserDefaultExtensions}`,
+            `--load-extension=${browserDefaultExtensions}`
+        ],
     }
   }
 }
@@ -76,9 +75,10 @@ const openBrowser = (config) => {
     let indexUrl = 'https://www.sogou.com/'
     console.debug(indexUrl)
     await page.goto(indexUrl)
-    console.debug(page.url)
     await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
-  })()
+  })().catch((error) => {
+    console.error(error.message)
+  })
   
 }
 
