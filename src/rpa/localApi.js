@@ -3,7 +3,7 @@ const app = express()
 const port = 3500
 
 const {openBrowser, frontBrowser, closeBrowser} = require('./browser')
-const {getListData, getCoingeckoListData} = require('./dataService')
+const {getListData, getCoingeckoListData} = require('./dataUtil')
 
 var bodyParser = require('body-parser')
 app.use(bodyParser.json())
@@ -13,24 +13,24 @@ app.get('/', (req, res) => {
   res.send('Hello World! Local API')
 })
 
-app.get('/api/browsers', (req, res) => {
+app.get('/api/browsers', async (req, res) => {
   // 查看浏览器状态，可指定某个或全部
 })
 
-app.post('/api/browser/open', (req, res) => {
+app.post('/api/browser/open', async (req, res) => {
   // 打开浏览器
   // req.body => json
   openBrowser({})
   res.send('createBrowser done')
 })
 
-app.post('/api/browser/front', (req, res) => {
+app.post('/api/browser/front', async (req, res) => {
   // 显示浏览器窗口(toFront)
 })
 
 
 // for test
-app.get('/api/browser/open', (req, res) => {
+app.get('/api/browser/open', async (req, res) => {
   // 打开浏览器, test only
   let browserId = req.query.browserId
   if(!browserId){

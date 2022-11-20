@@ -15,7 +15,7 @@ const playwright = require('playwright')
 console.debug("rpa load playwright")
 
 const { browserInit, openBrowser, frontBrowser, closeBrowser} = require('./browser')
-const { dataServiceInit, getListData} = require('./dataService')
+const { dataUtilInit, getListData} = require('./dataUtil')
 
 
 const rpaConfig = {}
@@ -26,8 +26,8 @@ const startRpa = () => {
 
     browserInit(rpaConfig)
 
-    // 计划合并 dataService和localApi
-    dataServiceInit(rpaConfig)
+    dataUtilInit(rpaConfig)
+
     loadLocalApi()
 }
 
@@ -37,6 +37,7 @@ var localApi
 const loadLocalApi = () => {
   localApi = require("./localApi")
 }
+
 
 // RPA 计划
 // 1 获取分配给当前节点的计划任务，启用本地定时任务

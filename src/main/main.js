@@ -1,8 +1,8 @@
 // Modules to control application life and create native browser window
 //require('update-electron-app')()
-try {
-	require('electron-reloader')(module);
-} catch {}
+// try {
+// 	require('electron-reloader')(module);
+// } catch {}
 
 const { app, ipcMain, Menu, BrowserWindow } = require('electron')
 const store = require('electron-store');
@@ -44,13 +44,15 @@ console.debug(appConfig);
 
 
 // RPA server
-const {rpaConfig, startRpaServer} = require("../rpa/rpa")
+const {rpaConfig, startRpaServer, rpaGetMainWindowStorageValue} = require("../rpa/rpa")
 const loadRpaServer = () => {
   rpaConfig.appExecPath = appExecPath
   rpaConfig.appDataPath = appDataPath
   rpaConfig.appConfig = appConfig;
   rpaConfig.isMac = isMac
   rpaConfig.isLinux = isLinux
+  rpaConfig.callbackGetMainWindowStorageValue = getMainWindowStorageValue
+  //rpaGetMainWindowStorageValue = getMainWindowStorageValue
   startRpaServer()
 }
 
@@ -58,10 +60,10 @@ const loadRpaServer = () => {
 const appUrl = appConfig['appUrl']
 // default https://rpa.w3bb.cc
 
-
+var mainWindow
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 900,
     webPreferences: {
@@ -79,6 +81,14 @@ const createWindow = () => {
   //mainWindow.webContents.openDevTools()
 }
 
+const getMainWindowStorageValue = async (key) => {
+  await mainWindow.webContents
+  .executeJavaScript('localStorage.getItem("'+key+'");', true)
+  .then(result => {
+    console.debug('key='+key+',value='+result)
+    return result
+  })
+}
 
 // 这段程序将会在 Electron 结束初始化
 // 和创建浏览器窗口的时候调用
