@@ -103,7 +103,7 @@ const  getListData = async (listKey, pageNo, pageSize) => {
         let result
         await axios.request({
             method: 'get',
-            url: 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/2c968084846b641501846b6415d20000?hasQuery=true&column=id&order=asc&pageNo=1&pageSize=10'
+            url: 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/' + tableId + '?hasQuery=true&pageNo='+pageNo+'&pageSize='+pageSize
         }).then(function (response){
             //console.debug(response)
             if(response.status === 200 && response.data.success){
