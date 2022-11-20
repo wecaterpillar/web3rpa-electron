@@ -15,6 +15,7 @@ const playwright = require('playwright')
 console.debug("rpa load playwright")
 
 const { browserInit, openBrowser, frontBrowser, closeBrowser} = require('./browser')
+const { dataServiceInit, getListData} = require('./dataService')
 
 
 const rpaConfig = {}
@@ -22,7 +23,11 @@ const rpaConfig = {}
 const startRpa = () => {
     console.debug('start rpa ...')
     console.debug(rpaConfig)
+
     browserInit(rpaConfig)
+
+    // 计划合并 dataService和localApi
+    dataServiceInit(rpaConfig)
     loadLocalApi()
 }
 

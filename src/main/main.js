@@ -1,5 +1,9 @@
 // Modules to control application life and create native browser window
 //require('update-electron-app')()
+try {
+	require('electron-reloader')(module);
+} catch {}
+
 const { app, ipcMain, Menu, BrowserWindow } = require('electron')
 const store = require('electron-store');
 
@@ -19,6 +23,11 @@ if(app.isPackaged){
   // for dev
   console.debug('isPackaged appExecPath='+path.dirname(app.getPath('exe')));
   console.debug('isPackaged appDataPath='+path.dirname(path.join(app.getPath('userData'), 'web3rpa')));
+
+  // debug
+  //console.debug('dir temp='+path.dirname(app.getPath('temp')));
+  //console.debug('dir appData='+path.dirname(app.getPath('appData')));
+  //console.debug('dir userData='+path.dirname(app.getPath('userData')));
 }
 console.log('appExecPath='+appExecPath);
 console.log('appDataPath='+appDataPath);
