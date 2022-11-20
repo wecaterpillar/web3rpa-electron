@@ -82,7 +82,7 @@ const getMainWindowStorageValue = async (key) => {
   await mainWindow.webContents
   .executeJavaScript('localStorage.getItem("'+key+'");', true)
   .then(result => {
-    console.debug('key='+key+',value='+result)
+    //console.debug('key='+key+',value='+result)
     value = result
   })
   return value
