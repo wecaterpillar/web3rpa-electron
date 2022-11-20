@@ -12,7 +12,7 @@ const axios = require('axios')
 // 获取服务器信息
 // https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/2c968084846b641501846b6415d20000?hasQuery=true&column=id&order=asc&pageNo=1&pageSize=100&_t=1668873758489
  // authorization 
-let AUTH_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2Njg5MTI4NjAsInVzZXJuYW1lIjoiYWRtaW4ifQ.ieLawIFToZnMGURJ0V_m741b0fVQrBQi54HJb2vSbZw'
+let AUTH_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2Njg5NDgwODQsInVzZXJuYW1lIjoiYWRtaW4ifQ.tZ9SxjNUGtzGK4n4cAu6wTf8zoFxrhHJIY1qE7IKxzU'
 axios.defaults.headers.common['authorization'] = AUTH_TOKEN;
 axios.defaults.headers.common['x-access-token'] = AUTH_TOKEN;
 axios.defaults.headers.common['referer'] = 'https://rpa.w3bb.cc';
@@ -43,7 +43,7 @@ const initMapTable = () => {
 }
 
 var getMainWindowStorageValue = async (key) => {
-    return rpaConfig.callbackGetMainWindowStorageValue(key)
+    return await rpaConfig.callbackGetMainWindowStorageValue(key)
 }
 
 var rpaConfig
@@ -53,9 +53,30 @@ const init = (config) => {
     initMapTable();
 }
 
-const checkToken = () => {
-    let value = getMainWindowStorageValue('WEB3RPA__PRODUCTION__3.4.3__LOCALE__')
+var CryptoJS = require("crypto-js");
+// 读取配置文件，需要同服务器设置一致
+cryptoKey = CryptoJS.enc.Utf8.parse('_11111000001111@');
+cryptoIv = CryptoJS.enc.Utf8.parse('@11111000001111_');
+const encryptAes = (str) =>{
+    return CryptoJS.AES.encrypt(str, cryptoKey, {
+        iv: cryptoIv,
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+    })
+}
+
+const decryptAes = (encrypted) => {
+    return  CryptoJS.AES.decrypt(encrypted, cryptoKey, {
+        iv: cryptoIv,
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+    })
+}
+
+const checkToken = async () => {
+    let value = await getMainWindowStorageValue('WEB3RPA__PRODUCTION__3.4.3__LOCALE__')
     console.debug(value)
+    console.debug(decryptAes(value))
     if(!AUTH_TOKEN){
         // get token from main window
 

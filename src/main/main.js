@@ -41,7 +41,7 @@ console.debug(appConfig);
 
 
 // RPA server
-const {rpaConfig, startRpaServer, rpaGetMainWindowStorageValue} = require("../rpa/rpa")
+const {rpaConfig, startRpaServer} = require("../rpa/rpa")
 const loadRpaServer = () => {
   rpaConfig.appExecPath = appExecPath
   rpaConfig.appDataPath = appDataPath
@@ -49,7 +49,6 @@ const loadRpaServer = () => {
   rpaConfig.isMac = isMac
   rpaConfig.isLinux = isLinux
   rpaConfig.callbackGetMainWindowStorageValue = getMainWindowStorageValue
-  //rpaGetMainWindowStorageValue = getMainWindowStorageValue
   startRpaServer()
 }
 
@@ -79,12 +78,14 @@ const createWindow = () => {
 }
 
 const getMainWindowStorageValue = async (key) => {
+  let value
   await mainWindow.webContents
   .executeJavaScript('localStorage.getItem("'+key+'");', true)
   .then(result => {
     console.debug('key='+key+',value='+result)
-    return result
+    value = result
   })
+  return value
 }
 
 // 这段程序将会在 Electron 结束初始化
