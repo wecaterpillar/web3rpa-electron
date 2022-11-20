@@ -1,8 +1,5 @@
 // Modules to control application life and create native browser window
 //require('update-electron-app')()
-// try {
-// 	require('electron-reloader')(module);
-// } catch {}
 
 const { app, ipcMain, Menu, BrowserWindow } = require('electron')
 const store = require('electron-store');
