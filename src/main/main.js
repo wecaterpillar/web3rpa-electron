@@ -73,6 +73,8 @@ const createWindow = () => {
   //mainWindow.loadFile('renderer/src/index.html')
   mainWindow.loadURL(appUrl)
 
+  mainWindow.maximize();    //打开时最大化打开，不是全屏，保留状态栏
+
   // 打开开发工具
   //mainWindow.webContents.openDevTools()
 }
