@@ -82,8 +82,14 @@ const checkToken = async () => {
     if(!AUTH_TOKEN){
         // get token from main window
         let value = await getMainWindowStorageValue('WEB3RPA__PRODUCTION__3.4.3__COMMON__LOCAL__KEY__')
+        if(!value){
+            return
+        }
         let storeJson = JSON.parse(decryptAes(value))
         //console.debug(storeJson)
+        if(!storeJson.value['TOKEN__'] || !storeJson.value['TOKEN__'].value){
+            return
+        }
         AUTH_TOKEN = storeJson.value['TOKEN__'].value
         console.debug(AUTH_TOKEN)
         axios.defaults.headers.common['authorization'] = AUTH_TOKEN;
@@ -126,12 +132,13 @@ const getCoingeckoListData = (pageNo, pageSize) => {
 
 const getRpaPlanTaskList = (filterJson) => {
     // filter
-    return getListData('rpa_plan_task', pageNo, pageSize)
+    return getListData('rpa_plan_task', 1, 100)
 }
 
 
 exports = module.exports = {
     dataUtilInit : init,
     getListData : getListData,
+    getRpaPlanTaskList : getRpaPlanTaskList,
     getCoingeckoListData : getCoingeckoListData
   }

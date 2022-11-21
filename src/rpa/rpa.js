@@ -13,9 +13,10 @@
 
 const playwright = require('playwright')
 console.debug("rpa load playwright")
+const schedule = require('node-schedule')
 
 const { browserInit, openBrowser, frontBrowser, closeBrowser} = require('./browser')
-const { dataUtilInit, getListData} = require('./dataUtil')
+const { dataUtilInit, getListData, getRpaPlanTaskList} = require('./dataUtil')
 
 
 const rpaConfig = {}
@@ -29,6 +30,19 @@ const startRpa = () => {
     dataUtilInit(rpaConfig)
 
     loadLocalApi()
+
+    checkPlanTask()
+}
+
+const checkPlanTask = () => {
+  schedule.scheduleJob('0 */1 * * * *',()=>{
+    console.log('checkPlanTask:' + new Date());
+    let result = getRpaPlanTaskList()
+    if(result && result.records){
+      // for tasks
+    }
+    console.debug(result)
+}); 
 }
 
 
