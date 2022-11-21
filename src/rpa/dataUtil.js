@@ -124,8 +124,9 @@ const getCoingeckoListData = (pageNo, pageSize) => {
     return getListData('coingecko', pageNo, pageSize)
 }
 
-const getRpaPlanList = () => {
-    return getListData('RPA计划', pageNo, pageSize)
+const getRpaPlanTaskList = (filterJson) => {
+    // filter
+    return getListData('rpa_plan_task', pageNo, pageSize)
 }
 
 
