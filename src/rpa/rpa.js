@@ -15,7 +15,7 @@ const playwright = require('playwright')
 console.debug("rpa load playwright")
 const schedule = require('node-schedule')
 
-const { browserInit, openBrowser, frontBrowser, closeBrowser} = require('./browser')
+const { browserInit, getBrowserConfig, getBrowserContext, openBrowser, frontBrowser, closeBrowser} = require('./browser')
 const { dataUtilInit, getListData, getRpaPlanTaskList, getDetailData, updateDetailData} = require('./dataUtil')
 
 
@@ -91,9 +91,18 @@ const execRpaTask = async (taskConfig) => {
        // 'w3_browser' - browserid
        let browser = await getDetailData('w3_browser', item['browserid'])
        if(browser){
+        browser['browserKey'] = browser['name']
         item['browser'] = browser
        }
-       console.debug(item)
+       //console.debug(item)    
+       // try exec project custmized script
+       //let browserConfig = await getBrowserConfig(item['browser'])
+       //let browserContext = await getBrowserContext(browserConfig)
+
+       // test dynamic load script file
+       let fileName = "../../flowscript/baidu123.js"
+       const {xxx_start} = require(fileName) 
+       xxx_start({item})
     }
   }
   // 5 更新任务状态，解锁任务

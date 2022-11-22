@@ -15,7 +15,7 @@ const getBrowserExtensions = (extensions) => {
   // 插件服务下载后解压
   // https://playwright.dev/docs/chrome-extensions
   var  browserExtensions = [
-    path.join(rpaConfig.appDataPath, 'lib/extensions/metamask-chrome-10.22.2')   //MetaMask
+    //path.join(rpaConfig.appDataPath, 'lib/extensions/metamask-chrome-10.22.2')   //MetaMask
   ]
   return browserExtensions
 }
@@ -208,7 +208,9 @@ const closeBrowser = (browserId) => {
 
 
 exports = module.exports = {
-  browserInit, browserInit,
+  browserInit: browserInit,
+  getBrowserConfig : getBrowserConfig,
+  getBrowserContext : getBrowserContext,
   openBrowser : openBrowser,
   frontBrowser : frontBrowser,
   closeBrowser : closeBrowser,

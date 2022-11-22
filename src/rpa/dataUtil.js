@@ -192,7 +192,7 @@ const updateDetailData = async (listKey, data) => {
         data: data
     }).then(function (response){
         if(response.status === 200){
-            console.debug(response)
+            //console.debug(response)
             result = response
         }else if(response.status === 401){
             AUTH_TOKEN = undefined
