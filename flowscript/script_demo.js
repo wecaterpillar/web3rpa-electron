@@ -1,6 +1,9 @@
 const { getBrowserConfig, getBrowserContext} = require('../src/rpa/browser')
 const { getListData, getDetailData, updateDetailData} = require('../src/rpa/dataUtil')
 
+// 浏览器帮助类
+// 数据帮助类，可考虑调用localAPI来同rpaServer交互
+
 const flow_start = ({item}) => {
     (async () => {
         console.debug("invoke flow_start")
