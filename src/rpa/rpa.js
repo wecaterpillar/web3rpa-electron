@@ -16,7 +16,7 @@ console.debug("rpa load playwright")
 const schedule = require('node-schedule')
 
 const { browserInit, openBrowser, frontBrowser, closeBrowser} = require('./browser')
-const { dataUtilInit, getListData, getRpaPlanTaskList, getDetailData} = require('./dataUtil')
+const { dataUtilInit, getListData, getRpaPlanTaskList, getDetailData, updateDetailData} = require('./dataUtil')
 
 
 const rpaConfig = {}
@@ -69,6 +69,10 @@ const execRpaTask = async (taskConfig) => {
   console.debug("execRpaTask")
   console.debug(taskConfig)
   // 1 锁定当前任务，防止重复执行
+  taskConfig['result'] = 'doing'
+  //taskConfig['start_time'] = new Date()
+  // Data truncation: Incorrect datetime value: '2022-11-22T10:15:00.795Z' for column 'start_time'
+  updateDetailData('rpa_plan_task', taskConfig)
   // 2 获取任务的执行脚本
   let scriptResult = await getDetailData('rpa_flow_script', taskConfig['scriptid']);
   console.debug(scriptResult)
@@ -93,6 +97,9 @@ const execRpaTask = async (taskConfig) => {
     }
   }
   // 5 更新任务状态，解锁任务
+  taskConfig['result'] = 'complete'
+  //taskConfig['end_time'] = new Date()
+  updateDetailData('rpa_plan_task', taskConfig)
 }
 
 exports = module.exports = {

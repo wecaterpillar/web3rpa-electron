@@ -174,6 +174,37 @@ const  getListData = async (listKey, queryParams = {}) => {
     return result
 }
 
+const updateDetailData = async (listKey, data) => {
+    // https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/[tableId]?tabletype=1
+    let result
+    if(!listKey){
+        return result
+    }
+    let tableId = listKey
+    if(listKey in mapRemoteTable){
+        tableId = mapRemoteTable.get(listKey)
+    }
+    await checkToken()
+    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/' + tableId + '?tabletype=1';
+    await axios.request({
+        method: 'put',
+        url: queryUrl,
+        data: data
+    }).then(function (response){
+        if(response.status === 200){
+            console.debug(response)
+            result = response
+        }else if(response.status === 401){
+            AUTH_TOKEN = undefined
+            //result = getListData(listKey, pageNo, pageSize)
+        }    
+    }).catch(function (error){
+        console.log(error)
+    }).finally(function (){
+    })
+    return result
+}
+
 const getCoingeckoListData = (pageNo, pageSize) => {
     let queryParams = {}
     if(pageNo){
@@ -201,6 +232,7 @@ exports = module.exports = {
     dataUtilInit : init,
     getListData : getListData,
     getDetailData : getDetailData,
+    updateDetailData : updateDetailData,
     getRpaPlanTaskList : getRpaPlanTaskList,
     getCoingeckoListData : getCoingeckoListData
   }
