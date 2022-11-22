@@ -1,11 +1,70 @@
 // 远程服务器交互
 // 本地文件交互（包含本地数据库）
 const axios = require('axios')
+
+
+var rpaConfig
+const init = (config) => {
+    rpaConfig = config
+    // token
+    initMapTable();
+}
+
+const checkToken = async () => {
+    if(!AUTH_TOKEN){
+        // get token from main window
+        AUTH_TOKEN = await rpaConfig.callbackGetLoginToken()
+        console.debug(AUTH_TOKEN)
+        if(!!AUTH_TOKEN){
+            axios.defaults.headers.common['authorization'] = AUTH_TOKEN;
+            axios.defaults.headers.common['x-access-token'] = AUTH_TOKEN;
+        }
+    }
+}
+
+const  getListData =  (tableKey, queryParams = {}) => {  
+    return getListDataRemote(tableKey, queryParams)
+}
+
+const  getDetailData =  (tableKey, detailId) => {
+    return getDetailDataRemote(tableKey, detailId)
+}
+
+const updateDetailData =  (tableKey, data) => {
+    return updateDetailDataRemote(tableKey, data)
+}
+
+// TODO 增加通过localApi访问remote的机制，用于flowscript中调用
+// 待调试
+const  getListDataApi =  async (tableKey, queryParams = {}) => {  
+    let url = 'http://localhost:3500/api/getData/'+tableKey
+    return await axios.get(url, queryParams)
+}
+
+const  getDetailDataApi =  async (tableKey, detailId) => {  
+    let url = 'http://localhost:3500/api/detail/'+tableKey+'/'+detailId
+    return await axios.get(url)
+}
+
+const updateDetailDataApi = async (tableKey, data) => {
+    let url = 'http://localhost:3500/api/form/'+tableKey
+    return await axios.put(url, data)
+}
+
+const getRpaPlanTaskList = (filterJson) => {
+    // filter
+    let queryParams = {}
+    queryParams['pageSize'] = 100
+    if(filterJson){
+        Object.assign(queryParams, filterJson)
+    }
+    return getListData('rpa_plan_task', queryParams)
+}
+
 // authorization 
 // = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2Njg5NDgwODQsInVzZXJuYW1lIjoiYWRtaW4ifQ.tZ9SxjNUGtzGK4n4cAu6wTf8zoFxrhHJIY1qE7IKxzU'
 // 开发时可查看浏览器所传递token设置在这里，否者需要等用户登录后自动抓取
 let AUTH_TOKEN 
-
 
 const mapRemoteTable = new Map()
 const initMapTable = () => {
@@ -40,26 +99,6 @@ const initMapTable = () => {
     // tableTxt -> id
 }
 
-
-var rpaConfig
-const init = (config) => {
-    rpaConfig = config
-    // token
-    initMapTable();
-}
-
-const checkToken = async () => {
-    if(!AUTH_TOKEN){
-        // get token from main window
-        AUTH_TOKEN = await rpaConfig.callbackGetLoginToken()
-        console.debug(AUTH_TOKEN)
-        if(!!AUTH_TOKEN){
-            axios.defaults.headers.common['authorization'] = AUTH_TOKEN;
-            axios.defaults.headers.common['x-access-token'] = AUTH_TOKEN;
-        }
-    }
-}
-
 const getTableKey = (tableKey) => {
     if(!tableKey){
         return tableKey
@@ -70,7 +109,7 @@ const getTableKey = (tableKey) => {
     return tableKey
 }
 
-const  getListData = async (tableKey, queryParams = {}) => {  
+const  getListDataRemote = async (tableKey, queryParams = {}) => {  
     //  https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/[tableId]
     let result
     if(!tableKey){
@@ -102,7 +141,7 @@ const  getListData = async (tableKey, queryParams = {}) => {
     return result
 }
 
-const  getDetailData = async (tableKey, detailId) => {
+const  getDetailDataRemote = async (tableKey, detailId) => {
     // https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/[tableId]/[id]
     let result
     if(!tableKey || !detailId){
@@ -133,8 +172,7 @@ const  getDetailData = async (tableKey, detailId) => {
     return result
 } 
 
-
-const updateDetailData = async (tableKey, data) => {
+const updateDetailDataRemote = async (tableKey, data) => {
     // https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/[tableId]?tabletype=1
     let result
     if(!tableKey){
@@ -160,17 +198,6 @@ const updateDetailData = async (tableKey, data) => {
     }).finally(function (){
     })
     return result
-}
-
-
-const getRpaPlanTaskList = (filterJson) => {
-    // filter
-    let queryParams = {}
-    queryParams['pageSize'] = 100
-    if(filterJson){
-        Object.assign(queryParams, filterJson)
-    }
-    return getListData('rpa_plan_task', queryParams)
 }
 
 
