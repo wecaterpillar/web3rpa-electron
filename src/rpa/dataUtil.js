@@ -21,7 +21,7 @@ let AUTH_TOKEN
 const mapRemoteTable = new Map()
 const initMapTable = () => {
     
-    
+    // onl_cgform_head
 
     mapRemoteTable.set('RPA项目明细', '40289f94844604be01844798772d0003')
     mapRemoteTable.set('w3_project_account', '40289f94844604be01844798772d0003')
@@ -37,6 +37,10 @@ const initMapTable = () => {
 
     mapRemoteTable.set('RPA运行节点', 'c6509c6e7f634250bf378b0240174803')
     mapRemoteTable.set('rpa_runnode', 'c6509c6e7f634250bf378b0240174803')
+
+    // browser 40289f94844604be0184479875490002
+    mapRemoteTable.set('指纹浏览器', '40289f94844604be0184479875490002')
+    mapRemoteTable.set('w3_browser', '40289f94844604be0184479875490002')
 
     mapRemoteTable.set('air_coingecko', '2c968084846b641501846b6415d20000')
     mapRemoteTable.set('coingecko', '2c968084846b641501846b6415d20000')
@@ -101,7 +105,7 @@ const checkToken = async () => {
     }
 }
 
-const  getDetailDate = async (listKey, detailId) => {
+const  getDetailData = async (listKey, detailId) => {
     // https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/[tableId]/[id]
     let result
     if(!listKey || !detailId){
@@ -196,6 +200,7 @@ const getRpaPlanTaskList = (filterJson) => {
 exports = module.exports = {
     dataUtilInit : init,
     getListData : getListData,
+    getDetailData : getDetailData,
     getRpaPlanTaskList : getRpaPlanTaskList,
     getCoingeckoListData : getCoingeckoListData
   }

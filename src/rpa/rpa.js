@@ -16,7 +16,7 @@ console.debug("rpa load playwright")
 const schedule = require('node-schedule')
 
 const { browserInit, openBrowser, frontBrowser, closeBrowser} = require('./browser')
-const { dataUtilInit, getListData, getRpaPlanTaskList} = require('./dataUtil')
+const { dataUtilInit, getListData, getRpaPlanTaskList, getDetailData} = require('./dataUtil')
 
 
 const rpaConfig = {}
@@ -47,7 +47,7 @@ const checkPlanTask = () => {
       }
      
     }
-    console.debug(result)
+    //console.debug(result)
 }); 
 }
 
@@ -70,12 +70,28 @@ const execRpaTask = async (taskConfig) => {
   console.debug(taskConfig)
   // 1 锁定当前任务，防止重复执行
   // 2 获取任务的执行脚本
+  let scriptResult = await getDetailData('rpa_flow_script', taskConfig['scriptid']);
+  console.debug(scriptResult)
+
   // 3 根据任务所属项目获取项目账号信息(包含浏览器及代理信息)
   let queryParams = {}
   queryParams['projectid'] = taskConfig['projectid']
   let result = await getListData('w3_project_account',queryParams)
-  console.debug(result)
+  //console.debug(result)
   // 4 每个账号独立运行（结果更新到项目明细记录中）
+  if(result && result.records){
+    // for 账号明细
+    for(i in result.records){
+       // 账号处理
+       let item = result.records[i]     
+       // 'w3_browser' - browserid
+       let browser = await getDetailData('w3_browser', item['browserid'])
+       if(browser){
+        item['browser'] = browser
+       }
+       console.debug(item)
+    }
+  }
   // 5 更新任务状态，解锁任务
 }
 
