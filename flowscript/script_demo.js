@@ -1,9 +1,9 @@
 const { getBrowserConfig, getBrowserContext} = require('../src/rpa/browser')
 const { getListData, getDetailData, updateDetailData} = require('../src/rpa/dataUtil')
 
-const xxx_start = ({item}) => {
+const flow_start = ({item}) => {
     (async () => {
-        console.debug("invoke xxx_start")
+        console.debug("invoke flow_start")
         console.debug(item)
         let browserConfig = await getBrowserConfig(item['browser'])
         let context = await getBrowserContext(browserConfig)
@@ -18,5 +18,5 @@ const xxx_start = ({item}) => {
 }
 
 exports = module.exports = {
-    xxx_start: xxx_start
+    flow_start: flow_start
 }

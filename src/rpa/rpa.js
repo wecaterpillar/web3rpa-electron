@@ -18,6 +18,8 @@ const schedule = require('node-schedule')
 const { browserInit, getBrowserConfig, getBrowserContext, openBrowser, frontBrowser, closeBrowser} = require('./browser')
 const { dataUtilInit, getListData, getRpaPlanTaskList, getDetailData, updateDetailData} = require('./dataUtil')
 
+const fs = require('fs')
+const path = require('path');
 
 const rpaConfig = {}
 
@@ -76,11 +78,17 @@ const execRpaTask = async (taskConfig) => {
   // 2 获取任务的执行脚本
   let scriptResult = await getDetailData('rpa_flow_script', taskConfig['scriptid']);
   console.debug(scriptResult)
+  var scriptFileName = path.join(rpaConfig.appDataPath, '/flowscript/'+scriptResult['type']+'-'+scriptResult['id']+'.js')
+  if(fs.existsSync(scriptFileName)){
+    fs.rmSync(scriptFileName)
+  }
+  fs.writeFileSync(scriptFileName, scriptResult['script'])
 
   // 3 根据任务所属项目获取项目账号信息(包含浏览器及代理信息)
   let queryParams = {}
   queryParams['projectid'] = taskConfig['projectid']
   let result = await getListData('w3_project_account',queryParams)
+
   //console.debug(result)
   // 4 每个账号独立运行（结果更新到项目明细记录中）
   if(result && result.records){
@@ -100,9 +108,8 @@ const execRpaTask = async (taskConfig) => {
        //let browserContext = await getBrowserContext(browserConfig)
 
        // test dynamic load script file
-       let fileName = "../../flowscript/baidu123.js"
-       const {xxx_start} = require(fileName) 
-       xxx_start({item})
+       const {flow_start} = require(scriptFileName) 
+       flow_start({item})
     }
   }
   // 5 更新任务状态，解锁任务

@@ -144,7 +144,10 @@ ref_multilogin/**
 default/*
 lib/chrome_*/*
 lib/extensions/*
+flowscript/*
+!flowscript/script_demo.js
 userData/*
 !userData/.gitkeep
 logs
+
 
