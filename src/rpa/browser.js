@@ -5,7 +5,7 @@ const path = require('path')
 
 
 // context pool
-const mapBrowser = new Map();  // browserId -> browser
+const mapBrowser = new Map();  // browserKey -> browserContext
 
 var rpaConfig
 var browserDefaultConfig = {}
@@ -29,9 +29,9 @@ const getBrowserExecutablePath = (browserType, version, browserName) => {
     // 1 浏览器配置指定
     //executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_105/SunBrowser.app/Contents/MacOS/SunBrowser'),
     //executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app/Contents/MacOS/Brave Browser'),
+    let bravePath = path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app/Contents/MacOS/Brave Browser')
     // 2 playwright默认配置
     // ~/Library/Caches/ms-playwright/chromium-1028/chrome-mac/Chromium.app
-    let bravePath = path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app/Contents/MacOS/Brave Browser')
     // 3 系统默认配置
     let chromeDefault = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     if(fs.existsSync(bravePath)){
@@ -52,30 +52,20 @@ const getBrowserExecutablePath = (browserType, version, browserName) => {
   return executablePath;
 }
 
-const getBrowserUserDataDir = (browserId) => {
+const getBrowserUserDataDir = (browserKey) => {
   // 默认目录如何处理，固定default或者不指定
-  if(!!browserId){
-    return path.join(rpaConfig.appDataPath, '/userData/'+browserId)
+  if(!!browserKey){
+    return path.join(rpaConfig.appDataPath, '/userData/'+browserKey)
   }
   return
 }
 
 const browserInitDefaultConfig = () => {
-  let extensions = getBrowserExtensions()
   browserDefaultConfig = {
     indexUrl: 'https://www.sogou.com',  //主页地址
     options: {
       headless: false, //是否无头浏览器
-      //slowMo: 1000,//延迟
-      // executablePath = /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
-      //executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_105/SunBrowser.app/Contents/MacOS/SunBrowser'),
-      executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app/Contents/MacOS/Brave Browser'),
-      ignoreDefaultArgs: ['--enable-automation'],
-        args: [
-            '--disable-blink-features=AutomationControlled',
-            `--disable-extensions-except=${extensions}`,
-            `--load-extension=${extensions}`
-        ],
+      ignoreDefaultArgs: ['--enable-automation']
     }
   }
 }
@@ -99,70 +89,110 @@ const createBrowser = () => {
     //await browser.close()
   })()
 }
-
-
-
-const openBrowser = (config) => {
-
-  (async () => {
+const getBrowserConfig = async (config) => {
     var browserConfig = {}
     Object.assign(browserConfig, browserDefaultConfig)
     if(config){
       Object.assign(browserConfig, config)
     }
+    // check browserKey/browserId
+    let browserKey 
+    if('browserKey' in browserConfig){
+      browserKey = browserConfig['browserKey']
+    }else if('browserId' in browserConfig){
+      browserKey = browserConfig['browserId']
+      browserConfig['browserKey'] = browserKey
+    }
+
     // 输入config转换为指纹的options,参考ads
+
+
+    // check headless
+    browserConfig.options.headless = false
+
+    // check extension
+    let extensions = getBrowserExtensions()
+    if(!!extensions && extensions.length>0){
+      browserConfig.options.args = [
+              '--disable-blink-features=AutomationControlled',
+              `--disable-extensions-except=${extensions}`,
+              `--load-extension=${extensions}`
+        ]
+    }else{
+      browserConfig.options.args = ['--disable-blink-features=AutomationControlled']
+    }
+
+    // check executablePath
+    let executablePath = getBrowserExecutablePath('chrome', 107, 'brave')
+    if(!!executablePath){
+      browserConfig.options.executablePath = executablePath
+    }
+
+    // check browserUserDataDir
+    let browserUserDataDir = getBrowserUserDataDir(browserKey)
+    if(!!browserUserDataDir){
+      browserConfig.userDataDir = browserUserDataDir
+    }
+
     console.debug(browserConfig);
 
+    return browserConfig
+}
+const getBrowserContext =  async (browserConfig) => {
     // load context
-    let browser
     let context
     
-    // 根据browserId检查是否有同id的browser正在运行
-    // check browserId and browserUserDataDir
-    let browserId
+    // 根据browserKey检查是否有同key的browser正在运行
+    // check browserKey and browserUserDataDir
+    let browserKey
     let browserUserDataDir
-    if('browserId' in browserConfig){
-      browserId = browserConfig.browserId
-      if(mapBrowser.has(browserId)){
-        context = mapBrowser.get(browserId)
+    if('browserKey' in browserConfig){
+      browserKey = browserConfig.browserKey
+      if(mapBrowser.has(browserKey)){
+        context = mapBrowser.get(browserKey)
         // TODO 检查是否有效无效则剔除
         if(context.pages().length==0){
           context = null
         }
       }
-      browserUserDataDir = getBrowserUserDataDir(browserId)
+      if(!!browserConfig.userDataDir){
+        browserUserDataDir = browserConfig.userDataDir
+      }    
       console.debug(browserUserDataDir);
     }
     
     if(!context){
-       // check executablePath
-      let executablePath = getBrowserExecutablePath('chrome', 107, 'brave')
-      if(!!executablePath){
-        browserConfig.options.executablePath = executablePath
-      }
       console.debug(browserConfig);
-
       if(!!browserUserDataDir){
         context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
-        mapBrowser.set(browserId, context)
+        mapBrowser.set(browserKey, context)
       }else{
         const browser = await playwright.chromium.launch(browserConfig.options)
         context = await browser.newContext()
-        mapBrowser.set(browserId, context)
+        mapBrowser.set(browserKey, context)
       }
-
     }
-    // goto home
-    const page = await context.newPage();
-    // check extensions and default page
-    let indexUrl = 'https://www.sogou.com/'
-    console.debug(indexUrl)
-    await page.goto(indexUrl)
-    await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
-  })().catch((error) => {
-    console.error(error.message)
-  })
-  
+    return context
+}
+
+const openBrowser = async (config) => {
+
+  let browserConfig = await getBrowserConfig(config)
+  let context = await getBrowserContext(browserConfig)
+  await visitSogouDemo({context, browserConfig})
+  // context.close()
+
+}
+
+const visitSogouDemo = async ({context, browserConfig}) => {
+   // goto home
+
+   const page = await context.newPage();
+   // check extensions and default page
+   let indexUrl = 'https://www.sogou.com/'
+   console.debug(indexUrl)
+   await page.goto(indexUrl)
+   await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
 }
 
 const frontBrowser = (browserId) => {

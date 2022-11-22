@@ -32,11 +32,7 @@ app.post('/api/browser/front', async (req, res) => {
 // for test
 app.get('/api/browser/open', async (req, res) => {
   // 打开浏览器, test only
-  let browserId = req.query.browserId
-  if(!browserId){
-    browserId = 'a001'
-  }
-  openBrowser({'browserId':browserId})
+  openBrowser(req.query)
   res.send('createBrowser done')
 })
 
