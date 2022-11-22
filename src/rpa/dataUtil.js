@@ -2,8 +2,9 @@
 // 本地文件交互（包含本地数据库）
 const axios = require('axios')
 // authorization 
-let AUTH_TOKEN 
 // = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2Njg5NDgwODQsInVzZXJuYW1lIjoiYWRtaW4ifQ.tZ9SxjNUGtzGK4n4cAu6wTf8zoFxrhHJIY1qE7IKxzU'
+// 开发时可查看浏览器所传递token设置在这里，否者需要等用户登录后自动抓取
+let AUTH_TOKEN 
 
 
 const mapRemoteTable = new Map()
@@ -59,16 +60,23 @@ const checkToken = async () => {
     }
 }
 
-const  getListData = async (listKey, queryParams = {}) => {  
+const getTableKey = (tableKey) => {
+    if(!tableKey){
+        return tableKey
+    }
+    if(tableKey in mapRemoteTable){
+        tableKey = mapRemoteTable.get(tableKey)
+    }
+    return tableKey
+}
+
+const  getListData = async (tableKey, queryParams = {}) => {  
     //  https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/[tableId]
     let result
-    if(!listKey){
+    if(!tableKey){
         return result
     }
-    let tableId = listKey
-    if(listKey in mapRemoteTable){
-        tableId = mapRemoteTable.get(listKey)
-    }
+    let tableId = getTableKey(tableKey)
     await checkToken()
 
     let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/' + tableId + '?hasQuery=true';
@@ -94,16 +102,13 @@ const  getListData = async (listKey, queryParams = {}) => {
     return result
 }
 
-const  getDetailData = async (listKey, detailId) => {
+const  getDetailData = async (tableKey, detailId) => {
     // https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/[tableId]/[id]
     let result
-    if(!listKey || !detailId){
+    if(!tableKey || !detailId){
         return result
     }
-    let tableId = listKey
-    if(listKey in mapRemoteTable){
-        tableId = mapRemoteTable.get(listKey)
-    }
+    let tableId = getTableKey(tableKey)
     await checkToken()
 
     let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/' + tableId + '/' + detailId;
@@ -129,16 +134,13 @@ const  getDetailData = async (listKey, detailId) => {
 } 
 
 
-const updateDetailData = async (listKey, data) => {
+const updateDetailData = async (tableKey, data) => {
     // https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/[tableId]?tabletype=1
     let result
-    if(!listKey){
+    if(!tableKey){
         return result
     }
-    let tableId = listKey
-    if(listKey in mapRemoteTable){
-        tableId = mapRemoteTable.get(listKey)
-    }
+    let tableId = getTableKey(tableKey)
     await checkToken()
     let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/' + tableId + '?tabletype=1';
     await axios.request({
@@ -160,17 +162,6 @@ const updateDetailData = async (listKey, data) => {
     return result
 }
 
-const getCoingeckoListData = (pageNo, pageSize) => {
-    let queryParams = {}
-    if(pageNo){
-        queryParams['pageNo'] = pageNo
-    }
-    if(pageSize){
-        queryParams['pageSize'] = pageSize
-    }
-    
-    return getListData('coingecko', queryParams)
-}
 
 const getRpaPlanTaskList = (filterJson) => {
     // filter

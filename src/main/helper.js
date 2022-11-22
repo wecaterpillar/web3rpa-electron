@@ -1,7 +1,13 @@
 var CryptoJS = require("crypto-js");
+
 // 读取配置文件，需要同服务器设置一致
-cryptoKey = CryptoJS.enc.Utf8.parse('_11111000001111@');
-cryptoIv = CryptoJS.enc.Utf8.parse('@11111000001111_');
+var rpaStorageKey = 'WEB3RPA__PRODUCTION__3.4.3__COMMON__LOCAL__KEY__'
+var strKey = '_11111000001111@'
+var strIv = '@11111000001111_'
+
+var cryptoKey = CryptoJS.enc.Utf8.parse(strKey);
+var cryptoIv = CryptoJS.enc.Utf8.parse(strIv);
+
 const encryptAes = (str) =>{
     var encrypted = CryptoJS.AES.encrypt(str, cryptoKey, {
         iv: cryptoIv,
@@ -36,7 +42,7 @@ const getMainWindowStorageValue = async ({mainWindow, key}) => {
 const getTokenFromMainWindow = async ({mainWindow}) => {
     let token
     // get token from main window
-    let value = await getMainWindowStorageValue({mainWindow, key:'WEB3RPA__PRODUCTION__3.4.3__COMMON__LOCAL__KEY__'})
+    let value = await getMainWindowStorageValue({mainWindow, key:rpaStorageKey})
     if(!value){
         return
     }
