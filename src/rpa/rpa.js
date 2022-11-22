@@ -21,6 +21,10 @@ const { dataUtilInit, getListData, getRpaPlanTaskList, getDetailData, updateDeta
 const fs = require('fs')
 const path = require('path');
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 const rpaConfig = {}
 
 const startRpa = () => {
@@ -33,6 +37,7 @@ const startRpa = () => {
 
     loadLocalApi()
 
+    sleep(10000)
     checkPlanTask()
 }
 

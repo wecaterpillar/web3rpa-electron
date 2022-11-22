@@ -2,14 +2,15 @@
 //require('update-electron-app')()
 
 const { app, ipcMain, Menu, BrowserWindow } = require('electron')
-const store = require('electron-store');
+//const store = require('electron-store');
 
 // os: mac vs linux vs win
 const isMac = process.platform === 'darwin'
 const isLinux = process.platform === 'linux'
 
 // app path
-const fs = require("fs")
+const fs = require("fs");
+const { setMaxIdleHTTPParsers } = require('http');
 const path = require('path');
 const appExecPath = app.getAppPath();
 const appDataPath = appExecPath;
@@ -39,16 +40,22 @@ if(fs.existsSync(configPath)){
 }
 console.debug(appConfig);
 
+// helper
+const {helperInit, getLoginToken} = require('./helper')
 
 // RPA server
 const {rpaConfig, startRpaServer} = require("../rpa/rpa")
 const loadRpaServer = () => {
+  // config
   rpaConfig.appExecPath = appExecPath
   rpaConfig.appDataPath = appDataPath
   rpaConfig.appConfig = appConfig;
   rpaConfig.isMac = isMac
   rpaConfig.isLinux = isLinux
-  rpaConfig.callbackGetMainWindowStorageValue = getMainWindowStorageValue
+  rpaConfig.callbackGetLoginToken = getLoginToken
+  //rpaConfig.callbackGetMainWindowStorageValue = getMainWindowStorageValue
+
+  // start rpa
   startRpaServer()
 }
 
@@ -75,18 +82,12 @@ const createWindow = () => {
 
   // 打开开发工具
   //mainWindow.webContents.openDevTools()
+
+  // helper init
+  helperInit({mainWindow})
 }
 
-const getMainWindowStorageValue = async (key) => {
-  let value
-  await mainWindow.webContents
-  .executeJavaScript('localStorage.getItem("'+key+'");', true)
-  .then(result => {
-    //console.debug('key='+key+',value='+result)
-    value = result
-  })
-  return value
-}
+
 
 // 这段程序将会在 Electron 结束初始化
 // 和创建浏览器窗口的时候调用
