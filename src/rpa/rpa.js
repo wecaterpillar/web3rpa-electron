@@ -37,9 +37,15 @@ const startRpa = () => {
 const checkPlanTask = () => {
   schedule.scheduleJob('0 */1 * * * *',()=>{
     console.log('checkPlanTask:' + new Date());
+    // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
     let result = getRpaPlanTaskList()
     if(result && result.records){
       // for tasks
+      for(let i=1; i<=result.records.length(); i++){
+         // 调用 任务处理
+        execRpaTask(result.records[i])
+      }
+     
     }
     console.debug(result)
 }); 
@@ -58,6 +64,16 @@ const loadLocalApi = () => {
 // 2 检查本地分配任务或者远程分配任务，并维护状态
 // child_process
 // 3 执行任务脚本-获取脚本，获取账号，执行任务，更新结果
+
+const execRpaTask = (taskConfig) => {
+  console.debug("execRpaTask")
+  console.debug(taskConfig)
+  // 1 锁定当前任务，防止重复执行
+  // 2 获取任务的执行脚本
+  // 3 根据任务所属项目获取项目账号信息(包含浏览器及代理信息)
+  // 4 每个账号独立运行（结果更新到项目明细记录中）
+  // 5 更新任务状态，解锁任务
+}
 
 exports = module.exports = {
     rpaConfig: rpaConfig,

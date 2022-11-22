@@ -67,8 +67,6 @@ const createWindow = () => {
     }
   })
 
-  //ipcMain.handle('ping', () => 'pong')
-
   // 加载 index.html
   //mainWindow.loadFile('renderer/src/index.html')
   mainWindow.loadURL(appUrl)
