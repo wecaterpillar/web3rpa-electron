@@ -21,6 +21,11 @@ let AUTH_TOKEN
 const mapRemoteTable = new Map()
 const initMapTable = () => {
     
+    
+
+    mapRemoteTable.set('RPA项目明细', '40289f94844604be01844798772d0003')
+    mapRemoteTable.set('w3_project_account', '40289f94844604be01844798772d0003')
+
     mapRemoteTable.set('RPA计划', '40289f94844604be01844798b95c0008')
     mapRemoteTable.set('rpa_plan_schedule', '40289f94844604be01844798b95c0008')
 
@@ -78,7 +83,6 @@ const decryptAes = (encrypted) => {
 }
 
 const checkToken = async () => {
-    
     if(!AUTH_TOKEN){
         // get token from main window
         let value = await getMainWindowStorageValue('WEB3RPA__PRODUCTION__3.4.3__COMMON__LOCAL__KEY__')
@@ -97,23 +101,28 @@ const checkToken = async () => {
     }
 }
 
-const  getListData = async (listKey, pageNo, pageSize) => {  
-    //  https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/[tableId]
+const  getDetailDate = async (listKey, detailId) => {
+    // https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/[tableId]/[id]
+    let result
+    if(!listKey || !detailId){
+        return result
+    }
+    let tableId = listKey
+    if(listKey in mapRemoteTable){
+        tableId = mapRemoteTable.get(listKey)
+    }
+    await checkToken()
 
-        if(!listKey in mapRemoteTable){
-            return
-        }
-        await checkToken()
+    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/' + tableId + '/' + detailId;
 
-        let tableId = mapRemoteTable.get(listKey)
-        let result
-        await axios.request({
+    
+    await axios.request({
             method: 'get',
-            url: 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/' + tableId + '?hasQuery=true&pageNo='+pageNo+'&pageSize='+pageSize
+            url: queryUrl
         }).then(function (response){
             //console.debug(response)
             if(response.status === 200 && response.data.success){
-                console.debug(response.data.result)
+                //console.debug(response.data.result)
                 result = response.data.result
             }else if(response.status === 401){
                 AUTH_TOKEN = undefined
@@ -123,16 +132,64 @@ const  getListData = async (listKey, pageNo, pageSize) => {
             console.log(error)
         }).finally(function (){
         })
+    return result
+} 
+
+const  getListData = async (listKey, queryParams = {}) => {  
+    //  https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/[tableId]
+    let result
+    if(!listKey){
         return result
+    }
+    let tableId = listKey
+    if(listKey in mapRemoteTable){
+        tableId = mapRemoteTable.get(listKey)
+    }
+    await checkToken()
+
+    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/' + tableId + '?hasQuery=true';
+    for(key in queryParams){
+        queryUrl += '&'+key+'='+queryParams[key]
+    }
+    await axios.request({
+            method: 'get',
+            url: queryUrl
+        }).then(function (response){
+            //console.debug(response)
+            if(response.status === 200 && response.data.success){
+                //console.debug(response.data.result)
+                result = response.data.result
+            }else if(response.status === 401){
+                AUTH_TOKEN = undefined
+                //result = getListData(listKey, pageNo, pageSize)
+            }    
+        }).catch(function (error){
+            console.log(error)
+        }).finally(function (){
+        })
+    return result
 }
 
 const getCoingeckoListData = (pageNo, pageSize) => {
-    return getListData('coingecko', pageNo, pageSize)
+    let queryParams = {}
+    if(pageNo){
+        queryParams['pageNo'] = pageNo
+    }
+    if(pageSize){
+        queryParams['pageSize'] = pageSize
+    }
+    
+    return getListData('coingecko', queryParams)
 }
 
 const getRpaPlanTaskList = (filterJson) => {
     // filter
-    return getListData('rpa_plan_task', 1, 100)
+    let queryParams = {}
+    queryParams['pageSize'] = 100
+    if(filterJson){
+        Object.assign(queryParams, filterJson)
+    }
+    return getListData('rpa_plan_task', queryParams)
 }
 
 
