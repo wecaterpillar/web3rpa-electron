@@ -105,39 +105,6 @@ const checkToken = async () => {
     }
 }
 
-const  getDetailData = async (listKey, detailId) => {
-    // https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/[tableId]/[id]
-    let result
-    if(!listKey || !detailId){
-        return result
-    }
-    let tableId = listKey
-    if(listKey in mapRemoteTable){
-        tableId = mapRemoteTable.get(listKey)
-    }
-    await checkToken()
-
-    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/' + tableId + '/' + detailId;
-
-    
-    await axios.request({
-            method: 'get',
-            url: queryUrl
-        }).then(function (response){
-            //console.debug(response)
-            if(response.status === 200 && response.data.success){
-                //console.debug(response.data.result)
-                result = response.data.result
-            }else if(response.status === 401){
-                AUTH_TOKEN = undefined
-                //result = getListData(listKey, pageNo, pageSize)
-            }    
-        }).catch(function (error){
-            console.log(error)
-        }).finally(function (){
-        })
-    return result
-} 
 
 const  getListData = async (listKey, queryParams = {}) => {  
     //  https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/[tableId]
@@ -173,6 +140,41 @@ const  getListData = async (listKey, queryParams = {}) => {
         })
     return result
 }
+
+const  getDetailData = async (listKey, detailId) => {
+    // https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/[tableId]/[id]
+    let result
+    if(!listKey || !detailId){
+        return result
+    }
+    let tableId = listKey
+    if(listKey in mapRemoteTable){
+        tableId = mapRemoteTable.get(listKey)
+    }
+    await checkToken()
+
+    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/' + tableId + '/' + detailId;
+
+    
+    await axios.request({
+            method: 'get',
+            url: queryUrl
+        }).then(function (response){
+            //console.debug(response)
+            if(response.status === 200 && response.data.success){
+                //console.debug(response.data.result)
+                result = response.data.result
+            }else if(response.status === 401){
+                AUTH_TOKEN = undefined
+                //result = getListData(listKey, pageNo, pageSize)
+            }    
+        }).catch(function (error){
+            console.log(error)
+        }).finally(function (){
+        })
+    return result
+} 
+
 
 const updateDetailData = async (listKey, data) => {
     // https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/[tableId]?tabletype=1
@@ -233,6 +235,5 @@ exports = module.exports = {
     getListData : getListData,
     getDetailData : getDetailData,
     updateDetailData : updateDetailData,
-    getRpaPlanTaskList : getRpaPlanTaskList,
-    getCoingeckoListData : getCoingeckoListData
+    getRpaPlanTaskList : getRpaPlanTaskList
   }

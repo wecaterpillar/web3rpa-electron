@@ -3,7 +3,7 @@ const app = express()
 const port = 3500
 
 const {openBrowser, frontBrowser, closeBrowser} = require('./browser')
-const {getListData, getCoingeckoListData} = require('./dataUtil')
+const {getListData, getDetailData, updateDetailData} = require('./dataUtil')
 
 var bodyParser = require('body-parser')
 app.use(bodyParser.json())
@@ -36,13 +36,27 @@ app.get('/api/browser/open', async (req, res) => {
   res.send('createBrowser done')
 })
 
-app.get('/api/getCoingeckoData', async (req, res) => {
-  // test only
-    let listKey = req.query.listKey
-    let result =  await getCoingeckoListData(1, 100)
-    console.debug(result)
-    res.json(result)
+
+app.get('/api/getData/:tableKey', async (req, res) => {
+  let tableKey = req.params.tableKey
+  let result = await getListData(tableKey, req.query)
+  res.json(result)
 })
+
+app.get('/api/detail/:tableKey/:id', async (req, res) => {
+  let tableKey = req.params.tableKey
+  let id = req.params.id
+  let result = await getDetailData(tableKey, id)
+  res.json(result)
+})
+
+app.put('/api/form/:tableKey', async (req, res) => {
+  let tableKey = req.params.tableKey
+  let data = req.body
+  let result = await updateDetailData(tableKey, data)
+  res.json(result)
+})
+
 
 
 
