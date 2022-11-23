@@ -29,6 +29,7 @@
     "extract-zip": "2.0.0",
     "ffi-napi": "^4.0.3",
     "node-schedule": "^2.1.0",
+    "node-uuid": "^1.4.8",
     "playwright": "^1.27.1",
     "pnpm": "^7.17.0",
     "ps-list": "^7.2.0",

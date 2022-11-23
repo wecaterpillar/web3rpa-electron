@@ -28,14 +28,27 @@ const decryptAes = (encrypted) => {
     return decrypted
 }
 
+const encryptMd5 = (str) => {
+    return CryptoJS.MD5(str).toString()
+}
+
 const getMainWindowStorageValue = async ({mainWindow, key}) => {
     let value
+    // check localStorage
     await mainWindow.webContents
     .executeJavaScript('localStorage.getItem("'+key+'");', true)
     .then(result => {
       //console.debug('key='+key+',value='+result)
       value = result
     })
+    // check sessionStorage
+    if(!value){
+        await mainWindow.webContents
+        .executeJavaScript('sessionStorage.getItem("'+key+'");', true)
+        .then(result => {
+        value = result
+        })
+    }
     return value
 }
 
@@ -61,6 +74,13 @@ const init = ({mainWindow}) => {
     myMainWindow = mainWindow
 }
 
+const getValueFromMainWindowStorage = async (key) => {
+    if(!myMainWindow){
+        return
+    }
+    return await getMainWindowStorageValue({mainWindow:myMainWindow, key})
+}
+
 const getLoginToken = async () => {
     if(!myMainWindow){
         return
@@ -70,5 +90,7 @@ const getLoginToken = async () => {
 
 exports = module.exports = {
     helperInit : init,
+    encryptMd5: encryptMd5,
+    getValueFromMainWindowStorage: getValueFromMainWindowStorage,
     getLoginToken : getLoginToken
   }

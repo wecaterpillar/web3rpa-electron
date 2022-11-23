@@ -10,7 +10,6 @@ const isLinux = process.platform === 'linux'
 
 // app path
 const fs = require("fs");
-const { setMaxIdleHTTPParsers } = require('http');
 const path = require('path');
 const appExecPath = app.getAppPath();
 const appDataPath = appExecPath;
@@ -33,15 +32,29 @@ console.log('appDataPath='+appDataPath);
 // looad config 
 // configFilePath = [appDataPath]/config.json
 var appConfig = {};
-const configPath = path.join(appDataPath, 'config.json');
-if(fs.existsSync(configPath)){
-  let configStr = fs.readFileSync(configPath);
-  appConfig = JSON.parse(configStr);
+const checkAppConfig = (config = {}, bWrite = false) =>{
+  const configPath = path.join(appDataPath, 'config.json');
+  if(fs.existsSync(configPath)){
+    let configStr = fs.readFileSync(configPath);
+    appConfig = JSON.parse(configStr);
+  }
+  if(!!config){
+    Object.assign(appConfig, config)
+  }
+  if(!'appUrl' in appConfig){
+    // default https://rpa.w3bb.cc
+    appConfig['appUrl'] = 'https://rpa.w3bb.cc'
+  }
+  if(bWrite){
+    fs.writeFileSync(configPath, JSON.stringify(appConfig))
+  }
+  console.debug(appConfig);
 }
-console.debug(appConfig);
+checkAppConfig()
+
 
 // helper
-const {helperInit, getLoginToken} = require('./helper')
+const {helperInit, getLoginToken, getValueFromMainWindowStorage} = require('./helper')
 
 // RPA server
 const {rpaConfig, startRpaServer} = require("../rpa/rpa")
@@ -52,8 +65,9 @@ const loadRpaServer = () => {
   rpaConfig.appConfig = appConfig;
   rpaConfig.isMac = isMac
   rpaConfig.isLinux = isLinux
+  rpaConfig.callbackCheckAppConfig = checkAppConfig
   rpaConfig.callbackGetLoginToken = getLoginToken
-  //rpaConfig.callbackGetMainWindowStorageValue = getMainWindowStorageValue
+  rpaConfig.callbackGetValueFromMainWindowStorage = getValueFromMainWindowStorage
 
   // start rpa
   startRpaServer()
@@ -61,7 +75,6 @@ const loadRpaServer = () => {
 
 // appUrl, read from config and change by line
 const appUrl = appConfig['appUrl']
-// default https://rpa.w3bb.cc
 
 var mainWindow
 const createWindow = () => {
