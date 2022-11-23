@@ -53,7 +53,7 @@ const startRpa = () => {
 
 var runNodeId
 const updateNodeStatus = () => {
-  schedule.scheduleJob('0 */2 * * * *', async ()=>{
+  schedule.scheduleJob('0 */10 * * * *', async ()=>{
     console.log('updateNodeStatus:' + new Date());
     let nodeName
     if('nodeName' in rpaConfig.appConfig){
@@ -102,7 +102,7 @@ const updateNodeStatus = () => {
 }
 
 const checkPlanTask = () => {
-  schedule.scheduleJob('0 */5 * * * *', async ()=>{
+  schedule.scheduleJob('0 */30 * * * *', async ()=>{
     console.log('checkPlanTask:' + new Date());
     // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
     let result = await getRpaPlanTaskList()
