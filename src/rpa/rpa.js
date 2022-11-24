@@ -102,7 +102,7 @@ const updateNodeStatus = () => {
 }
 
 const checkPlanTask = () => {
-  schedule.scheduleJob('0 */30 * * * *', async ()=>{
+  schedule.scheduleJob('0 */2 * * * *', async ()=>{
     console.log('checkPlanTask:' + new Date());
     // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
     let result = await getRpaPlanTaskList()
@@ -142,10 +142,14 @@ const execRpaTask = async (taskConfig) => {
   // Data truncation: Incorrect datetime value: '2022-11-22T10:15:00.795Z' for column 'start_time'
   await updateDetailData('rpa_plan_task', taskConfig)
   // 2 获取任务的执行脚本
-  let scriptResult = await getDetailData('rpa_flow_script', taskConfig['scriptid']);
+  let scriptResult = await getDetailData('rpa_flow_script', taskConfig['script_id']);
+  if(!scriptResult || !'script' in scriptResult){
+    console.error('can not get script')
+    return
+  }
   let scriptContext = scriptResult['script']
   //console.debug(scriptResult)
-  var scriptFileName = path.join(rpaConfig.appDataPath, '/flowscript/'+scriptResult['type']+'-'+scriptResult['name']+'-'+CryptoJS.MD5(scriptContext).toString()+'.js')
+  var scriptFileName = path.join(rpaConfig.appDataPath, '/flowscript/'+scriptResult['name'].slice(0,5)+'-'+CryptoJS.MD5(scriptContext).toString().slice(-5)+'.js')
   if(!fs.existsSync(scriptFileName)){
     fs.writeFileSync(scriptFileName, scriptContext)
   }
@@ -153,7 +157,7 @@ const execRpaTask = async (taskConfig) => {
 
   // 3 根据任务所属项目获取项目账号信息(包含浏览器及代理信息)
   let queryParams = {}
-  queryParams['projectid'] = taskConfig['projectid']
+  queryParams['project_id'] = taskConfig['project_id']
   let result = await getListData('w3_project_account',queryParams)
 
   //console.debug(result)
@@ -164,7 +168,7 @@ const execRpaTask = async (taskConfig) => {
        // 账号处理
        let item = result.records[i]     
        // 'w3_browser' - browserid
-       let browser = await getDetailData('w3_browser', item['browserid'])
+       let browser = await getDetailData('w3_browser', item['browser_id'])
        if(browser){
         browser['browserKey'] = browser['name']
         item['browser'] = browser
