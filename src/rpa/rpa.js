@@ -67,19 +67,19 @@ const callbackGetAppCurrentUser = async () => {
 }
 
 const getUsername = async () => {
-  let username = rpaConfig.appCurrentUser['username'] 
+  let username = await rpaConfig.appCurrentUser['username'] 
   if(!username){
     await callbackGetAppCurrentUser()
-    username = rpaConfig.appCurrentUser['username']
+    username = await rpaConfig.appCurrentUser['username']
   }
   return username
 }
 
 const getLoginToken = async () => {
-  let token = rpaConfig.appCurrentUser['token'] 
+  let token = await rpaConfig.appCurrentUser['token'] 
   if(!token){
     await callbackGetAppCurrentUser()
-    token = rpaConfig.appCurrentUser['token']
+    token = await rpaConfig.appCurrentUser['token']
   }
   return token
 } 
@@ -90,7 +90,7 @@ const resetLoginToken = async () => {
 
 var runNodeId
 const updateNodeStatus = () => {
-  schedule.scheduleJob('0 */10 * * * *', async ()=>{
+  schedule.scheduleJob('0 */2 * * * *', async ()=>{
     console.log('updateNodeStatus:' + new Date());
     let nodeData
     // 1. get nodeName from config
