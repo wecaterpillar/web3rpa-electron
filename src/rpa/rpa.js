@@ -39,6 +39,14 @@ const startRpa = () => {
     console.debug('start rpa ...')
     console.debug(rpaConfig)
 
+    if(!rpaConfig.appCurrentUser){
+      rpaConfig.appCurrentUser = {}
+    }
+
+    rpaConfig.getUsername = getUsername
+    rpaConfig.getLoginToken = getLoginToken
+    rpaConfig.resetLoginToken = resetLoginToken
+
     browserInit(rpaConfig)
 
     dataUtilInit(rpaConfig)
@@ -51,6 +59,35 @@ const startRpa = () => {
     updateNodeStatus()
 }
 
+const callbackGetAppCurrentUser = async () => {
+  let userInfo = await rpaConfig.callbackGetAppCurrentUser()
+  if('username' in userInfo && !!userInfo['username']){
+    rpaConfig.appCurrentUser = userInfo
+  }
+}
+
+const getUsername = async () => {
+  let username = rpaConfig.appCurrentUser['username'] 
+  if(!username){
+    await callbackGetAppCurrentUser()
+    username = rpaConfig.appCurrentUser['username']
+  }
+  return username
+}
+
+const getLoginToken = async () => {
+  let token = rpaConfig.appCurrentUser['token'] 
+  if(!token){
+    await callbackGetAppCurrentUser()
+    token = rpaConfig.appCurrentUser['token']
+  }
+  return token
+} 
+
+const resetLoginToken = async () => {
+  rpaConfig.appCurrentUser['token'] = undefined
+}
+
 var runNodeId
 const updateNodeStatus = () => {
   schedule.scheduleJob('0 */10 * * * *', async ()=>{
@@ -58,17 +95,25 @@ const updateNodeStatus = () => {
     let nodeData
     // 1. get nodeName from config
     let nodeName
-    // 1.1 load from file
+    // 1.1 load from appConfig (开发环境初次可手动设置)
+    if('nodeName' in rpaConfig.appConfig){
+      nodeName = rpaConfig.appConfig['nodeName']
+    }
+    // 1.2 load from file
+    let nodename2
     const nodeNamePath = path.join(rpaConfig.appDataPath, 'nodeName');
     if(fs.existsSync(nodeNamePath)){
-      nodeName = fs.readFileSync(nodeNamePath).toString();
+      nodeName2 = fs.readFileSync(nodeNamePath).toString();
     }
-    // 1.2 load from appConfig (开发环境初次可手动设置)
-    if(!nodeName && 'nodeName' in rpaConfig.appConfig){
-      nodeName = rpaConfig.appConfig['nodeName']
-      if(!!nodeName){
+    if(!!nodeName){
+      if(!nodeName2 || nodeName !== nodename2){
         fs.writeFileSync(nodeNamePath, nodeName)
-      } 
+      }
+    }else{
+      if(!!nodeName2){
+        nodeName = nodeName2
+        rpaConfig.appConfig['nodeName'] = nodeName
+      }
     }
     // 2. query nodeData
     if(!!nodeName){
@@ -83,7 +128,6 @@ const updateNodeStatus = () => {
     // 3. init nodeData
     if(!!!nodeData){
       nodeData = {}
-      let userInfo = await rpaConfig.callbackGetAppCurrentUser()
       if(!!!nodeName){
         nodeName = userInfo['hostname']
         if(!!!nodeName){
@@ -101,7 +145,7 @@ const updateNodeStatus = () => {
         }  
       }
       nodeData['node_name'] = nodeName
-      let username = userInfo['username'] 
+      let username = getUsername()
       if(!!username){
         nodeData['username'] = username  
         console.info(nodeData)
@@ -119,10 +163,15 @@ const updateNodeStatus = () => {
 }
 
 const checkPlanTask = () => {
+  // TODO 指定节点或者指定当前用户但无指定节点
+  // 当前只查询分配给本节点的任务，且为待处理
+  // username, runnode
+  let username = getUsername()
+  let nodeName = rpaConfig.appConfig['nodeName']
   schedule.scheduleJob('0 */30 * * * *', async ()=>{
     console.log('checkPlanTask:' + new Date());
     // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
-    let result = await getRpaPlanTaskList()
+    let result = await getRpaPlanTaskList({runnode: nodeName, status: 'todo'})
     if(result && result.records){
       // for tasks
       for(i in result.records){
@@ -203,10 +252,11 @@ const execRpaTask = async (taskConfig) => {
     }
   }
   // 5 更新任务状态，解锁任务
-  taskConfig['result'] = 'complete'
-  taskConfig['end_time'] = getDateTime()
+  // 异步需要额外方式检查是否已经完成任务
+  //taskConfig['result'] = 'complete'
+  //taskConfig['end_time'] = getDateTime()
   //taskConfig['end_time'] = new Date()
-  await updateDetailData('rpa_plan_task', taskConfig)
+  //await updateDetailData('rpa_plan_task', taskConfig)
 }
 
 exports = module.exports = {

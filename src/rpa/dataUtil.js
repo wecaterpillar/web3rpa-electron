@@ -13,8 +13,7 @@ const init = (config) => {
 const checkToken = async () => {
     if(!AUTH_TOKEN){
         // get token from main window
-        let userInfo = await rpaConfig.callbackGetAppCurrentUser()
-        AUTH_TOKEN = userInfo['token']
+        AUTH_TOKEN = await rpaConfig.getLoginToken()
         console.debug(AUTH_TOKEN)
         if(!!AUTH_TOKEN){
             axios.defaults.headers.common['authorization'] = AUTH_TOKEN;
@@ -136,6 +135,7 @@ const  getListDataRemote = async (tableKey, queryParams = {}) => {
                 //console.debug(response.data.result)
                 result = response.data.result
             }else if(response.status === 401){
+                rpaConfig.resetLoginToken()
                 AUTH_TOKEN = undefined
                 //result = getListData(listKey, pageNo, pageSize)
             }    
@@ -167,6 +167,7 @@ const  getDetailDataRemote = async (tableKey, detailId) => {
                 //console.debug(response.data.result)
                 result = response.data.result
             }else if(response.status === 401){
+                rpaConfig.resetLoginToken()
                 AUTH_TOKEN = undefined
                 //result = getListData(listKey, pageNo, pageSize)
             }    
@@ -195,6 +196,7 @@ const updateDetailDataRemote = async (tableKey, data) => {
             //console.debug(response)
             result = response
         }else if(response.status === 401){
+            rpaConfig.resetLoginToken()
             AUTH_TOKEN = undefined
             //result = getListData(listKey, pageNo, pageSize)
         }    
@@ -223,6 +225,7 @@ const createDetailDataRemote = async (tableKey, data) => {
             //console.debug(response)
             result = response
         }else if(response.status === 401){
+            rpaConfig.resetLoginToken()
             AUTH_TOKEN = undefined
             //result = getListData(listKey, pageNo, pageSize)
         }    
