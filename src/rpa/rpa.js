@@ -72,11 +72,11 @@ const updateNodeStatus = () => {
     }
     // 2. query nodeData
     if(!!nodeName){
-           // 2. query node
+        // 2. query node  查询优先级？ node_name, username,update_by, create_by
         let nodeResult = await getListData('rpa_runnode',{'node_name':nodeName})
         //console.debug(nodeResult)
         
-        if(nodeResult && nodeResult.records){
+        if(nodeResult && nodeResult.records.length>0){
           nodeData = nodeResult.records[0]
         }
     }
@@ -104,7 +104,7 @@ const updateNodeStatus = () => {
       let username = userInfo['username'] 
       if(!!username){
         nodeData['username'] = username  
-        const uuidv1 = ruquire('uuid/v1')
+        const uuidv1 = require('uuid/v1')
         nodeData['id'] = uuidv1().replace(/-/g, '') 
       }   
       console.info(nodeData)
