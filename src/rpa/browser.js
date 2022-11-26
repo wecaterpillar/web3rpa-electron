@@ -163,14 +163,18 @@ const getBrowserContext =  async (browserConfig) => {
     
     if(!context){
       console.debug(browserConfig);
-      if(!!browserUserDataDir){
-        context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
-        mapBrowser.set(browserKey, context)
-      }else{
-        const browser = await playwright.chromium.launch(browserConfig.options)
-        context = await browser.newContext()
-        mapBrowser.set(browserKey, context)
-      }
+      (async () => {
+        if(!!browserUserDataDir){
+          context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
+          mapBrowser.set(browserKey, context)
+        }else{
+          const browser = await playwright.chromium.launch(browserConfig.options)
+          context = await browser.newContext()
+          mapBrowser.set(browserKey, context)
+        }
+      }).catch(function (error){
+        console.log(error)
+      })()    
     }
     return context
 }

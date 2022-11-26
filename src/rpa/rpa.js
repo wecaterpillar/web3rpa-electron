@@ -55,45 +55,62 @@ var runNodeId
 const updateNodeStatus = () => {
   schedule.scheduleJob('0 */10 * * * *', async ()=>{
     console.log('updateNodeStatus:' + new Date());
+    let nodeData
+    // 1. get nodeName from config
     let nodeName
-    if('nodeName' in rpaConfig.appConfig){
+    // 1.1 load from file
+    const nodeNamePath = path.join(rpaConfig.appDataPath, 'nodeName');
+    if(fs.existsSync(nodeNamePath)){
+      nodeName = fs.readFileSync(nodeNamePath).toString();
+    }
+    // 1.2 load from appConfig (开发环境初次可手动设置)
+    if(!nodeName && 'nodeName' in rpaConfig.appConfig){
       nodeName = rpaConfig.appConfig['nodeName']
-    }else{     
-      const nodeNamePath = path.join(rpaConfig.appDataPath, 'nodeName');
-      if(fs.existsSync(nodeNamePath)){
-        nodeName = fs.readFileSync(nodeNamePath);
-      }
-      if(!nodeName)
-      {
-        nodeName = await rpaConfig.callbackGetValueFromMainWindowStorage('hostname')
-        console.log(nodeName)
-        if(!nodeName){
+      if(!!nodeName){
+        fs.writeFileSync(nodeNamePath, nodeName)
+      } 
+    }
+    // 2. query nodeData
+    if(!!nodeName){
+           // 2. query node
+        let nodeResult = await getListData('rpa_runnode',{'node_name':nodeName})
+        //console.debug(nodeResult)
+        
+        if(nodeResult && nodeResult.records){
+          nodeData = nodeResult.records[0]
+        }
+    }
+
+    // 3. init nodeData
+    if(!!!nodeData){
+      nodeData = {}
+      let userInfo = await rpaConfig.callbackGetAppCurrentUser()
+      if(!!!nodeName){
+        nodeName = userInfo['hostname']
+        if(!!!nodeName){
           const {
             randomBytes
           } = await import('crypto');      
           const buf = randomBytes(5);
           nodeName = buf.toString('hex')
-        }
+        }   
+        console.log(nodeName)
         if(!!nodeName){
+          nodeData['node_name'] = nodeName
           rpaConfig.appConfig['nodeName'] = nodeName
           fs.writeFileSync(nodeNamePath, nodeName)
-        }   
+        }  
       }
-    } 
-    
-    let nodeResult = await getListData('rpa_runnode',{'node_name':nodeName})
-    //console.debug(nodeResult)
-    let nodeData
-    if(nodeResult && nodeResult.records){
-      nodeData = nodeResult.records[0]
+      let username = userInfo['username'] 
+      if(!!username){
+        nodeData['username'] = username  
+        const uuidv1 = ruquire('uuid/v1')
+        nodeData['id'] = uuidv1().replace(/-/g, '') 
+      }   
+      console.info(nodeData)
     }
-    if(!!!nodeData){
-      nodeData = {}
-      nodeData['node_name'] = nodeName
-      const uuidv1 = ruquire('uuid/v1')
-      nodeData['id'] = uuidv1().replace(/-/g, '')
-    }
-    if(!!nodeData){
+   
+    if(!!nodeData && 'id' in nodeData){
       // todo add user, ip
       nodeData['update_time'] = getDateTime()
       await updateDetailData('rpa_runnode', nodeData)
@@ -102,7 +119,7 @@ const updateNodeStatus = () => {
 }
 
 const checkPlanTask = () => {
-  schedule.scheduleJob('0 */2 * * * *', async ()=>{
+  schedule.scheduleJob('0 */30 * * * *', async ()=>{
     console.log('checkPlanTask:' + new Date());
     // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
     let result = await getRpaPlanTaskList()
@@ -111,6 +128,8 @@ const checkPlanTask = () => {
       for(i in result.records){
          // 调用 任务处理
         execRpaTask(result.records[i])
+        // sleep
+        sleep(30000)
       }
      
     }

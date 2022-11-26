@@ -54,7 +54,7 @@ checkAppConfig()
 
 
 // helper
-const {helperInit, getLoginToken, getValueFromMainWindowStorage} = require('./helper')
+const {helperInit, getAppCurrentUser, getValueFromMainWindowStorage} = require('./helper')
 
 // RPA server
 const {rpaConfig, startRpaServer} = require("../rpa/rpa")
@@ -66,7 +66,7 @@ const loadRpaServer = () => {
   rpaConfig.isMac = isMac
   rpaConfig.isLinux = isLinux
   rpaConfig.callbackCheckAppConfig = checkAppConfig
-  rpaConfig.callbackGetLoginToken = getLoginToken
+  rpaConfig.callbackGetAppCurrentUser = getAppCurrentUser
   rpaConfig.callbackGetValueFromMainWindowStorage = getValueFromMainWindowStorage
 
   // start rpa

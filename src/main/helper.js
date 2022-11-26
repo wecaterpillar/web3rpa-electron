@@ -52,22 +52,6 @@ const getMainWindowStorageValue = async ({mainWindow, key}) => {
     return value
 }
 
-const getTokenFromMainWindow = async ({mainWindow}) => {
-    let token
-    // get token from main window
-    let value = await getMainWindowStorageValue({mainWindow, key:rpaStorageKey})
-    if(!value){
-        return
-    }
-    let storeJson = JSON.parse(decryptAes(value))
-    //console.debug(storeJson)
-    if(!storeJson.value['TOKEN__'] || !storeJson.value['TOKEN__'].value){
-        return
-    }
-    token = storeJson.value['TOKEN__'].value
-    return token
-}
-
 var myMainWindow
 
 const init = ({mainWindow}) => {
@@ -81,16 +65,40 @@ const getValueFromMainWindowStorage = async (key) => {
     return await getMainWindowStorageValue({mainWindow:myMainWindow, key})
 }
 
-const getLoginToken = async () => {
+const getAppCurrentUser = async () => {
+    let userInfo = {}
     if(!myMainWindow){
-        return
+        return userInfo
     }
-    return await getTokenFromMainWindow({mainWindow:myMainWindow})
+    mainWindow = myMainWindow   
+    let value = await getMainWindowStorageValue({mainWindow, key:rpaStorageKey})
+    if(!!value){
+        let storeJson = JSON.parse(decryptAes(value))
+        //console.debug(storeJson)
+        // username
+        if(storeJson.value['USER__INFO__'] && storeJson.value['USER__INFO__'].value){
+            let username = storeJson.value['USER__INFO__'].value['username']
+            userInfo['username'] = username
+            userInfo['userid'] = storeJson.value['USER__INFO__'].value['id']
+        }
+        // token
+        if(storeJson.value['TOKEN__'] && storeJson.value['TOKEN__'].value){
+            let token = storeJson.value['TOKEN__'].value
+            userInfo['token'] = token
+        }   
+    }   
+    // check other
+    let hostname = await getMainWindowStorageValue({mainWindow, key:'hostname'})
+    if(!!hostname){
+        userInfo['hostname'] = hostname
+    }   
+    return userInfo
 }
+
 
 exports = module.exports = {
     helperInit : init,
     encryptMd5: encryptMd5,
     getValueFromMainWindowStorage: getValueFromMainWindowStorage,
-    getLoginToken : getLoginToken
+    getAppCurrentUser : getAppCurrentUser
   }

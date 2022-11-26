@@ -13,7 +13,8 @@ const init = (config) => {
 const checkToken = async () => {
     if(!AUTH_TOKEN){
         // get token from main window
-        AUTH_TOKEN = await rpaConfig.callbackGetLoginToken()
+        let userInfo = await rpaConfig.callbackGetAppCurrentUser()
+        AUTH_TOKEN = userInfo['token']
         console.debug(AUTH_TOKEN)
         if(!!AUTH_TOKEN){
             axios.defaults.headers.common['authorization'] = AUTH_TOKEN;
