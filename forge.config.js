@@ -1,5 +1,7 @@
-module.exports = {
-  packagerConfig: {},
+const config = {
+  packagerConfig: {
+    extraResources:['./lib/**', './flowscript/**','./userData/**','./doc/**','./logs/**','./ref_**/**']
+  },
   rebuildConfig: {},
   makers: [
     {
@@ -20,3 +22,5 @@ module.exports = {
     },
   ],
 };
+
+module.exports = config
