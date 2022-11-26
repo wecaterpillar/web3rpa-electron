@@ -21,6 +21,10 @@ const checkToken = async () => {
         }
     }
 }
+const resetToken = async () => {
+    AUTH_TOKEN = undefined
+    await rpaConfig.resetLoginToken()
+}
 
 const  getListData =  (tableKey, queryParams = {}) => {  
     return getListDataRemote(tableKey, queryParams)
@@ -135,8 +139,7 @@ const  getListDataRemote = async (tableKey, queryParams = {}) => {
                 //console.debug(response.data.result)
                 result = response.data.result
             }else if(response.status === 401){
-                rpaConfig.resetLoginToken()
-                AUTH_TOKEN = undefined
+                resetToken()
                 //result = getListData(listKey, pageNo, pageSize)
             }    
         }).catch(function (error){
@@ -167,8 +170,7 @@ const  getDetailDataRemote = async (tableKey, detailId) => {
                 //console.debug(response.data.result)
                 result = response.data.result
             }else if(response.status === 401){
-                rpaConfig.resetLoginToken()
-                AUTH_TOKEN = undefined
+                resetToken()
                 //result = getListData(listKey, pageNo, pageSize)
             }    
         }).catch(function (error){
@@ -196,8 +198,7 @@ const updateDetailDataRemote = async (tableKey, data) => {
             //console.debug(response)
             result = response
         }else if(response.status === 401){
-            rpaConfig.resetLoginToken()
-            AUTH_TOKEN = undefined
+            resetToken()
             //result = getListData(listKey, pageNo, pageSize)
         }    
     }).catch(function (error){
@@ -225,8 +226,7 @@ const createDetailDataRemote = async (tableKey, data) => {
             //console.debug(response)
             result = response
         }else if(response.status === 401){
-            rpaConfig.resetLoginToken()
-            AUTH_TOKEN = undefined
+            resetToken()
             //result = getListData(listKey, pageNo, pageSize)
         }    
     }).catch(function (error){
