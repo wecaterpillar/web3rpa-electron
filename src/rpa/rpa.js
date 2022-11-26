@@ -17,7 +17,7 @@ const schedule = require('node-schedule')
 var CryptoJS = require("crypto-js");
 
 const { browserInit, getBrowserConfig, getBrowserContext, openBrowser, frontBrowser, closeBrowser} = require('./browser')
-const { dataUtilInit, getListData, getRpaPlanTaskList, getDetailData, updateDetailData} = require('./dataUtil')
+const { dataUtilInit, getListData, getRpaPlanTaskList, getDetailData, updateDetailData, createDetailData} = require('./dataUtil')
 
 const fs = require('fs')
 const path = require('path');
@@ -74,8 +74,7 @@ const updateNodeStatus = () => {
     if(!!nodeName){
         // 2. query node  查询优先级？ node_name, username,update_by, create_by
         let nodeResult = await getListData('rpa_runnode',{'node_name':nodeName})
-        //console.debug(nodeResult)
-        
+        //console.debug(nodeResult)    
         if(nodeResult && nodeResult.records.length>0){
           nodeData = nodeResult.records[0]
         }
@@ -101,17 +100,18 @@ const updateNodeStatus = () => {
           fs.writeFileSync(nodeNamePath, nodeName)
         }  
       }
+      nodeData['node_name'] = nodeName
       let username = userInfo['username'] 
       if(!!username){
         nodeData['username'] = username  
-        const uuidv1 = require('uuid/v1')
-        nodeData['id'] = uuidv1().replace(/-/g, '') 
-      }   
-      console.info(nodeData)
+        console.info(nodeData)
+        await createDetailData('rpa_runnode', nodeData)
+      }       
     }
    
     if(!!nodeData && 'id' in nodeData){
-      // todo add user, ip
+       // todo add  ip
+      nodeData['status'] = 'running'
       nodeData['update_time'] = getDateTime()
       await updateDetailData('rpa_runnode', nodeData)
     }

@@ -35,6 +35,10 @@ const updateDetailData =  (tableKey, data) => {
     return updateDetailDataRemote(tableKey, data)
 }
 
+const createDetailData =  (tableKey, data) => {
+    return createDetailDataRemote(tableKey, data)
+}
+
 // TODO 增加通过localApi访问remote的机制，用于flowscript中调用
 // 待调试
 const  getListDataApi =  async (tableKey, queryParams = {}) => {  
@@ -201,11 +205,40 @@ const updateDetailDataRemote = async (tableKey, data) => {
     return result
 }
 
+const createDetailDataRemote = async (tableKey, data) => {
+    // https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/[tableId]?tabletype=1
+    let result
+    if(!tableKey){
+        return result
+    }
+    let tableId = getTableKey(tableKey)
+    await checkToken()
+    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/' + tableId + '?tabletype=1';
+    await axios.request({
+        method: 'post',
+        url: queryUrl,
+        data: data
+    }).then(function (response){
+        if(response.status === 200){
+            //console.debug(response)
+            result = response
+        }else if(response.status === 401){
+            AUTH_TOKEN = undefined
+            //result = getListData(listKey, pageNo, pageSize)
+        }    
+    }).catch(function (error){
+        console.log(error)
+    }).finally(function (){
+    })
+    return result
+}
+
 
 exports = module.exports = {
     dataUtilInit : init,
     getListData : getListData,
     getDetailData : getDetailData,
     updateDetailData : updateDetailData,
+    createDetailData : createDetailData,
     getRpaPlanTaskList : getRpaPlanTaskList
   }

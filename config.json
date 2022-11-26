@@ -1,1 +1,4 @@
-{"appUrl":"https://rpa.w3bb.cc"}
+{
+    "appUrl":"https://rpa.w3bb.cc",
+    "localApiPort":3500
+}

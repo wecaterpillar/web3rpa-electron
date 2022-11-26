@@ -172,8 +172,6 @@ const getBrowserContext =  async (browserConfig) => {
           context = await browser.newContext()
           mapBrowser.set(browserKey, context)
         }
-      }).catch(function (error){
-        console.log(error)
       })()    
     }
     return context
