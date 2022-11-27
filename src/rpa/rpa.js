@@ -1,23 +1,11 @@
-// base_path
-// user_data
-
-// getbrowserpath: chrome 105
-
-// browser fingerprint config
-// proxy config
-// cookie
-
-// launch browser
-// debug 
-// DevTools listening on ws://127.0.0.1:60163/devtools/browser/1ac46d43-2dbf-49ad-a95c-9e7a30f0c553
-
 const playwright = require('playwright')
 console.debug("rpa load playwright")
 const schedule = require('node-schedule')
 var CryptoJS = require("crypto-js");
 
-const { browserInit, getBrowserConfig, getBrowserContext, openBrowser, frontBrowser, closeBrowser} = require('./browser')
-const { dataUtilInit, getListData, getRpaPlanTaskList, getDetailData, updateDetailData, createDetailData} = require('./dataUtil')
+const { remoteServerInit } = require('./remoteServer')
+const { browserInit } = require('./browser')
+const { dataUtilInit, getListData, getDetailData, updateDetailData, createDetailData, getRpaPlanTaskList} = require('./dataUtil')
 
 const fs = require('fs')
 const path = require('path');
@@ -39,6 +27,8 @@ const startRpa = () => {
     console.debug('start rpa ...')
     console.debug(rpaConfig)
 
+    // 1. load rpa config
+
     if(!rpaConfig.appCurrentUser){
       rpaConfig.appCurrentUser = {}
     }
@@ -47,14 +37,25 @@ const startRpa = () => {
     rpaConfig.getLoginToken = getLoginToken
     rpaConfig.resetLoginToken = resetLoginToken
 
-    browserInit(rpaConfig)
+    // 2. init
+    // 2.1 remote server
+    remoteServerInit(rpaConfig)
+    
+    // 2.2 local api
+    loadLocalApi(rpaConfig)
 
+    // 2.3 dataUtil
     dataUtilInit(rpaConfig)
 
-    loadLocalApi()
+    // 2.4 browser
+    browserInit(rpaConfig)    
 
+
+    // 3 rpa 
+    // 3.1 check task
     sleep(10000)
     checkPlanTask()
+    // 3.2 node status
     sleep(10000)
     updateNodeStatus()
 }

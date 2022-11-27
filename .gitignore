@@ -150,4 +150,5 @@ userData/*
 !userData/.gitkeep
 logs
 nodeName
+appLoginUser
 
