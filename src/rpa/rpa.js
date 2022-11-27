@@ -220,6 +220,11 @@ const execRpaTask = async (taskConfig) => {
   let projectId = taskConfig['project_id']
   let projectResult = await getDetailData('w3_project_auto', projectId);
 
+  var projectFilePath = path.join(rpaConfig.appDataPath, '/flowscript/'+projectResult['code'])
+  if(!fs.existsSync(projectFilePath)){
+    fs.mkdirSync(projectFilePath)
+  }
+
   // 2.2 执行脚本
   let scriptResult = await getDetailData('rpa_flow_script', taskConfig['script_id']);
   if(!scriptResult || !'script' in scriptResult){
@@ -229,7 +234,7 @@ const execRpaTask = async (taskConfig) => {
   let scriptContext = scriptResult['script']
   //console.debug(scriptResult)
   let fileName = scriptResult['name'].slice(0,5)+'-'+CryptoJS.MD5(scriptContext).toString().slice(-5)+'.js'
-  var scriptFilePath = path.join(rpaConfig.appDataPath, '/flowscript/'+projectResult['code']+'/'+fileName)
+  var scriptFilePath =  path.join(projectFilePath, '/'+fileName);
   if(!fs.existsSync(scriptFilePath)){
     // todo 可能会替换脚本中开发和生产环境不同的路径
     if(rpaConfig.isPackaged){
