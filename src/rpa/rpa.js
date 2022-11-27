@@ -71,10 +71,15 @@ const callbackGetAppCurrentUser = async () => {
 }
 
 const getUsername = async () => {
-  let username = await rpaConfig.appCurrentUser['username'] 
+  let username 
+  if(rpaConfig.appCurrentUser && 'username' in rpaConfig.appCurrentUser){
+    username = rpaConfig.appCurrentUser['username'] 
+  }
   if(!username){
     await callbackGetAppCurrentUser()
-    username = await rpaConfig.appCurrentUser['username']
+    if(rpaConfig.appCurrentUser && 'username' in rpaConfig.appCurrentUser){
+      username = rpaConfig.appCurrentUser['username'] 
+    }
   }
   return username
 }
@@ -124,7 +129,7 @@ const updateNodeStatus = () => {
         // 2. query node  查询优先级？ node_name, username,update_by, create_by
         let nodeResult = await getListData('rpa_runnode',{'node_name':nodeName})
         //console.debug(nodeResult)    
-        if(nodeResult && nodeResult.records.length>0){
+        if(!!nodeResult && nodeResult.records.length>0){
           nodeData = nodeResult.records[0]
         }
     }
@@ -268,7 +273,7 @@ const execRpaTask = async (taskConfig) => {
        // 账号处理
        let item = result.records[i]     
        // 'w3_browser' - browserid
-       let browser = await getDetailData('w3_browser', item['browser_id'])
+       let browser = await getBrowserInfo({browserId:item['browser_id']})
        if(browser){
         browser['browserKey'] = browser['name']
         item['browser'] = browser

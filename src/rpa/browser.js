@@ -3,10 +3,6 @@ const playwright = require('playwright')
 const fs = require("fs")
 const path = require('path')
 
-
-// context pool
-const mapBrowser = new Map();  // browserKey -> browserContext
-
 var rpaConfig
 var browserDefaultConfig = {}
 
@@ -77,19 +73,6 @@ const browserInit = (config) => {
   // browser pool init?
 }
 
-// for dev
-
-const createBrowser = () => {
-  (async () => {
-    const browser = await playwright.chromium.launch({headless:false})
-    const context = await browser.newContext()
-    const page = await context.newPage()
-    await page.goto('https://www.baidu.com')
-    await page.screenshot({path:'test1-baidu.png'})
-    //await browser.close()
-  })()
-}
-
 const getBrowserConfig = async (config) => {
     var browserConfig = {}
     Object.assign(browserConfig, browserDefaultConfig)
@@ -102,6 +85,9 @@ const getBrowserConfig = async (config) => {
       browserKey = browserConfig['browserKey']
     }else if('browserId' in browserConfig){
       browserKey = browserConfig['browserId']
+      browserConfig['browserKey'] = browserKey
+    }else if('name' in browserConfig){
+      browserKey = browserConfig['name']
       browserConfig['browserKey'] = browserKey
     }
 
@@ -140,30 +126,6 @@ const getBrowserConfig = async (config) => {
     return browserConfig
 }
 
-const getBrowserContext =  async (browserConfig) => {
-  // load context
-  let context
-  let browserKey
-  if(!!browserConfig && 'browserKey' in browserConfig){
-    browserKey = browserConfig.browserKey
-    if(mapBrowser.has(browserKey)){
-      context = mapBrowser.get(browserKey)
-      // TODO 检查是否有效无效则剔除
-      if(context.pages().length==0){
-        context = null
-      }
-    } 
-    console.debug(browserUserDataDir);
-  }
-  if(!context){
-    context = await launchBrowserContext(browserConfig)
-    // 缓存
-    mapBrowser.set(browserKey, context)
-  }
-
-  return context
-}
-
 const launchBrowserContext =  async (browserConfig) => {
     // load context
     let context
@@ -196,6 +158,36 @@ const closeBrowserContext = async (context) => {
   }
 }
 
+//////////////////////////////////////////
+// 浏览器 local API 调用
+
+// context pool
+const mapBrowser = new Map();  // browserKey -> browserContext
+
+const getBrowserContext =  async (browserConfig) => {
+  // load context
+  let context
+  let browserKey
+  if(!!browserConfig && 'browserKey' in browserConfig){
+    browserKey = browserConfig.browserKey
+    if(mapBrowser.has(browserKey)){
+      context = mapBrowser.get(browserKey)
+      // TODO 检查是否有效无效则剔除
+      if(context.pages().length==0){
+        context = null
+      }
+    } 
+    console.debug(browserUserDataDir);
+  }
+  if(!context){
+    context = await launchBrowserContext(browserConfig)
+    // 缓存
+    mapBrowser.set(browserKey, context)
+  }
+
+  return context
+}
+
 const openBrowser = async (config) => {
 
   let browserConfig = await getBrowserConfig(config)
@@ -203,17 +195,6 @@ const openBrowser = async (config) => {
   await visitSogouDemo({context, browserConfig})
   // context.close()
 
-}
-
-const visitSogouDemo = async ({context, browserConfig}) => {
-   // goto home
-
-   const page = await context.newPage();
-   // check extensions and default page
-   let indexUrl = 'https://www.sogou.com/'
-   console.debug(indexUrl)
-   await page.goto(indexUrl)
-   await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
 }
 
 const frontBrowser = (browserId) => {
@@ -224,6 +205,20 @@ const frontBrowser = (browserId) => {
 const closeBrowser = (browserId) => {
   // 关闭浏览器
   
+}
+
+
+// for dev
+
+const createBrowser = () => {
+  (async () => {
+    const browser = await playwright.chromium.launch({headless:false})
+    const context = await browser.newContext()
+    const page = await context.newPage()
+    await page.goto('https://www.baidu.com')
+    await page.screenshot({path:'test1-baidu.png'})
+    //await browser.close()
+  })()
 }
 
 
