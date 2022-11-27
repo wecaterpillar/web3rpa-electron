@@ -232,6 +232,12 @@ const execRpaTask = async (taskConfig) => {
   var scriptFilePath = path.join(rpaConfig.appDataPath, '/flowscript/'+projectResult['code']+'/'+fileName)
   if(!fs.existsSync(scriptFilePath)){
     // todo 可能会替换脚本中开发和生产环境不同的路径
+    if(rpaConfig.isPackaged){
+
+    }else{
+      // ../../lib/rpa/ => ../../src/rpa/
+      scriptContext = scriptContext.replaceAll('../../lib/rpa/','../../src/rpa/')
+    }
     fs.writeFileSync(scriptFilePath, scriptContext)
   }
   

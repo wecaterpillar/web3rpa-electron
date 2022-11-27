@@ -62,7 +62,8 @@ const loadRpaServer = () => {
   // config
   rpaConfig.appExecPath = appExecPath
   rpaConfig.appDataPath = appDataPath
-  rpaConfig.appConfig = appConfig;
+  rpaConfig.appConfig = appConfig
+  rpaConfig.isPackaged = app.isPackaged
   rpaConfig.isMac = isMac
   rpaConfig.isLinux = isLinux
   rpaConfig.callbackCheckAppConfig = checkAppConfig
