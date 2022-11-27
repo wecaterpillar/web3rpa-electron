@@ -1,4 +1,4 @@
-const { getBrowserConfig, getBrowserContext} = require('../src/rpa/browser')
+const { getBrowserConfig, launchBrowserContext, closeBrowserContext, getBrowserContext} = require('../src/rpa/browser')
 const { getListData, getDetailData, updateDetailData} = require('../src/rpa/dataUtil')
 
 // 浏览器帮助类
@@ -9,7 +9,7 @@ const flow_start = ({item}) => {
         console.debug("invoke flow_start")
         console.debug(item)
         let browserConfig = await getBrowserConfig(item['browser'])
-        let context = await getBrowserContext(browserConfig)
+        let context = await launchBrowserContext(browserConfig)
         //console.debug("context")
         //console.debug(context)
         const page = await context.newPage();
@@ -17,6 +17,7 @@ const flow_start = ({item}) => {
         //console.debug(indexUrl)
         await page.goto(indexUrl)
         // await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
+        await closeBrowserContext(context)
     })()  
 }
 

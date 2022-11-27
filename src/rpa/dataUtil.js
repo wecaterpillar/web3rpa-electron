@@ -144,6 +144,9 @@ const  getListDataRemote = async (tableKey, queryParams = {}) => {
             }    
         }).catch(function (error){
             console.log(error)
+            if(error.response.status === 401){
+                resetToken()
+            }
         }).finally(function (){
         })
     return result
@@ -175,6 +178,9 @@ const  getDetailDataRemote = async (tableKey, detailId) => {
             }    
         }).catch(function (error){
             console.log(error)
+            if(error.response.status === 401){
+                resetToken()
+            }
         }).finally(function (){
         })
     return result
@@ -203,6 +209,9 @@ const updateDetailDataRemote = async (tableKey, data) => {
         }    
     }).catch(function (error){
         console.log(error)
+        if(error.response.status === 401){
+            resetToken()
+        }
     }).finally(function (){
     })
     return result
@@ -231,6 +240,9 @@ const createDetailDataRemote = async (tableKey, data) => {
         }    
     }).catch(function (error){
         console.log(error)
+        if(error.response.status === 401){
+            resetToken()
+        }
     }).finally(function (){
     })
     return result

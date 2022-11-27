@@ -89,6 +89,7 @@ const createBrowser = () => {
     //await browser.close()
   })()
 }
+
 const getBrowserConfig = async (config) => {
     var browserConfig = {}
     Object.assign(browserConfig, browserDefaultConfig)
@@ -138,43 +139,63 @@ const getBrowserConfig = async (config) => {
 
     return browserConfig
 }
+
 const getBrowserContext =  async (browserConfig) => {
+  // load context
+  let context
+  let browserKey
+  if('browserKey' in browserConfig){
+    browserKey = browserConfig.browserKey
+    if(mapBrowser.has(browserKey)){
+      context = mapBrowser.get(browserKey)
+      // TODO 检查是否有效无效则剔除
+      if(context.pages().length==0){
+        context = null
+      }
+    } 
+    console.debug(browserUserDataDir);
+  }
+  if(!context){
+    context = launchBrowserContext(browserConfig)
+    // 缓存
+    mapBrowser.set(browserKey, context)
+  }
+
+  return context
+}
+
+const launchBrowserContext =  async (browserConfig) => {
     // load context
     let context
-    
-    // 根据browserKey检查是否有同key的browser正在运行
-    // check browserKey and browserUserDataDir
     let browserKey
     let browserUserDataDir
     if('browserKey' in browserConfig){
       browserKey = browserConfig.browserKey
-      if(mapBrowser.has(browserKey)){
-        context = mapBrowser.get(browserKey)
-        // TODO 检查是否有效无效则剔除
-        if(context.pages().length==0){
-          context = null
-        }
-      }
       if(!!browserConfig.userDataDir){
         browserUserDataDir = browserConfig.userDataDir
       }    
-      console.debug(browserUserDataDir);
-    }
-    
-    if(!context){
-      console.debug(browserConfig);
+    }  
+    console.debug(browserConfig);
       (async () => {
         if(!!browserUserDataDir){
           context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
-          mapBrowser.set(browserKey, context)
         }else{
           const browser = await playwright.chromium.launch(browserConfig.options)
           context = await browser.newContext()
-          mapBrowser.set(browserKey, context)
         }
-      })()    
-    }
+    })()    
     return context
+}
+
+const closeBrowserContext = async (context) => {
+  // https://playwright.dev/docs/api/class-browsercontext#browser-context-close
+  if(!!context){
+    let browser = context.browser()
+    context.close()
+    if(!!browser){
+      browser.close()
+    }
+  }
 }
 
 const openBrowser = async (config) => {
@@ -212,6 +233,8 @@ const closeBrowser = (browserId) => {
 exports = module.exports = {
   browserInit: browserInit,
   getBrowserConfig : getBrowserConfig,
+  launchBrowserContext : launchBrowserContext,
+  closeBrowserContext : closeBrowserContext,
   getBrowserContext : getBrowserContext,
   openBrowser : openBrowser,
   frontBrowser : frontBrowser,
