@@ -1,5 +1,5 @@
-const { getBrowserConfig, launchBrowserContext, closeBrowserContext, getBrowserContext} = require('../src/rpa/browser')
-const { getListData, getDetailData, updateDetailData} = require('../src/rpa/dataUtil')
+const { getBrowserConfig, launchBrowserContext, closeBrowserContext, getBrowserContext} = require('../../src/rpa/browser')
+const { getListData, getDetailData, updateDetailData} = require('../../src/rpa/dataUtil')
 
 // 浏览器帮助类
 // 数据帮助类，可考虑调用localAPI来同rpaServer交互

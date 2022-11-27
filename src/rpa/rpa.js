@@ -212,10 +212,15 @@ const execRpaTask = async (taskConfig) => {
   // 1 锁定当前任务，防止重复执行
   taskConfig['status'] = 'doing'
   taskConfig['start_time'] = getDateTime()
-  //taskConfig['start_time'] = new Date()
-  // Data truncation: Incorrect datetime value: '2022-11-22T10:15:00.795Z' for column 'start_time'
   await updateDetailData('rpa_plan_task', taskConfig)
-  // 2 获取任务的执行脚本
+
+
+  // 2 获取通用任务
+  // 2.1 项目信息
+  let projectId = taskConfig['project_id']
+  let projectResult = await getDetailData('w3_project_auto', projectId);
+
+  // 2.2 执行脚本
   let scriptResult = await getDetailData('rpa_flow_script', taskConfig['script_id']);
   if(!scriptResult || !'script' in scriptResult){
     console.error('can not get script')
@@ -223,15 +228,17 @@ const execRpaTask = async (taskConfig) => {
   }
   let scriptContext = scriptResult['script']
   //console.debug(scriptResult)
-  var scriptFileName = path.join(rpaConfig.appDataPath, '/flowscript/'+scriptResult['name'].slice(0,5)+'-'+CryptoJS.MD5(scriptContext).toString().slice(-5)+'.js')
-  if(!fs.existsSync(scriptFileName)){
-    fs.writeFileSync(scriptFileName, scriptContext)
+  let fileName = scriptResult['name'].slice(0,5)+'-'+CryptoJS.MD5(scriptContext).toString().slice(-5)+'.js'
+  var scriptFilePath = path.join(rpaConfig.appDataPath, '/flowscript/'+projectResult['code']+'/'+fileName)
+  if(!fs.existsSync(scriptFilePath)){
+    // todo 可能会替换脚本中开发和生产环境不同的路径
+    fs.writeFileSync(scriptFilePath, scriptContext)
   }
   
 
   // 3 根据任务所属项目获取项目账号信息(包含浏览器及代理信息)
   let queryParams = {}
-  queryParams['project_id'] = taskConfig['project_id']
+  queryParams['project_id'] = projectId
   // 是否还有其他筛选条件？
   let result = await getListData('w3_project_account',queryParams)
 
@@ -254,7 +261,7 @@ const execRpaTask = async (taskConfig) => {
        //let browserContext = await getBrowserContext(browserConfig)
 
        // test dynamic load script file
-       const {flow_start} = require(scriptFileName) 
+       const {flow_start} = require(scriptFilePath) 
        flow_start({item})
     }
   }
