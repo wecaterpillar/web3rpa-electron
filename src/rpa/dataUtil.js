@@ -22,30 +22,23 @@ const init = (config) => {
 /////////////////////////////////////////////////////////////
 /// commmon API with w3rpa server
 
-const w3encrypt = async ({str, salt, key}) => {
+const w3cryptkey = async ({account,salt,type,group,project,tag}) => {
     if(useLocalApi){
-        let url = localApiBase + '/api/w3encrpt'
+        let url = localApiBase + '/api/w3cryptkey?w3'
         let queryParams = {}
-        queryParams['str'] = str
+        queryParams['account'] = account
         queryParams['salt'] = salt
-        queryParams['key'] = key
+        queryParams['type'] = type
+        queryParams['group'] = group
+        queryParams['project'] = project
+        queryParams['tag'] = tag
         return await axios.get(url, queryParams)
     }else{
-        
+        let {w3cryptkeyRemote} = require('./remoteServer')
+        return await w3cryptkeyRemote({account,salt,type,group,project,tag})
     }
 }
-const w3decrypt = async ({str, salt, key}) => {
-    if(useLocalApi){
-        let url = localApiBase + '/api/w3decrpt'
-        let queryParams = {}
-        queryParams['str'] = str
-        queryParams['salt'] = salt
-        queryParams['key'] = key
-        return await axios.get(url, queryParams)
-    }else{
-        
-    }
-}
+
 
 const  getListData = async (tableKey, queryParams = {}) => {  
     if(useLocalApi){
@@ -89,7 +82,15 @@ const createDetailData = async (tableKey, data) => {
 
 ///////////////////////////////////////////////////////////////////////////
 ////  specail API fro web3 RPA
-
+const AES = require('mysql-aes')
+const w3encrypt = async ({str, params={salt,type,group,project,tag}}) => {
+    let key = await w3cryptkey(params)
+    return AES.encrypt(str, key)
+}
+const w3decrypt = async ({enStr, params={salt,type,group,project,tag}}) => {
+    let key = await w3cryptkey(params)
+    return AES.decrypt(enStr, key)
+}
 
 /**
  * 获取计划任务列表
@@ -142,9 +143,9 @@ const getAccountInfo = async ({type, account, isWeb3 = true, withDecrypt = false
             accountInfo = result.records[0]
         }
         if(!!accountInfo && withDecrypt && !!encryptKey){
-            let salt = accountInfo['salt']
             //助记 mnemonic_encrypt
             //私钥 private_key_encrypt
+            // w3decrypt
         }
         
     }else{
@@ -166,5 +167,6 @@ exports = module.exports = {
     updateDetailData : updateDetailData,
     createDetailData : createDetailData,
     getRpaPlanTaskList : getRpaPlanTaskList,
-    getBrowserInfo: getBrowserInfo
+    getBrowserInfo: getBrowserInfo,
+    getAccountInfo: getAccountInfo
   }

@@ -72,6 +72,50 @@ const getTableKey = (tableKey) => {
     return tableKey
 }
 
+/**
+ * 服务器计算加密密码
+ * @param {} param0 
+ * @returns 
+ */
+const w3cryptkeyRemote = async ({account,salt,type,group,project,tag}) => {
+    let result
+    await checkToken()
+    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/w3rpa/cryptKey?client=e';
+    queryUrl += '&account='+account
+    if(!salt){
+        queryUrl += '&salt='+salt
+    }
+    if(!type){
+        queryUrl += '&type='+type
+    }
+    if(!group){
+        queryUrl += '&group='+group
+    }
+    if(!project){
+        queryUrl += '&project='+project
+    }
+    if(!tag){
+        queryUrl += '&tag='+tag
+    }
+    await axios.request({
+            method: 'get',
+            url: queryUrl
+        }).then(function (response){
+            if(response.status === 200 && response.data.success){
+                result = response.data.result
+            }else if(response.status === 401){
+                resetToken()
+            }    
+        }).catch(function (error){
+            console.log(error)
+            if(error.response.status === 401){
+                resetToken()
+            }
+        }).finally(function (){
+        })
+    return result
+}
+
 const  getListDataRemote = async (tableKey, queryParams = {}) => {  
     //  https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/[tableId]
     let result
@@ -206,6 +250,7 @@ const createDetailDataRemote = async (tableKey, data) => {
 
 exports = module.exports = {
     remoteServerInit : init,
+    w3cryptkeyRemote: w3cryptkeyRemote,
     getListDataRemote : getListDataRemote,
     getDetailDataRemote : getDetailDataRemote,
     updateDetailDataRemote : updateDetailDataRemote,
