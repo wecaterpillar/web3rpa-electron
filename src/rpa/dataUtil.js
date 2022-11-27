@@ -42,23 +42,6 @@ const createDetailData =  (tableKey, data) => {
     return createDetailDataRemote(tableKey, data)
 }
 
-// TODO 增加通过localApi访问remote的机制，用于flowscript中调用
-// 待调试
-const  getListDataApi =  async (tableKey, queryParams = {}) => {  
-    let url = 'http://localhost:3500/api/getData/'+tableKey
-    return await axios.get(url, queryParams)
-}
-
-const  getDetailDataApi =  async (tableKey, detailId) => {  
-    let url = 'http://localhost:3500/api/detail/'+tableKey+'/'+detailId
-    return await axios.get(url)
-}
-
-const updateDetailDataApi = async (tableKey, data) => {
-    let url = 'http://localhost:3500/api/form/'+tableKey
-    return await axios.put(url, data)
-}
-
 const getRpaPlanTaskList = (filterJson) => {
     // filter
     let queryParams = {}

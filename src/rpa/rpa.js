@@ -63,6 +63,9 @@ const callbackGetAppCurrentUser = async () => {
   let userInfo = await rpaConfig.callbackGetAppCurrentUser()
   if('username' in userInfo && !!userInfo['username']){
     rpaConfig.appCurrentUser = userInfo
+    // save to local file, for dev only
+    const appCurrentUserPath = path.join(rpaConfig.appDataPath, 'appLoginUser')
+    fs.writeFileSync(appCurrentUserPath, JSON.stringify(rpaConfig.appCurrentUser))
   }
 }
 
@@ -101,9 +104,9 @@ const updateNodeStatus = () => {
     }
     // 1.2 load from file
     let nodename2
-    const nodeNamePath = path.join(rpaConfig.appDataPath, 'nodeName');
+    const nodeNamePath = path.join(rpaConfig.appDataPath, 'nodeName')
     if(fs.existsSync(nodeNamePath)){
-      nodeName2 = fs.readFileSync(nodeNamePath).toString();
+      nodeName2 = fs.readFileSync(nodeNamePath).toString()
     }
     if(!!nodeName){
       if(!nodeName2 || nodeName !== nodename2){
@@ -238,8 +241,11 @@ const execRpaTask = async (taskConfig) => {
   if(!fs.existsSync(scriptFilePath)){
     // todo 可能会替换脚本中开发和生产环境不同的路径
     if(rpaConfig.isPackaged){
-
+      // ../../dev/rpa/ => ../../lib/rpa/
+      // ../../src/rpa/ => ../../lib/rpa/
     }else{
+      // ../../dev/rpa/ => ../../src/rpa/
+      scriptContext = scriptContext.replaceAll('../../dev/rpa/','../../src/rpa/')
       // ../../lib/rpa/ => ../../src/rpa/
       scriptContext = scriptContext.replaceAll('../../lib/rpa/','../../src/rpa/')
     }
