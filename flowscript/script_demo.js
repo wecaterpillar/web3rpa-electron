@@ -16,7 +16,7 @@ const flow_start = ({item}) => {
         let indexUrl = 'https://www.baidu.com/'
         //console.debug(indexUrl)
         await page.goto(indexUrl)
-        // await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
+        //await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
         await closeBrowserContext(context)
     })()  
 }

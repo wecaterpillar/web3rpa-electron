@@ -232,6 +232,7 @@ const execRpaTask = async (taskConfig) => {
   // 3 根据任务所属项目获取项目账号信息(包含浏览器及代理信息)
   let queryParams = {}
   queryParams['project_id'] = taskConfig['project_id']
+  // 是否还有其他筛选条件？
   let result = await getListData('w3_project_account',queryParams)
 
   //console.debug(result)

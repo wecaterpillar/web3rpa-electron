@@ -144,7 +144,7 @@ const getBrowserContext =  async (browserConfig) => {
   // load context
   let context
   let browserKey
-  if('browserKey' in browserConfig){
+  if(!!browserConfig && 'browserKey' in browserConfig){
     browserKey = browserConfig.browserKey
     if(mapBrowser.has(browserKey)){
       context = mapBrowser.get(browserKey)
@@ -156,7 +156,7 @@ const getBrowserContext =  async (browserConfig) => {
     console.debug(browserUserDataDir);
   }
   if(!context){
-    context = launchBrowserContext(browserConfig)
+    context = await launchBrowserContext(browserConfig)
     // 缓存
     mapBrowser.set(browserKey, context)
   }
@@ -169,21 +169,19 @@ const launchBrowserContext =  async (browserConfig) => {
     let context
     let browserKey
     let browserUserDataDir
-    if('browserKey' in browserConfig){
+    if(!!browserConfig && 'browserKey' in browserConfig){
       browserKey = browserConfig.browserKey
       if(!!browserConfig.userDataDir){
         browserUserDataDir = browserConfig.userDataDir
       }    
     }  
     console.debug(browserConfig);
-      (async () => {
-        if(!!browserUserDataDir){
-          context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
-        }else{
-          const browser = await playwright.chromium.launch(browserConfig.options)
-          context = await browser.newContext()
-        }
-    })()    
+    if(!!browserUserDataDir){
+        context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
+      }else{
+        const browser = await playwright.chromium.launch(browserConfig.options)
+        context = await browser.newContext()
+    }
     return context
 }
 
