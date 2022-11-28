@@ -22,20 +22,13 @@ const init = (config) => {
 /////////////////////////////////////////////////////////////
 /// commmon API with w3rpa server
 
-const w3cryptkey = async ({account,salt,type,group,project,tag}) => {
+const getAccountCryptkey = async (params ={account,salt,type,group,project,tag}) => {
     if(useLocalApi){
         let url = localApiBase + '/api/w3cryptkey?w3'
-        let queryParams = {}
-        queryParams['account'] = account
-        queryParams['salt'] = salt
-        queryParams['type'] = type
-        queryParams['group'] = group
-        queryParams['project'] = project
-        queryParams['tag'] = tag
-        return await axios.get(url, queryParams)
+        return await axios.get(url, params)
     }else{
-        let {w3cryptkeyRemote} = require('./remoteServer')
-        return await w3cryptkeyRemote({account,salt,type,group,project,tag})
+        let {getAccountCryptkeyRemote} = require('./remoteServer')
+        return await getAccountCryptkeyRemote(params)
     }
 }
 
@@ -83,13 +76,45 @@ const createDetailData = async (tableKey, data) => {
 ///////////////////////////////////////////////////////////////////////////
 ////  specail API fro web3 RPA
 const AES = require('mysql-aes')
-const w3encrypt = async ({str, params={salt,type,group,project,tag}}) => {
-    let key = await w3cryptkey(params)
+const w3encrypt = async (str, key) => {
     return AES.encrypt(str, key)
 }
-const w3decrypt = async ({enStr, params={salt,type,group,project,tag}}) => {
-    let key = await w3cryptkey(params)
+const w3decrypt = async (enStr, key) => {
+    let key = await getAccountCryptkey(params)
     return AES.decrypt(enStr, key)
+}
+
+const getAccountEncryptParams = (accountInfo, encryptKey) => {
+    let encryptParams = {}
+    //account,salt,type,group,project,tag
+    if('account' in accountInfo){
+        encryptParams['account'] = account
+    }
+    if('username' in accountInfo){
+        encryptParams['username'] = username
+    }
+    if('address' in accountInfo){
+        encryptParams['address'] = address
+    }
+    if('type' in accountInfo){
+        encryptParams['type'] = type
+    }
+    if('salt' in accountInfo){
+        encryptParams['salt'] = salt
+    }
+    if('group' in accountInfo){
+        encryptParams['group'] = group
+    }
+    if('project' in accountInfo){
+        encryptParams['project'] = project
+    }
+    if('tag' in accountInfo){
+        encryptParams['tag'] = tag
+    }
+    if(!!encryptKey){
+        encryptParams['encryptKey'] = encryptKey
+    }
+    return encryptParams;
 }
 
 /**
@@ -145,7 +170,22 @@ const getAccountInfo = async ({type, account, isWeb3 = true, withDecrypt = false
         if(!!accountInfo && withDecrypt && !!encryptKey){
             //助记 mnemonic_encrypt
             //私钥 private_key_encrypt
-            // w3decrypt
+            let encryptParams = getAccountEncryptParams(accountInfo, encryptKey)
+            let key = await getAccountCryptkey(encryptParams)
+            let mnemonicEncrypt = accountInfo['mnemonic_encrypt']
+            if(!!mnemonicEncrypt){
+                let mnemonic = w3decrypt(mnemonicEncrypt, key)
+                if(!!mnemonic){
+                    //accountInfo['mnemonic'] = mnemonic
+                }
+            }  
+            let privateKeyEncrypt = accountInfo['private_key_encrypt']
+            if(!!privateKeyEncrypt){
+                let privateKey = w3decrypt(privateKeyEncrypt, key)
+                if(!!privateKey){
+                    //accountInfo['privateKey'] = privateKey
+                }
+            }           
         }
         
     }else{
@@ -156,6 +196,9 @@ const getAccountInfo = async ({type, account, isWeb3 = true, withDecrypt = false
         if(!!accountInfo && withDecrypt && !!encryptKey){
             //密码
             // w3decrypt
+            let encryptParams = getAccountEncryptParams(accountInfo, encryptKey)
+            let key = await getAccountCryptkey(encryptParams)
+            
         }
     }
     return accountInfo
