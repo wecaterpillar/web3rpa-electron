@@ -267,11 +267,15 @@ const execRpaTask = async (taskConfig) => {
 
   //console.debug(result)
   // 4 每个账号独立运行（结果更新到项目明细记录中）
+  // 需要增加分页机制
   if(result && result.records){
     // for 账号明细
     for(i in result.records){
        // 账号处理
-       let item = result.records[i]     
+       let item = result.records[i]
+       // project
+       item['project'] = projectResult['code']
+       item['project_code'] = projectResult['code']
        // 'w3_browser' - browserid
        let browser = await getBrowserInfo({browserId:item['browser_id']})
        if(browser){

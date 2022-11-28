@@ -14,6 +14,9 @@ const flow_start = ({item}) => {
         //console.debug(context)
         const page = await context.newPage();
         let indexUrl = 'https://www.baidu.com/'
+
+        //loadUserPassword(item);
+
         //console.debug(indexUrl)
         await page.goto(indexUrl)
         //await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})

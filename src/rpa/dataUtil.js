@@ -83,33 +83,19 @@ const w3decrypt = async (enStr, key) => {
     return AES.decrypt(enStr, key)
 }
 
+const copyParams = ( targetJson, sourceJson, keyField) => {
+    if(keyField in sourceJson){
+        targetJson[keyField] = sourceJson[keyField]
+    }
+}
+
 const getAccountEncryptParams = (accountInfo, inputKey) => {
     let encryptParams = {}
     // scope: 1-web3 account 2-web2 account 3-project account
     //account,salt,type,group,project,tag
-    if('account' in accountInfo){
-        encryptParams['account'] = accountInfo['account']
-    }
-    if('username' in accountInfo){
-        encryptParams['username'] = accountInfo['username']
-    }
-    if('address' in accountInfo){
-        encryptParams['address'] = accountInfo['address']
-    }
-    if('type' in accountInfo){
-        encryptParams['type'] = accountInfo['type']
-    }
-    if('salt' in accountInfo){
-        encryptParams['salt'] = accountInfo['salt']
-    }
-    if('group2' in accountInfo){
-        encryptParams['group2'] = accountInfo['group2']
-    }
-    if('project' in accountInfo){
-        encryptParams['project'] = accountInfo['project']
-    }
-    if('tag' in accountInfo){
-        encryptParams['tag'] = accountInfo['tag']
+    let copyFields = ['account', 'username', 'address','type','salt','group2','project_code','project','tag' ]
+    for(i in copyFields){
+        copyParams(encryptParams, accountInfo, copyFields[i])
     }
     if(!!inputKey){
         encryptParams['inputKey'] = inputKey
@@ -204,6 +190,74 @@ const getAccountInfo = async ({type, account, isWeb3 = true, withDecrypt = false
     return accountInfo
 }
 
+/**
+ * 获取项目明细的web2账号密码
+ * @param projectItem
+ * @returns {Promise<string>}
+ */
+const loadProjectUserPassword = async (projectItem = {}) =>{
+    let passwordEncrypt = projectItem['password_encrypt']
+    let password
+    if(!!passwordEncrypt){
+        let encryptParams = getAccountEncryptParams(projectItem)
+        let encryptKey = await getAccountCryptkey(encryptParams)
+        password = w3decrypt(passwordEncrypt, encryptKey)
+        projectItem['password'] = password
+    }
+    return password
+}
+
+/**
+ * 获取web2账号的密码
+ * @param accountItem
+ * @returns {Promise<string>}
+ */
+const loadAccountUserPassword = async (accountItem = {}) => {
+    let passwordEncrypt = accountItem['password_encrypt']
+    let password
+    if(!!passwordEncrypt){
+        let encryptParams = getAccountEncryptParams(accountItem)
+        let encryptKey = await getAccountCryptkey(encryptParams)
+        password = w3decrypt(passwordEncrypt, encryptKey)
+        accountItem['password'] = password
+    }
+    return password
+}
+
+/**
+ * 获取web3账号私钥
+ * @param accountItem
+ * @returns {Promise<string>}
+ */
+const loadAccountPrivateKey = async (accountItem = {}) => {
+    let privateKeyEncrypt = accountItem['private_key_encrypt']
+    let privateKey
+    if(!!privateKeyEncrypt){
+        let encryptParams = getAccountEncryptParams(accountItem)
+        let encryptKey = await getAccountCryptkey(encryptParams)
+        privateKey = w3decrypt(privateKeyEncrypt, encryptKey)
+        accountItem['privateKey'] = privateKey
+    }
+    return privateKey
+}
+
+/**
+ * 获取web3账号助记词
+ * @param accountItem
+ * @returns {Promise<string>}
+ */
+const loadAccountMnemonic = async (accountItem = {}) => {
+    let mnemonicEncrypt = accountItem['mnemonic_encrypt']
+    let mnemonic
+    if(!!mnemonicEncrypt){
+        let encryptParams = getAccountEncryptParams(accountItem)
+        let encryptKey = await getAccountCryptkey(encryptParams)
+        mnemonic = w3decrypt(mnemonicEncrypt, encryptKey)
+        accountItem['mnemonic'] = mnemonic
+    }
+    return mnemonic
+}
+
 exports = module.exports = {
     dataUtilInit : init,
     getListData : getListData,
@@ -212,5 +266,9 @@ exports = module.exports = {
     createDetailData : createDetailData,
     getRpaPlanTaskList : getRpaPlanTaskList,
     getBrowserInfo: getBrowserInfo,
-    getAccountInfo: getAccountInfo
+    getAccountInfo: getAccountInfo,
+    loadProjectUserPassword: loadProjectUserPassword,
+    loadAccountUserPassword: loadAccountUserPassword,
+    loadAccountPrivateKey: loadAccountPrivateKey,
+    loadAccountMnemonic: loadAccountMnemonic
   }
