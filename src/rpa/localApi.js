@@ -3,7 +3,7 @@ const app = express()
 const port = 3500
 
 
-const {getListDataRemote, getDetailDataRemote, updateDetailDataRemote, createDetailDataRemote} = require('./remoteServer')
+const {getAccountCryptkeyRemote, getListDataRemote, getDetailDataRemote, updateDetailDataRemote, createDetailDataRemote} = require('./remoteServer')
 const {openBrowser, frontBrowser, closeBrowser} = require('./browser')
 
 
@@ -13,6 +13,11 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 app.get('/', (req, res) => {
   res.send('Hello World! Local API')
+})
+
+app.get('/api/getAccountCryptkey', async (req, res) => {
+  let key = await getAccountCryptkeyRemote(req.params)
+  res.send(key)
 })
 
 app.get('/api/getData/:tableKey', async (req, res) => {

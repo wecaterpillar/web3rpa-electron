@@ -77,29 +77,14 @@ const getTableKey = (tableKey) => {
  * @param {} param0 
  * @returns 
  */
-const w3cryptkeyRemote = async ({account,salt,type,group,project,tag}) => {
+ const getAccountCryptkeyRemote = async (params) => {
     let result
     await checkToken()
-    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/w3rpa/cryptKey?client=e';
-    queryUrl += '&account='+account
-    if(!salt){
-        queryUrl += '&salt='+salt
-    }
-    if(!type){
-        queryUrl += '&type='+type
-    }
-    if(!group){
-        queryUrl += '&group='+group
-    }
-    if(!project){
-        queryUrl += '&project='+project
-    }
-    if(!tag){
-        queryUrl += '&tag='+tag
-    }
+    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/account/api/getCryptKey?client=e';
     await axios.request({
             method: 'get',
-            url: queryUrl
+            url: queryUrl,
+            params: params
         }).then(function (response){
             if(response.status === 200 && response.data.success){
                 result = response.data.result
@@ -250,7 +235,7 @@ const createDetailDataRemote = async (tableKey, data) => {
 
 exports = module.exports = {
     remoteServerInit : init,
-    w3cryptkeyRemote: w3cryptkeyRemote,
+    getAccountCryptkeyRemote: getAccountCryptkeyRemote,
     getListDataRemote : getListDataRemote,
     getDetailDataRemote : getDetailDataRemote,
     updateDetailDataRemote : updateDetailDataRemote,

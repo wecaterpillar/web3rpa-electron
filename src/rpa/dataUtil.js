@@ -22,9 +22,9 @@ const init = (config) => {
 /////////////////////////////////////////////////////////////
 /// commmon API with w3rpa server
 
-const getAccountCryptkey = async (params ={account,salt,type,group,project,tag}) => {
+const getAccountCryptkey = async (params) => {
     if(useLocalApi){
-        let url = localApiBase + '/api/w3cryptkey?w3'
+        let url = localApiBase + '/api/getAccountCryptkey?w3'
         return await axios.get(url, params)
     }else{
         let {getAccountCryptkeyRemote} = require('./remoteServer')
@@ -80,39 +80,39 @@ const w3encrypt = async (str, key) => {
     return AES.encrypt(str, key)
 }
 const w3decrypt = async (enStr, key) => {
-    let key = await getAccountCryptkey(params)
     return AES.decrypt(enStr, key)
 }
 
-const getAccountEncryptParams = (accountInfo, encryptKey) => {
+const getAccountEncryptParams = (accountInfo, inputKey) => {
     let encryptParams = {}
+    // scope: 1-web3 account 2-web2 account 3-project account
     //account,salt,type,group,project,tag
     if('account' in accountInfo){
-        encryptParams['account'] = account
+        encryptParams['account'] = accountInfo['account']
     }
     if('username' in accountInfo){
-        encryptParams['username'] = username
+        encryptParams['username'] = accountInfo['username']
     }
     if('address' in accountInfo){
-        encryptParams['address'] = address
+        encryptParams['address'] = accountInfo['address']
     }
     if('type' in accountInfo){
-        encryptParams['type'] = type
+        encryptParams['type'] = accountInfo['type']
     }
     if('salt' in accountInfo){
-        encryptParams['salt'] = salt
+        encryptParams['salt'] = accountInfo['salt']
     }
-    if('group' in accountInfo){
-        encryptParams['group'] = group
+    if('group2' in accountInfo){
+        encryptParams['group2'] = accountInfo['group2']
     }
     if('project' in accountInfo){
-        encryptParams['project'] = project
+        encryptParams['project'] = accountInfo['project']
     }
     if('tag' in accountInfo){
-        encryptParams['tag'] = tag
+        encryptParams['tag'] = accountInfo['tag']
     }
-    if(!!encryptKey){
-        encryptParams['encryptKey'] = encryptKey
+    if(!!inputKey){
+        encryptParams['inputKey'] = inputKey
     }
     return encryptParams;
 }
@@ -198,7 +198,7 @@ const getAccountInfo = async ({type, account, isWeb3 = true, withDecrypt = false
             // w3decrypt
             let encryptParams = getAccountEncryptParams(accountInfo, encryptKey)
             let key = await getAccountCryptkey(encryptParams)
-            
+
         }
     }
     return accountInfo
