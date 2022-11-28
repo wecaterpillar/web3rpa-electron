@@ -155,6 +155,7 @@ const getAccountInfo = async ({type, account, isWeb3 = true, withDecrypt = false
         }
         if(!!accountInfo && withDecrypt && !!encryptKey){
             //密码
+            // w3decrypt
         }
     }
     return accountInfo
