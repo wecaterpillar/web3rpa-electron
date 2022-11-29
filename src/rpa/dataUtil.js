@@ -147,46 +147,18 @@ const getBrowserInfo = async ({browserId, browserKey, withProxy=false}) => {
     return browser 
 }
 
-const getAccountInfo = async ({type, account, isWeb3 = true, withDecrypt = false, encryptKey}) => {
+const getAccountInfo = async ({type, account, isWeb3 = true, encryptKey}) => {
     let accountInfo 
     if(isWeb3){
         // web3 地址唯一
         let result = await getListData('w3_account',{'address': account})
         if(!!result && result.records.length>0){
             accountInfo = result.records[0]
-        }
-        if(!!accountInfo && withDecrypt && !!encryptKey){
-            //助记 mnemonic_encrypt
-            //私钥 private_key_encrypt
-            let encryptParams = getAccountEncryptParams(accountInfo, encryptKey)
-            let key = await getAccountCryptkey(encryptParams)
-            let mnemonicEncrypt = accountInfo['mnemonic_encrypt']
-            if(!!mnemonicEncrypt){
-                let mnemonic = w3decrypt(mnemonicEncrypt, key)
-                if(!!mnemonic){
-                    //accountInfo['mnemonic'] = mnemonic
-                }
-            }  
-            let privateKeyEncrypt = accountInfo['private_key_encrypt']
-            if(!!privateKeyEncrypt){
-                let privateKey = w3decrypt(privateKeyEncrypt, key)
-                if(!!privateKey){
-                    //accountInfo['privateKey'] = privateKey
-                }
-            }           
-        }
-        
+        } 
     }else{
         let result = await getListData('w3_account2',{'type':type, 'username': account})
         if(!!result && result.records.length>0){
             accountInfo = result.records[0]
-        }
-        if(!!accountInfo && withDecrypt && !!encryptKey){
-            //密码
-            // w3decrypt
-            let encryptParams = getAccountEncryptParams(accountInfo, encryptKey)
-            let key = await getAccountCryptkey(encryptParams)
-
         }
     }
     return accountInfo
