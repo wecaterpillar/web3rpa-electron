@@ -111,13 +111,13 @@ const updateNodeStatus = () => {
       nodeName = rpaConfig.appConfig['nodeName']
     }
     // 1.2 load from file
-    let nodename2
+    let nodeName2
     const nodeNamePath = path.join(rpaConfig.appDataPath, 'nodeName')
     if(fs.existsSync(nodeNamePath)){
       nodeName2 = fs.readFileSync(nodeNamePath).toString()
     }
     if(!!nodeName){
-      if(!nodeName2 || nodeName !== nodename2){
+      if(!nodeName2 || nodeName !== nodeName2){
         fs.writeFileSync(nodeNamePath, nodeName)
       }
     }else{
