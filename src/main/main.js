@@ -52,6 +52,8 @@ const checkAppConfig = (config = {}, bWrite = false) =>{
 }
 checkAppConfig()
 
+// will fix with cloudflare certification
+//app.commandLine.appendSwitch('ignore-certificate-errors') // 忽略证书检测
 
 // helper
 const {helperInit, getAppCurrentUser, getValueFromMainWindowStorage} = require('./helper')
