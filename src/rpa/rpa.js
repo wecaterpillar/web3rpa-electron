@@ -5,7 +5,7 @@ var CryptoJS = require("crypto-js");
 
 const { remoteServerInit } = require('./remoteServer')
 const { browserInit } = require('./browser')
-const { dataUtilInit, getListData, getDetailData, updateDetailData, createDetailData, getRpaPlanTaskList} = require('./dataUtil')
+const { dataUtilInit, getListData, getDetailData, updateDetailData, createDetailData, getRpaPlanTaskList,getBrowserInfo} = require('./dataUtil')
 
 const fs = require('fs')
 const path = require('path');
