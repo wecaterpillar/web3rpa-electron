@@ -140,7 +140,7 @@ const updateNodeStatus = () => {
     if(!!!nodeData){
       nodeData = {}
       if(!!!nodeName){
-        nodeName = userInfo['hostname']
+        // nodeName = userInfo['hostname']
         if(!!!nodeName){
           const {
             randomBytes
