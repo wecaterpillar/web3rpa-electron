@@ -93,7 +93,7 @@ const getTableKey = (tableKey) => {
             }    
         }).catch(function (error){
             console.log(error)
-            if(error.response.status === 401){
+            if(!!error.response && error.response.status === 401){
                 resetToken()
             }
         }).finally(function (){
@@ -128,7 +128,7 @@ const  getListDataRemote = async (tableKey, queryParams = {}) => {
             }    
         }).catch(function (error){
             console.log(error)
-            if(error.response.status === 401){
+            if(!!error.response && error.response.status === 401){
                 resetToken()
             }
         }).finally(function (){
@@ -162,7 +162,7 @@ const  getDetailDataRemote = async (tableKey, detailId) => {
             }    
         }).catch(function (error){
             console.log(error)
-            if(error.response.status === 401){
+            if(!!error.response && error.response.status === 401){
                 resetToken()
             }
         }).finally(function (){
@@ -193,7 +193,7 @@ const updateDetailDataRemote = async (tableKey, data) => {
         }    
     }).catch(function (error){
         console.log(error)
-        if(error.response.status === 401){
+        if(!!error.response && error.response.status === 401){
             resetToken()
         }
     }).finally(function (){
@@ -224,7 +224,7 @@ const createDetailDataRemote = async (tableKey, data) => {
         }    
     }).catch(function (error){
         console.log(error)
-        if(error.response.status === 401){
+        if(!!error.response && error.response.status === 401){
             resetToken()
         }
     }).finally(function (){
