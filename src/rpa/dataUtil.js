@@ -5,12 +5,14 @@ const axios = require('axios')
 
 var rpaConfig
 // TODO 
-const useLocalApi = false
+let useLocalApi = false
 let localApiBase 
 
 const init = (config) => {
     rpaConfig = config
-
+    if( 'isLocalDev' in rpaConfig){
+        useLocalApi = rpaConfig['isLocalDev']
+    }
     if( 'localApi' in rpaConfig){
         localApiBase = rpaConfig['localApi']
     }

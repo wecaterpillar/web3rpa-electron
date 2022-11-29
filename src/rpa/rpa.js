@@ -37,6 +37,8 @@ const startRpa = () => {
     rpaConfig.getLoginToken = getLoginToken
     rpaConfig.resetLoginToken = resetLoginToken
 
+    rpaConfig.isLocalDev = false
+
     // 2. init
     // 2.1 remote server
     remoteServerInit(rpaConfig)
