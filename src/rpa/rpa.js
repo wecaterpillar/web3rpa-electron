@@ -7,6 +7,7 @@ const { remoteServerInit } = require('./remoteServer')
 const { browserInit } = require('./browser')
 const { dataUtilInit, getListData, getDetailData, updateDetailData, createDetailData, getRpaPlanTaskList,getBrowserInfo} = require('./dataUtil')
 
+const os = require('os')
 const fs = require('fs')
 const path = require('path');
 const { randomBytes } = require('crypto')
@@ -126,44 +127,56 @@ const updateNodeStatus = () => {
         rpaConfig.appConfig['nodeName'] = nodeName
       }
     }
-    // 2. query nodeData
+    let username 
+    if(!!!nodeName){
+      // create new name
+      // nodeName = userInfo['hostname']
+      let hostname = os.hostname()
+      username = await getUsername()
+      if(!!username){
+        if(!!hostname){
+          nodeName = hostname.toLowerCase().slice(0,8)+'-'+username.toLowerCase().slice(0,4)
+        }else{
+          const {
+            randomBytes
+          } = await import('crypto');      
+          const buf = randomBytes(3);
+          nodeName = username.toLowerCase().slice(0,4)+buf.toString('hex')
+        }
+        
+        console.log(nodeName)
+      }
+      if(!!nodeName){
+        rpaConfig.appConfig['nodeName'] = nodeName
+        fs.writeFileSync(nodeNamePath, nodeName)
+      }  
+    }
+
+    // 2. query nodeData, if no exist then create 
     if(!!nodeName){
         // 2. query node  查询优先级？ node_name, username,update_by, create_by
         let nodeResult = await getListData('rpa_runnode',{'node_name':nodeName})
         //console.debug(nodeResult)    
-        if(!!nodeResult && nodeResult.records.length>0){
-          nodeData = nodeResult.records[0]
-        }
+        if(!!nodeResult){
+          if(nodeResult.records.length>0){
+            nodeData = nodeResult.records[0]
+          }else{
+            //init nodeData
+            nodeData = {}
+            nodeData['node_name'] = nodeName
+            if(!username){
+              username = await getUsername()
+            }          
+            if(!!username){
+              nodeData['username'] = username  
+              console.info(nodeData)
+              await createDetailData('rpa_runnode', nodeData)
+            }       
+          }
+        }      
     }
 
-    // 3. init nodeData
-    if(!!!nodeData){
-      nodeData = {}
-      if(!!!nodeName){
-        // nodeName = userInfo['hostname']
-        if(!!!nodeName){
-          const {
-            randomBytes
-          } = await import('crypto');      
-          const buf = randomBytes(5);
-          nodeName = buf.toString('hex')
-        }   
-        console.log(nodeName)
-        if(!!nodeName){
-          nodeData['node_name'] = nodeName
-          rpaConfig.appConfig['nodeName'] = nodeName
-          fs.writeFileSync(nodeNamePath, nodeName)
-        }  
-      }
-      nodeData['node_name'] = nodeName
-      let username = getUsername()
-      if(!!username){
-        nodeData['username'] = username  
-        console.info(nodeData)
-        await createDetailData('rpa_runnode', nodeData)
-      }       
-    }
-   
+    // 3. update node status 
     if(!!nodeData && 'id' in nodeData){
        // todo add  ip
       nodeData['status'] = 'running'

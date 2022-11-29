@@ -72,6 +72,13 @@ const getTableKey = (tableKey) => {
     return tableKey
 }
 
+const getRpaServerBase = () =>{
+    return rpaConfig.appConfig['appUrl']+'/rpa-server/';
+}
+const getRpaServerFormApiBase = () => {
+    return rpaConfig.appConfig['appUrl']+'/rpa-server/online/cgform/api/';
+}
+
 /**
  * 服务器计算加密密码
  * @param {} param0 
@@ -80,7 +87,7 @@ const getTableKey = (tableKey) => {
  const getAccountCryptkeyRemote = async (params) => {
     let result
     await checkToken()
-    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/account/api/getCryptKey?client=e';
+    let queryUrl = getRpaServerBase()+'account/api/getCryptKey?client=e';
     await axios.request({
             method: 'get',
             url: queryUrl,
@@ -110,7 +117,7 @@ const  getListDataRemote = async (tableKey, queryParams = {}) => {
     let tableId = getTableKey(tableKey)
     await checkToken()
 
-    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/' + tableId + '?hasQuery=true';
+    let queryUrl = getRpaServerFormApiBase()+'getData/' + tableId + '?hasQuery=true';
     for(key in queryParams){
         queryUrl += '&'+key+'='+queryParams[key]
     }
@@ -145,7 +152,7 @@ const  getDetailDataRemote = async (tableKey, detailId) => {
     let tableId = getTableKey(tableKey)
     await checkToken()
 
-    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/' + tableId + '/' + detailId;
+    let queryUrl = getRpaServerFormApiBase()+'detail/' + tableId + '/' + detailId;
 
     
     await axios.request({
@@ -178,7 +185,7 @@ const updateDetailDataRemote = async (tableKey, data) => {
     }
     let tableId = getTableKey(tableKey)
     await checkToken()
-    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/' + tableId + '?tabletype=1';
+    let queryUrl = getRpaServerFormApiBase()+'form/' + tableId + '?tabletype=1';
     await axios.request({
         method: 'put',
         url: queryUrl,
@@ -209,7 +216,7 @@ const createDetailDataRemote = async (tableKey, data) => {
     }
     let tableId = getTableKey(tableKey)
     await checkToken()
-    let queryUrl = 'https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/' + tableId + '?tabletype=1';
+    let queryUrl = getRpaServerFormApiBase()+'form/' + tableId + '?tabletype=1';
     await axios.request({
         method: 'post',
         url: queryUrl,
