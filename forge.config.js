@@ -12,31 +12,15 @@ const config = {
       // all
       name: '@electron-forge/maker-zip',
       platforms: ['darwin']
-    },
-    {
-      // Win
-      name: '@electron-forge/maker-squirrel',
-      config: {
-        icon: './src/images/icon/icon.icon'
-      }
-    },
-    {
-      // Mac
-      name: '@electron-forge/maker-dmg',
-      config: {
-        icon: './src/images/icon/icon.icns'
-      }
     }
   ],
   publishers:[
     {
-      name: '@electron-forge/publisher-github',
+      name: '@electron-forge/publisher-electron-release-server',
       config: {
-        repository: {
-          owner: 'rpa',
-          name: 'wecaterpillar/web3rpa-electron'
-        },
-        prerelease: true
+        baseUrl: 'https://rpa-update.w3bb.cc',
+        username: 'admin',
+        password: process.env.PASSWORD // string
       }
     }
   ],
