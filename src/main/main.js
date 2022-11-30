@@ -18,16 +18,11 @@ if(app.isPackaged){
   appDataPath = path.join(app.getPath('userData'), 'web3rpa');
 }else{
   // for dev
-  console.debug('isPackaged appExecPath='+path.dirname(app.getPath('exe')));
-  console.debug('isPackaged appDataPath='+path.dirname(path.join(app.getPath('userData'), 'web3rpa')));
-
-  // debug
-  //console.debug('dir temp='+path.dirname(app.getPath('temp')));
-  //console.debug('dir appData='+path.dirname(app.getPath('appData')));
-  //console.debug('dir userData='+path.dirname(app.getPath('userData')));
+  //console.debug('isPackaged appExecPath='+path.dirname(app.getPath('exe')));
+  //console.debug('isPackaged appDataPath='+path.dirname(path.join(app.getPath('userData'), 'web3rpa')));
 }
-console.log('appExecPath='+appExecPath);
-console.log('appDataPath='+appDataPath);
+//console.log('appExecPath='+appExecPath);
+//console.log('appDataPath='+appDataPath);
 
 // looad config 
 // configFilePath = [appDataPath]/config.json
@@ -242,6 +237,14 @@ const menuTemplate = [
             checked: appConfig['appUrl'].indexOf("rpa2.")>-1,
             click: function (){
               appConfig['appUrl'].indexOf("rpa2.")>-1 || resetAppUrl('https://rpa2.w3bb.cc')
+            }
+          },
+          {
+            label: 'line2b(hk)',
+            type: 'radio', 
+            checked: appConfig['appUrl'].indexOf("rpa2b.")>-1,
+            click: function (){
+              appConfig['appUrl'].indexOf("rpa2b.")>-1 || resetAppUrl('https://rpa2b.w3bb.cc')
             }
           }
         ]},

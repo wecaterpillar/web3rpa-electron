@@ -1,3 +1,5 @@
+const os = require('os')
+const platform = os.platform()
 const config = {
   packagerConfig: {
     extraResources:['./lib/**', './flowscript/**','./userData/**','./doc/**','./logs/**','./ref_**/**']
