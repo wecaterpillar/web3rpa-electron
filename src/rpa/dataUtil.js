@@ -45,7 +45,7 @@ const  getListData = async (tableKey, queryParams = {}) => {
     if(useLocalApi){
         let url = localApiBase + '/api/getData/'+tableKey
         let result
-        await axios.get(url, queryParams).then(function (response){
+        await axios.post(url, queryParams).then(function (response){
             if(response.status === 200){
                 result = response.data
             } 
