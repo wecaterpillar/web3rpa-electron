@@ -169,7 +169,7 @@ const template = [
       { label: 'change Line',
         submenu:[
           {
-            label: 'line1',
+            label: 'line1(sg+cf)',
             type: 'radio', 
             checked: appConfig['appUrl'].indexOf("rpa.")>-1,
             click: function (){
@@ -177,7 +177,7 @@ const template = [
             }
           },
           {
-            label: 'line2',
+            label: 'line2(hk+cf)',
             type: 'radio', 
             checked: appConfig['appUrl'].indexOf("rpa2.")>-1,
             click: function (){
