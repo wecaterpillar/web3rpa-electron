@@ -1,7 +1,7 @@
 // Modules to control application life and create native browser window
 //require('update-electron-app')()
 
-const { app, ipcMain, Menu, BrowserWindow } = require('electron')
+const { app, ipcMain, Menu, MenuItem, BrowserWindow } = require('electron')
 //const store = require('electron-store');
 
 // os: mac vs linux vs win
@@ -51,6 +51,19 @@ const checkAppConfig = (config = {}, bWrite = false) =>{
   console.debug(appConfig);
 }
 checkAppConfig()
+
+const resetAppUrl = (appUrl) => {
+  appConfig['appUrl'] = appUrl
+  mainWindow.loadURL(appUrl)
+  //reset token
+  if(rpaConfig.resetLoginToken){
+    rpaConfig.resetLoginToken()
+  }
+  const configPath = path.join(appDataPath, 'config.json');
+  if(fs.existsSync(configPath)){
+    fs.writeFileSync(configPath, JSON.stringify(appConfig))
+  }
+}
 
 // will fix with cloudflare certification
 //app.commandLine.appendSwitch('ignore-certificate-errors') // 忽略证书检测
@@ -103,12 +116,111 @@ const createWindow = () => {
   helperInit({mainWindow})
 }
 
+const template = [
+  // { role: 'appMenu' }
+  {
+    label: app.name,
+    submenu: [
+      { label: 'Logs' },
+      { type: 'separator' },
+      { role: 'services' },
+      { type: 'separator' },
+      isMac ? { role: 'close' } : { role: 'quit' }
+    ]
+  },
+  // { role: 'editMenu' }
+  {
+    label: 'Edit',
+    submenu: [
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      ...(isMac ? [
+        { role: 'pasteAndMatchStyle' },
+        { role: 'delete' },
+        { role: 'selectAll' },
+        { type: 'separator' },
+        {
+          label: 'Speech',
+          submenu: [
+            { role: 'startSpeaking' },
+            { role: 'stopSpeaking' }
+          ]
+        }
+      ] : [
+        { role: 'delete' },
+        { type: 'separator' },
+        { role: 'selectAll' }
+      ])
+    ]
+  },
+  // { role: 'windowMenu' }
+  {
+    label: 'Window',
+    submenu: [
+      { role: 'reload' },
+      { role: 'forceReload' },
+      { role: 'toggleDevTools' },
+      { role: 'togglefullscreen'},
+      { type: 'separator' },
+      { label: 'change Line',
+        submenu:[
+          {
+            label: 'line1',
+            type: 'radio', 
+            checked: appConfig['appUrl'].indexOf("rpa.")>-1,
+            click: function (){
+              appConfig['appUrl'].indexOf("rpa.")>-1 || resetAppUrl('https://rpa.w3bb.cc')
+            }
+          },
+          {
+            label: 'line2',
+            type: 'radio', 
+            checked: appConfig['appUrl'].indexOf("rpa2.")>-1,
+            click: function (){
+              appConfig['appUrl'].indexOf("rpa2.")>-1 || resetAppUrl('https://rpa2.w3bb.cc')
+            }
+          }
+        ]},
+      { type: 'separator' },
+     
+      { role: 'zoomIn' },
+      { role: 'zoomOut' },
+      { role: 'resetZoom' },
+      ...(isMac ? [
+        { type: 'separator' },
+        { role: 'front' },
+      ] : [
+        { role: 'close' }
+      ])
+    ]
+  },
+  {
+    role: 'help',
+    submenu: [
+      { role: 'about' },
+      {
+        label: 'Learn More',
+        click: async () => {
+          const { shell } = require('electron')
+          await shell.openExternal('https://electronjs.org')
+        }
+      }
+    ]
+  }
+]
 
 
 // 这段程序将会在 Electron 结束初始化
 // 和创建浏览器窗口的时候调用
 // 部分 API 在 ready 事件触发后才能使用。
 app.whenReady().then(() => {
+
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 
   createWindow()
 
