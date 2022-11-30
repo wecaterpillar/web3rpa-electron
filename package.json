@@ -8,9 +8,7 @@
   "author": "gold",
   "license": "MIT",
   "config": {
-    "forge": {
-      "packagerConfig": {}
-    }
+    "forge": "./forge.config.js"
   },
   "scripts": {
     "start": "electron-forge start",
