@@ -1,7 +1,7 @@
 // Modules to control application life and create native browser window
 //require('update-electron-app')()
 
-const { app, ipcMain, Menu, MenuItem, BrowserWindow } = require('electron')
+const { app, ipcMain, Menu, MenuItem, BrowserWindow, shell } = require('electron')
 //const store = require('electron-store');
 
 // os: mac vs linux vs win
@@ -49,6 +49,7 @@ const checkAppConfig = (config = {}, bWrite = false) =>{
     fs.writeFileSync(configPath, JSON.stringify(appConfig))
   }
   console.debug(appConfig);
+  //console.debug(app)
 }
 checkAppConfig()
 
@@ -63,6 +64,11 @@ const resetAppUrl = (appUrl) => {
   if(fs.existsSync(configPath)){
     fs.writeFileSync(configPath, JSON.stringify(appConfig))
   }
+}
+const openUserData = (subDir) => {
+  let openDir = path.join(appDataPath, subDir)
+  console.debug(openDir)
+  shell.showItemInFolder(openDir)
 }
 
 // will fix with cloudflare certification
@@ -103,6 +109,9 @@ const createWindow = () => {
     }
   })
 
+  const menu = Menu.buildFromTemplate(menuTemplate)
+  Menu.setApplicationMenu(menu)
+
   // 加载 index.html
   //mainWindow.loadFile('renderer/src/index.html')
   mainWindow.loadURL(appUrl)
@@ -116,18 +125,68 @@ const createWindow = () => {
   helperInit({mainWindow})
 }
 
-const template = [
+
+
+// 这段程序将会在 Electron 结束初始化
+// 和创建浏览器窗口的时候调用
+// 部分 API 在 ready 事件触发后才能使用。
+app.whenReady().then(() => {
+
+  createWindow()
+
+  loadRpaServer()
+  
+  app.on('activate', () => {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+})
+
+// 除了 macOS 外，当所有窗口都被关闭的时候退出程序。 There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on('window-all-closed', () => {
+
+  if (!isMac) app.quit()
+})
+
+const menuTemplate = [
   // { role: 'appMenu' }
-  {
+  ...(isMac ? [{
     label: app.name,
     submenu: [
-      { label: 'Logs' },
+      { label: 'Logs',
+        click: function() {
+          openUserData('logs')
+        }
+      },
+      { label: 'Browser UserData',
+        click: function() {
+          openUserData('userData')
+        }
+      },
       { type: 'separator' },
-      { role: 'services' },
-      { type: 'separator' },
-      isMac ? { role: 'close' } : { role: 'quit' }
+      { role: 'close' } 
     ]
-  },
+  }]:[{
+    label: 'File',
+        submenu: [
+          { label: 'Logs',
+          click: function() {
+            openUserData('logs')
+          }
+        },
+        { label: 'Browser UserData',
+          click: function() {
+            openUserData('userData')
+          }
+        },
+          { type: 'separator' },
+          { role: 'quit' }
+        ]
+      }    
+  ]),
   // { role: 'editMenu' }
   {
     label: 'Edit',
@@ -145,6 +204,7 @@ const template = [
         { type: 'separator' },
         {
           label: 'Speech',
+          visible: false,
           submenu: [
             { role: 'startSpeaking' },
             { role: 'stopSpeaking' }
@@ -161,9 +221,9 @@ const template = [
   {
     label: 'Window',
     submenu: [
-      { role: 'reload' },
-      { role: 'forceReload' },
-      { role: 'toggleDevTools' },
+      { label: 'reload', role: 'forceReload' },
+      { role: 'toggleDevTools', visible: false},
+      { role: 'reload', visible: false },
       { role: 'togglefullscreen'},
       { type: 'separator' },
       { label: 'change Line',
@@ -212,32 +272,4 @@ const template = [
     ]
   }
 ]
-
-
-// 这段程序将会在 Electron 结束初始化
-// 和创建浏览器窗口的时候调用
-// 部分 API 在 ready 事件触发后才能使用。
-app.whenReady().then(() => {
-
-  const menu = Menu.buildFromTemplate(template)
-  Menu.setApplicationMenu(menu)
-
-  createWindow()
-
-  loadRpaServer()
-  
-  app.on('activate', () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-})
-
-// 除了 macOS 外，当所有窗口都被关闭的时候退出程序。 There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-
-  if (!isMac) app.quit()
-})
 

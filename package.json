@@ -1,5 +1,6 @@
 {
   "name": "Web3RPA",
+  "productName": "Web3RPA",
   "version": "1.0.0",
   "description": "Web3 RPA client",
   "main": "src/main/main.js",
