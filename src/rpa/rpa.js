@@ -9,7 +9,6 @@ const { dataUtilInit, getListData, getDetailData, updateDetailData, createDetail
 const os = require('os')
 const fs = require('fs')
 const path = require('path');
-const { randomBytes } = require('crypto')
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -20,6 +19,13 @@ function getDateTime() {
   return d_t.getFullYear() + "-" + ("0"+(d_t.getMonth()+1)).slice(-2)+ "-" + ("0"+d_t.getDate()).slice(-2) 
    + " " + ("0"+d_t.getHours()).slice(-2) + ":" + d_t.getMinutes() + ":" + d_t.getSeconds()
 }
+
+const encryptMd5 = (str) => {
+  let CryptoJS = require("crypto-js")
+  return CryptoJS.MD5(str).toString()
+}
+
+/////////////////////////////////
 
 const rpaConfig = {}
 
@@ -34,8 +40,6 @@ const startRpa = () => {
     }
 
     rpaConfig.getUsername = getUsername
-    rpaConfig.getLoginToken = getLoginToken
-    rpaConfig.resetLoginToken = resetLoginToken
 
     rpaConfig.isLocalDev = false
 
@@ -84,19 +88,6 @@ const getUsername = async () => {
     }
   }
   return username
-}
-
-const getLoginToken = async () => {
-  let token = await rpaConfig.appCurrentUser['token'] 
-  if(!token){
-    await callbackGetAppCurrentUser()
-    token = await rpaConfig.appCurrentUser['token']
-  }
-  return token
-} 
-
-const resetLoginToken = async () => {
-  rpaConfig.appCurrentUser['token'] = undefined
 }
 
 var runNodeId
@@ -222,10 +213,7 @@ const loadLocalApi = () => {
   // set port
   localApi = require("./localApi")
 }
-const encryptMd5 = (str) => {
-  let CryptoJS = require("crypto-js")
-  return CryptoJS.MD5(str).toString()
-}
+
 
 // RPA 计划
 // 1 计划生成任务在服务器处理

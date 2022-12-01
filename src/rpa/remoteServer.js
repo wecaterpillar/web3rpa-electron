@@ -6,10 +6,19 @@ const init = (config) => {
     rpaConfig = config
 }
 
+const getLoginToken = async () => {
+    let token = await rpaConfig.appCurrentUser['token'] 
+    if(!token){
+      await rpaConfig.callbackGetAppCurrentUser()
+      token = await rpaConfig.appCurrentUser['token']
+    }
+    return token
+} 
+
 const checkToken = async () => {
     if(!AUTH_TOKEN){
         // get token from main window
-        AUTH_TOKEN = await rpaConfig.getLoginToken()
+        AUTH_TOKEN = await getLoginToken()
         console.debug(AUTH_TOKEN)
         if(!!AUTH_TOKEN){
             axios.defaults.headers.common['authorization'] = AUTH_TOKEN;
@@ -19,7 +28,7 @@ const checkToken = async () => {
 }
 const resetToken = async () => {
     AUTH_TOKEN = undefined
-    await rpaConfig.resetLoginToken()
+    rpaConfig.appCurrentUser['token'] = undefined
 }
 
 // authorization 

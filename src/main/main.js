@@ -41,10 +41,10 @@ const checkAppConfig = (config = {}, bWrite = false) =>{
     appConfig['appUrl'] = 'https://rpa.w3bb.cc'
   }
   if(bWrite){
-    let nodeName = configPath['nodeName']
-    configPath['nodeName'] = undefined
+    let nodeName = appConfig['nodeName']
+    appConfig['nodeName'] = undefined
     fs.writeFileSync(configPath, JSON.stringify(appConfig))
-    configPath['nodeName'] = nodeName
+    appConfig['nodeName'] = nodeName
   }
   console.debug(appConfig);
   //console.debug(app)
@@ -62,10 +62,10 @@ const resetAppUrl = (appUrl) => {
   }
   const configPath = path.join(appDataPath, 'config.json');
   if(fs.existsSync(configPath)){
-    let nodeName = configPath['nodeName']
-    configPath['nodeName'] = undefined
+    let nodeName = appConfig['nodeName']
+    appConfig['nodeName'] = undefined
     fs.writeFileSync(configPath, JSON.stringify(appConfig))
-    configPath['nodeName'] = nodeName
+    appConfig['nodeName'] = nodeName
   }
 }
 const openUserData = (subDir) => {
@@ -81,9 +81,8 @@ const openUserData = (subDir) => {
 const {helperInit, getAppCurrentUser, getValueFromMainWindowStorage} = require('./helper')
 
 // RPA server
-const {rpaConfig} = require("../rpa/rpa")
+const {rpaConfig, startRpaServer} = require("../rpa/rpa")
 const loadRpaServer = () => {
-  let {startRpaServer} = require("../rpa/rpa")
   // config
   rpaConfig.appExecPath = appExecPath
   rpaConfig.appDataPath = appDataPath
@@ -91,6 +90,8 @@ const loadRpaServer = () => {
   rpaConfig.isPackaged = app.isPackaged
   rpaConfig.isMac = isMac
   rpaConfig.isLinux = isLinux
+
+  // callback
   rpaConfig.callbackCheckAppConfig = checkAppConfig
   rpaConfig.callbackGetAppCurrentUser = getAppCurrentUser
   rpaConfig.callbackGetValueFromMainWindowStorage = getValueFromMainWindowStorage
@@ -109,8 +110,6 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js')
     }
   })
-
-  loadMenu()
 
   // appUrl, read from config and change by line
   let appUrl = appConfig['appUrl']
@@ -137,6 +136,8 @@ const createWindow = () => {
 // 和创建浏览器窗口的时候调用
 // 部分 API 在 ready 事件触发后才能使用。
 app.whenReady().then(() => {
+
+  loadMenu()
 
   createWindow()
 
@@ -232,7 +233,7 @@ const loadMenu = () => {
       submenu: [
         { label: 'reload', role: 'forceReload' },
         { label: 'reload RPA', click: function (){
-          startRpaServer()
+          //startRpaServer()
         }},
         { role: 'toggleDevTools', visible: false},
         { role: 'reload', visible: false },
