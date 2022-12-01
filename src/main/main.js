@@ -41,7 +41,10 @@ const checkAppConfig = (config = {}, bWrite = false) =>{
     appConfig['appUrl'] = 'https://rpa.w3bb.cc'
   }
   if(bWrite){
+    let nodeName = configPath['nodeName']
+    configPath['nodeName'] = undefined
     fs.writeFileSync(configPath, JSON.stringify(appConfig))
+    configPath['nodeName'] = nodeName
   }
   console.debug(appConfig);
   //console.debug(app)
@@ -57,7 +60,10 @@ const resetAppUrl = (appUrl) => {
   }
   const configPath = path.join(appDataPath, 'config.json');
   if(fs.existsSync(configPath)){
+    let nodeName = configPath['nodeName']
+    configPath['nodeName'] = undefined
     fs.writeFileSync(configPath, JSON.stringify(appConfig))
+    configPath['nodeName'] = nodeName
   }
 }
 const openUserData = (subDir) => {
