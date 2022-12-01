@@ -1,7 +1,6 @@
 const playwright = require('playwright')
 console.debug("rpa load playwright")
 const schedule = require('node-schedule')
-var CryptoJS = require("crypto-js");
 
 const { remoteServerInit } = require('./remoteServer')
 const { browserInit } = require('./browser')
@@ -223,7 +222,10 @@ const loadLocalApi = () => {
   // set port
   localApi = require("./localApi")
 }
-
+const encryptMd5 = (str) => {
+  let CryptoJS = require("crypto-js")
+  return CryptoJS.MD5(str).toString()
+}
 
 // RPA 计划
 // 1 计划生成任务在服务器处理
@@ -258,7 +260,7 @@ const execRpaTask = async (taskConfig) => {
   }
   let scriptContext = scriptResult['script']
   //console.debug(scriptResult)
-  let fileName = scriptResult['name'].slice(0,5)+'-'+CryptoJS.MD5(scriptContext).toString().slice(-5)+'.js'
+  let fileName = scriptResult['name'].slice(0,5)+'-'+encryptMd5(scriptContext).slice(-5)+'.js'
   var scriptFilePath =  path.join(projectFilePath, '/'+fileName);
   if(!fs.existsSync(scriptFilePath)){
     // todo 可能会替换脚本中开发和生产环境不同的路径

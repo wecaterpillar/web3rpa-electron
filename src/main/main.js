@@ -49,7 +49,9 @@ const checkAppConfig = (config = {}, bWrite = false) =>{
   console.debug(appConfig);
   //console.debug(app)
 }
+
 checkAppConfig()
+
 
 const resetAppUrl = (appUrl) => {
   appConfig['appUrl'] = appUrl
@@ -79,8 +81,9 @@ const openUserData = (subDir) => {
 const {helperInit, getAppCurrentUser, getValueFromMainWindowStorage} = require('./helper')
 
 // RPA server
-const {rpaConfig, startRpaServer} = require("../rpa/rpa")
+const {rpaConfig} = require("../rpa/rpa")
 const loadRpaServer = () => {
+  let {startRpaServer} = require("../rpa/rpa")
   // config
   rpaConfig.appExecPath = appExecPath
   rpaConfig.appDataPath = appDataPath
@@ -96,9 +99,6 @@ const loadRpaServer = () => {
   startRpaServer()
 }
 
-// appUrl, read from config and change by line
-const appUrl = appConfig['appUrl']
-
 var mainWindow
 const createWindow = () => {
   // Create the browser window.
@@ -110,8 +110,13 @@ const createWindow = () => {
     }
   })
 
-  const menu = Menu.buildFromTemplate(menuTemplate)
-  Menu.setApplicationMenu(menu)
+  loadMenu()
+
+  // appUrl, read from config and change by line
+  let appUrl = appConfig['appUrl']
+  if(!appUrl){
+    appUrl = 'https://rpa.w3bb.cc'
+  }
 
   // 加载 index.html
   //mainWindow.loadFile('renderer/src/index.html')
@@ -152,28 +157,15 @@ app.on('window-all-closed', () => {
   if (!isMac) app.quit()
 })
 
-const menuTemplate = [
-  // { role: 'appMenu' }
-  ...(isMac ? [{
-    label: app.name,
-    submenu: [
-      { label: 'Logs',
-        click: function() {
-          openUserData('logs')
-        }
-      },
-      { label: 'Browser UserData',
-        click: function() {
-          openUserData('userData')
-        }
-      },
-      { type: 'separator' },
-      { role: 'close' } 
-    ]
-  }]:[{
-    label: 'File',
-        submenu: [
-          { label: 'Logs',
+
+
+const loadMenu = () => {
+  let menuTemplate = [
+    // { role: 'appMenu' }
+    ...(isMac ? [{
+      label: app.name,
+      submenu: [
+        { label: 'Logs',
           click: function() {
             openUserData('logs')
           }
@@ -183,102 +175,127 @@ const menuTemplate = [
             openUserData('userData')
           }
         },
-          { type: 'separator' },
-          { role: 'quit' }
-        ]
-      }    
-  ]),
-  // { role: 'editMenu' }
-  {
-    label: 'Edit',
-    submenu: [
-      { role: 'undo' },
-      { role: 'redo' },
-      { type: 'separator' },
-      { role: 'cut' },
-      { role: 'copy' },
-      { role: 'paste' },
-      ...(isMac ? [
-        { role: 'pasteAndMatchStyle' },
-        { role: 'delete' },
-        { role: 'selectAll' },
         { type: 'separator' },
-        {
-          label: 'Speech',
-          visible: false,
+        { role: 'close' } 
+      ]
+    }]:[{
+      label: 'File',
           submenu: [
-            { role: 'startSpeaking' },
-            { role: 'stopSpeaking' }
+            { label: 'Logs',
+            click: function() {
+              openUserData('logs')
+            }
+          },
+          { label: 'Browser UserData',
+            click: function() {
+              openUserData('userData')
+            }
+          },
+            { type: 'separator' },
+            { role: 'quit' }
           ]
-        }
-      ] : [
-        { role: 'delete' },
+        }    
+    ]),
+    // { role: 'editMenu' }
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
         { type: 'separator' },
-        { role: 'selectAll' }
-      ])
-    ]
-  },
-  // { role: 'windowMenu' }
-  {
-    label: 'Window',
-    submenu: [
-      { label: 'reload', role: 'forceReload' },
-      { role: 'toggleDevTools', visible: false},
-      { role: 'reload', visible: false },
-      { role: 'togglefullscreen'},
-      { type: 'separator' },
-      { label: 'change Line',
-        submenu:[
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        ...(isMac ? [
+          { role: 'pasteAndMatchStyle' },
+          { role: 'delete' },
+          { role: 'selectAll' },
+          { type: 'separator' },
           {
-            label: 'line1(sg+cf)',
-            type: 'radio', 
-            checked: appConfig['appUrl'].indexOf("rpa.")>-1,
-            click: function (){
-              appConfig['appUrl'].indexOf("rpa.")>-1 || resetAppUrl('https://rpa.w3bb.cc')
-            }
-          },
-          {
-            label: 'line2(hk+cf)',
-            type: 'radio', 
-            checked: appConfig['appUrl'].indexOf("rpa2.")>-1,
-            click: function (){
-              appConfig['appUrl'].indexOf("rpa2.")>-1 || resetAppUrl('https://rpa2.w3bb.cc')
-            }
-          },
-          {
-            label: 'line2b(hk)',
-            type: 'radio', 
-            checked: appConfig['appUrl'].indexOf("rpa2b.")>-1,
-            click: function (){
-              appConfig['appUrl'].indexOf("rpa2b.")>-1 || resetAppUrl('https://rpa2b.w3bb.cc')
-            }
+            label: 'Speech',
+            visible: false,
+            submenu: [
+              { role: 'startSpeaking' },
+              { role: 'stopSpeaking' }
+            ]
           }
-        ]},
-      { type: 'separator' },
-     
-      { role: 'zoomIn' },
-      { role: 'zoomOut' },
-      { role: 'resetZoom' },
-      ...(isMac ? [
+        ] : [
+          { role: 'delete' },
+          { type: 'separator' },
+          { role: 'selectAll' }
+        ])
+      ]
+    },
+    // { role: 'windowMenu' }
+    {
+      label: 'Window',
+      submenu: [
+        { label: 'reload', role: 'forceReload' },
+        { label: 'reload RPA', click: function (){
+          startRpaServer()
+        }},
+        { role: 'toggleDevTools', visible: false},
+        { role: 'reload', visible: false },
+        { role: 'togglefullscreen'},
         { type: 'separator' },
-        { role: 'front' },
-      ] : [
-        { role: 'close' }
-      ])
-    ]
-  },
-  {
-    role: 'help',
-    submenu: [
-      { role: 'about' },
-      {
-        label: 'Learn More',
-        click: async () => {
-          const { shell } = require('electron')
-          await shell.openExternal('https://electronjs.org')
+        { label: 'change Line',
+          submenu:[
+            {
+              label: 'line1(sg+cf)',
+              type: 'radio', 
+              checked: appConfig['appUrl'].indexOf("rpa.")>-1,
+              click: function (){
+                appConfig['appUrl'].indexOf("rpa.")>-1 || resetAppUrl('https://rpa.w3bb.cc')
+              }
+            },
+            {
+              label: 'line2(hk+cf)',
+              type: 'radio', 
+              checked: appConfig['appUrl'].indexOf("rpa2.")>-1,
+              click: function (){
+                appConfig['appUrl'].indexOf("rpa2.")>-1 || resetAppUrl('https://rpa2.w3bb.cc')
+              }
+            },
+            {
+              label: 'line2b(hk)',
+              type: 'radio', 
+              checked: appConfig['appUrl'].indexOf("rpa2b.")>-1,
+              click: function (){
+                appConfig['appUrl'].indexOf("rpa2b.")>-1 || resetAppUrl('https://rpa2b.w3bb.cc')
+              }
+            }
+          ]},
+        { type: 'separator' },
+       
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { role: 'resetZoom' },
+        ...(isMac ? [
+          { type: 'separator' },
+          { role: 'front' },
+        ] : [
+          { role: 'close' }
+        ])
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        { role: 'about' },
+        {
+          label: 'Learn More',
+          click: async () => {
+            const { shell } = require('electron')
+            await shell.openExternal('https://electronjs.org')
+          }
         }
-      }
-    ]
-  }
-]
+      ]
+    }
+  ]
+  // check menu
+  let menu = Menu.buildFromTemplate(menuTemplate)
+  Menu.setApplicationMenu(menu)
+}
+
+
 

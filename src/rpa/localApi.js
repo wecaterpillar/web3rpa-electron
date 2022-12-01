@@ -20,6 +20,12 @@ app.get('/api/getAccountCryptkey', async (req, res) => {
   res.send(key)
 })
 
+app.get('/api/getData/:tableKey', async (req, res) => {
+  let tableKey = req.params.tableKey
+  let result = await getListDataRemote(tableKey, req.body)
+  res.json(result)
+})
+
 app.post('/api/getData/:tableKey', async (req, res) => {
   let tableKey = req.params.tableKey
   let result = await getListDataRemote(tableKey, req.body)

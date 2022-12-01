@@ -1,12 +1,13 @@
-var CryptoJS = require("crypto-js");
+var CryptoJS = require("crypto-js")
 
 // 读取配置文件，需要同服务器设置一致
 var rpaStorageKey = 'WEB3RPA__PRODUCTION__3.4.3__COMMON__LOCAL__KEY__'
 var strKey = '_11111000001111@'
 var strIv = '@11111000001111_'
 
-var cryptoKey = CryptoJS.enc.Utf8.parse(strKey);
-var cryptoIv = CryptoJS.enc.Utf8.parse(strIv);
+var cryptoKey = CryptoJS.enc.Utf8.parse(strKey)
+var cryptoIv = CryptoJS.enc.Utf8.parse(strIv)
+
 
 const encryptAes = (str) =>{
     var encrypted = CryptoJS.AES.encrypt(str, cryptoKey, {
