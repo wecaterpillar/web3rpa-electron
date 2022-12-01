@@ -7,8 +7,8 @@ const isLinux = process.platform === 'linux'
 // app path
 const fs = require("fs");
 const path = require('path');
-const appExecPath = app.getAppPath();
-const appDataPath = appExecPath;
+let appExecPath = app.getAppPath();
+let appDataPath = appExecPath;
 
 const appName = 'web3rpa'
 
