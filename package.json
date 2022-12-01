@@ -3,8 +3,8 @@
   "productName": "Web3RPA",
   "version": "1.0.0",
   "description": "Web3 RPA client",
-  "main": "src/entry/appEntry.js",
-  "main2": "src/main/main.js",
+  "main1": "src/entry/appEntry.js",
+  "main": "src/main/main.js",
   "author": "gold",
   "license": "MIT",
   "config": {

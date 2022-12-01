@@ -9,6 +9,7 @@ const config = {
       ,'webpack*','forge*'
       ,'appLoginUser','nodeName','ref_adspow','ref_multilogin'
       ,'doc','flowscript','userData','logs'
+      ,'lib/chrome_105','lib/extensions'
     ],
     extraResources:['./src/**']
   },

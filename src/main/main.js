@@ -11,8 +11,8 @@ const isLinux = process.platform === 'linux'
 // app path
 const fs = require("fs");
 const path = require('path');
-const appExecPath = app.getAppPath();
-const appDataPath = appExecPath;
+let appExecPath = app.getAppPath();
+let appDataPath = appExecPath;
 if(app.isPackaged){
   appExecPath = path.dirname(app.getPath('exe'));
   appDataPath = path.join(app.getPath('userData'), 'web3rpa');
@@ -26,7 +26,7 @@ if(app.isPackaged){
 
 // looad config 
 // configFilePath = [appDataPath]/config.json
-var appConfig = {};
+let appConfig = {};
 const checkAppConfig = (config = {}, bWrite = false) =>{
   const configPath = path.join(appDataPath, 'config.json');
   if(fs.existsSync(configPath)){
