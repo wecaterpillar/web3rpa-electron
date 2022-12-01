@@ -131,8 +131,9 @@ const  getListDataRemote = async (tableKey, queryParams = {}) => {
 
     let queryUrl = getRpaServerFormApiBase()+'getData/' + tableId + '?hasQuery=true';
     for(key in queryParams){
-        queryUrl += '&'+key+'='+queryParams[key]
+        queryUrl += '&'+key+'='+encodeURIComponent(queryParams[key])
     }
+    console.debug(queryUrl)
     await axios.request({
             method: 'get',
             url: queryUrl
@@ -205,7 +206,7 @@ const updateDetailDataRemote = async (tableKey, data) => {
     }).then(function (response){
         if(response.status === 200){
             //console.debug(response)
-            result = response
+            result = response.data
         }else if(response.status === 401){
             resetToken()
             //result = getListData(listKey, pageNo, pageSize)

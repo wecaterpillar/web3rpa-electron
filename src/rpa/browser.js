@@ -43,6 +43,14 @@ const getBrowserExecutablePath = (browserType, version, browserName) => {
     //win32
 
     // %USERPROFILE%\AppData\Local\ms-playwright
+      bravePath = path.join(rpaConfig.appDataPath, 'lib/chrome_107/brave.exe')
+
+      let braveDefault = "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe"
+      if(fs.existsSync(bravePath)){
+          executablePath = bravePath;
+      }if(fs.existsSync(braveDefault)){
+          executablePath = braveDefault;
+      }
 
   }
   return executablePath;
