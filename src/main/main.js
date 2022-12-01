@@ -11,46 +11,48 @@ const isLinux = process.platform === 'linux'
 // app path
 const fs = require("fs");
 const path = require('path');
+const appName = 'Web3RPA'
+const appUrlDefault = ' https://rpa.w3bb.cc'
 let appExecPath = app.getAppPath();
 let appDataPath = appExecPath;
 if(app.isPackaged){
   appExecPath = path.dirname(app.getPath('exe'));
-  appDataPath = path.join(app.getPath('userData'), 'web3rpa');
+  appDataPath = path.join(app.getPath('userData'), appName);
 }else{
   // for dev
   //console.debug('isPackaged appExecPath='+path.dirname(app.getPath('exe')));
   //console.debug('isPackaged appDataPath='+path.dirname(path.join(app.getPath('userData'), 'web3rpa')));
 }
-//console.log('appExecPath='+appExecPath);
-//console.log('appDataPath='+appDataPath);
+console.log('appExecPath='+appExecPath);
+console.log('appDataPath='+appDataPath);
 
 // looad config 
 // configFilePath = [appDataPath]/config.json
-let appConfig = {};
-const checkAppConfig = (config = {}, bWrite = false) =>{
+const appConfig = {};
+const checkAppConfig = ({config = {}, bWrite = false}) =>{
   const configPath = path.join(appDataPath, 'config.json');
   if(fs.existsSync(configPath)){
     let configStr = fs.readFileSync(configPath);
-    appConfig = JSON.parse(configStr);
+    let appConfig2 = JSON.parse(configStr);
+    if(!!appConfig2){
+      Object.assign(appConfig, appConfig2)
+    }
   }
   if(!!config){
     Object.assign(appConfig, config)
   }
   if(!'appUrl' in appConfig){
-    // default https://rpa.w3bb.cc
-    appConfig['appUrl'] = 'https://rpa.w3bb.cc'
+    appConfig['appUrl'] = appUrlDefault
   }
   if(bWrite){
     let nodeName = appConfig['nodeName']
-    appConfig['nodeName'] = undefined
+    delete appConfig['nodeName']
     fs.writeFileSync(configPath, JSON.stringify(appConfig))
     appConfig['nodeName'] = nodeName
   }
   console.debug(appConfig);
   //console.debug(app)
 }
-
-checkAppConfig()
 
 
 const resetAppUrl = (appUrl) => {
@@ -63,7 +65,7 @@ const resetAppUrl = (appUrl) => {
   const configPath = path.join(appDataPath, 'config.json');
   if(fs.existsSync(configPath)){
     let nodeName = appConfig['nodeName']
-    appConfig['nodeName'] = undefined
+    delete appConfig['nodeName']
     fs.writeFileSync(configPath, JSON.stringify(appConfig))
     appConfig['nodeName'] = nodeName
   }
@@ -92,7 +94,7 @@ const loadRpaServer = () => {
   rpaConfig.isLinux = isLinux
 
   // callback
-  rpaConfig.callbackCheckAppConfig = checkAppConfig
+  //rpaConfig.callbackCheckAppConfig = checkAppConfig
   rpaConfig.callbackGetAppCurrentUser = getAppCurrentUser
   rpaConfig.callbackGetValueFromMainWindowStorage = getValueFromMainWindowStorage
 
@@ -113,8 +115,8 @@ const createWindow = () => {
 
   // appUrl, read from config and change by line
   let appUrl = appConfig['appUrl']
-  if(!appUrl){
-    appUrl = 'https://rpa.w3bb.cc'
+  if(!!!appUrl){
+    appUrl = appUrlDefault
   }
 
   // 加载 index.html
@@ -137,6 +139,8 @@ const createWindow = () => {
 // 部分 API 在 ready 事件触发后才能使用。
 app.whenReady().then(() => {
 
+  checkAppConfig({bWrite:true})
+
   loadMenu()
 
   createWindow()
@@ -157,8 +161,6 @@ app.on('window-all-closed', () => {
 
   if (!isMac) app.quit()
 })
-
-
 
 const loadMenu = () => {
   let menuTemplate = [

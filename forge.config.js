@@ -5,13 +5,13 @@ const config = {
     name: 'Web3RPA',
     icon: './src/images/icon/icon',
     ignore: [
-      '.env','.idea','.vscode','.lock','.ignore','.clean','.md','.iml'
-      ,'webpack*','forge*'
+      '.env','.idea','.vscode','yarn.lock','.yarnclean','.gitignore','web3rpa-electron.iml'
+      ,'webpack.*.config.js','webpack.rules.js','forge.config.js','README.md'
       ,'appLoginUser','nodeName','ref_adspow','ref_multilogin'
       ,'doc','flowscript','userData','logs'
       ,'lib/chrome_105','lib/extensions'
     ],
-    extraResources:['./src/**']
+    extraResources:['./src/']
   },
   rebuildConfig: {},
   makers: [

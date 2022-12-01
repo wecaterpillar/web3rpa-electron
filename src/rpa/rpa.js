@@ -2,13 +2,11 @@ const playwright = require('playwright')
 console.debug("rpa load playwright")
 const schedule = require('node-schedule')
 
-const { remoteServerInit } = require('./remoteServer')
-const { browserInit } = require('./browser')
 const { dataUtilInit, getListData, getDetailData, updateDetailData, createDetailData, getRpaPlanTaskList,getBrowserInfo} = require('./dataUtil')
 
 const os = require('os')
 const fs = require('fs')
-const path = require('path');
+const path = require('path')
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -41,19 +39,21 @@ const startRpa = () => {
 
     rpaConfig.getUsername = getUsername
 
-    rpaConfig.isLocalDev = false
-
     // 2. init
     // 2.1 remote server
+    const { remoteServerInit } = require('./remoteServer')
     remoteServerInit(rpaConfig)
     
     // 2.2 local api
-    loadLocalApi(rpaConfig)
+    // localAPI server
+    // set port??
+    let localApi = require("./localApi")
 
     // 2.3 dataUtil
     dataUtilInit(rpaConfig)
 
     // 2.4 browser
+    const { browserInit } = require('./browser')
     browserInit(rpaConfig)    
 
 
@@ -64,6 +64,11 @@ const startRpa = () => {
     // 3.2 node status
     sleep(10000)
     updateNodeStatus()
+}
+
+const restartRpa = () =>{
+  console.debug('restart rpa ...')
+  console.debug(rpaConfig)
 }
 
 const callbackGetAppCurrentUser = async () => {
@@ -90,9 +95,8 @@ const getUsername = async () => {
   return username
 }
 
-var runNodeId
 const updateNodeStatus = () => {
-  schedule.scheduleJob('0 */2 * * * *', async ()=>{
+  schedule.scheduleJob('10 */1 * * * *', async ()=>{
     console.log('updateNodeStatus:' + new Date());
     let nodeData
     // 1. get nodeName from config
@@ -204,14 +208,6 @@ const checkPlanTask = () => {
     }
     //console.debug(result)
 }); 
-}
-
-
-// localAPI server
-var localApi
-const loadLocalApi = () => {
-  // set port
-  localApi = require("./localApi")
 }
 
 

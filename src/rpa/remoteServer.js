@@ -21,14 +21,17 @@ const checkToken = async () => {
         AUTH_TOKEN = await getLoginToken()
         console.debug(AUTH_TOKEN)
         if(!!AUTH_TOKEN){
-            axios.defaults.headers.common['authorization'] = AUTH_TOKEN;
-            axios.defaults.headers.common['x-access-token'] = AUTH_TOKEN;
+            axios.defaults.headers.common['authorization'] = AUTH_TOKEN
+            axios.defaults.headers.common['x-access-token'] = AUTH_TOKEN
         }
     }
 }
 const resetToken = async () => {
     AUTH_TOKEN = undefined
     rpaConfig.appCurrentUser['token'] = undefined
+    //
+    delete axios.defaults.headers.common['authorization']
+    delete axios.defaults.headers.common['x-access-token']
 }
 
 // authorization 
