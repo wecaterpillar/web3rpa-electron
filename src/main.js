@@ -72,7 +72,10 @@ const resetAppUrl = (appUrl) => {
 }
 const openUserData = (subDir) => {
   let openDir = path.join(appDataPath, subDir)
-  console.debug(openDir)
+  if("applogs" === subDir){
+    openDir = app.getPath('logs')
+  }
+  log.debug("open dir:"+openDir)
   shell.showItemInFolder(openDir)
 }
 
@@ -175,11 +178,16 @@ const loadMenu = () => {
     ...(isMac ? [{
       label: app.name,
       submenu: [
-        { label: 'Logs',
+        { label: 'RPA Logs',
           click: function() {
             openUserData('logs')
           }
         },
+        { label: 'App Logs',
+        click: function() {
+          openUserData('applogs')
+        }
+      },
         { label: 'Browser UserData',
           click: function() {
             openUserData('userData')
@@ -192,11 +200,16 @@ const loadMenu = () => {
     }]:[{
       label: 'File',
           submenu: [
-            { label: 'Logs',
+            { label: 'RPA Logs',
             click: function() {
               openUserData('logs')
             }
           },
+          { label: 'App Logs',
+          click: function() {
+            openUserData('applogs')
+          }
+        },
           { label: 'Browser UserData',
             click: function() {
               openUserData('userData')
