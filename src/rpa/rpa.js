@@ -1,6 +1,6 @@
 const log = require('electron-log')
 const playwright = require('playwright')
-console.debug("rpa load playwright")
+log.debug("rpa load playwright")
 const schedule = require('node-schedule')
 
 const { dataUtilInit, getListData, getDetailData, updateDetailData, createDetailData, getRpaPlanTaskList,getBrowserInfo} = require('./dataUtil')
@@ -29,8 +29,8 @@ const encryptMd5 = (str) => {
 const rpaConfig = {}
 
 const startRpa = () => {
-    console.debug('start rpa ...')
-    console.debug(rpaConfig)
+    log.debug('start rpa ...')
+    log.debug(rpaConfig)
 
     // 1. load rpa config
 
@@ -68,7 +68,7 @@ const startRpa = () => {
 }
 
 const restartRpa = () =>{
-  console.debug('restart rpa ...')
+  log.debug('restart rpa ...')
   console.debug(rpaConfig)
 }
 
@@ -98,7 +98,7 @@ const getUsername = async () => {
 
 const updateNodeStatus = () => {
   schedule.scheduleJob('10 */1 * * * *', async ()=>{
-    console.log('updateNodeStatus:' + new Date());
+    console.debug('updateNodeStatus:' + new Date());
     let nodeData
     // 1. get nodeName from config
     let nodeName
@@ -194,7 +194,7 @@ const checkPlanTask = () => {
     }
   }
   schedule.scheduleJob('0 */2 * * * *', async ()=>{
-    console.log('checkPlanTask:' + new Date());
+    log.debug('checkPlanTask:' + new Date());
     // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
     let result = await getRpaPlanTaskList({runnode: nodeName, status: 'todo'})
     if(result && result.records){
@@ -219,8 +219,7 @@ const checkPlanTask = () => {
 // 3 执行任务脚本-获取脚本，获取账号，执行任务，更新结果
 
 const execRpaTask = async (taskConfig) => {
-  console.debug("execRpaTask")
-  console.debug(taskConfig)
+  log.debug("execRpaTask:" + JSON.stringify(taskConfig))
   // 1 锁定当前任务，防止重复执行
   taskConfig['status'] = 'doing'
   taskConfig['start_time'] = getDateTime()
@@ -240,7 +239,7 @@ const execRpaTask = async (taskConfig) => {
   // 2.2 执行脚本
   let scriptResult = await getDetailData('rpa_flow_script', taskConfig['script_id']);
   if(!scriptResult || !'script' in scriptResult){
-    console.error('can not get script')
+    log.error('can not get script:' + taskConfig['script_id'])
     return
   }
   let scriptContext = scriptResult['script']
@@ -295,6 +294,7 @@ const execRpaTask = async (taskConfig) => {
 
        // test dynamic load script file
        const {flow_start} = require(scriptFilePath) 
+       log.debug({item})
        flow_start({item})
     }
   }
