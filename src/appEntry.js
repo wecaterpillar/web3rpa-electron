@@ -4,16 +4,28 @@ const { app} = require('electron')
 const isMac = process.platform === 'darwin'
 const isLinux = process.platform === 'linux'
 
+if(!isMac && !isLinux){
+  // fix Squirrel.Windows will spawn your app an additional time with some special arguments
+  // https://www.electronforge.io/config/makers/squirrel.windows
+  if (require('electron-squirrel-startup')) {
+    log.warn('you need restart app again. (electron-squirrel-startup)')
+    app.quit()
+  }
+}
+
+
 // app path
 const fs = require("fs");
 const path = require('path');
 
 // check app data path
 let appExecPath;
+let appResourcesPath;
 let appDataPath;
 
 const checkDataPath = () => {
   appExecPath = app.getAppPath();
+  appResourcesPath = process.resourcesPath
   appDataPath = path.join(appExecPath, 'w3rpa');
   if(app.isPackaged){
     appExecPath = path.dirname(app.getPath('exe'));
@@ -33,6 +45,8 @@ const checkDataPath = () => {
     log.debug("mkdir appDataPath:"+ appDataPath)
   }
   log.info("appDataPath="+appDataPath)
+  log.info("appResourcesPath="+appResourcesPath)
+  log.info("appExecPath="+appExecPath)
 
   let appLogsPath = path.join(appDataPath, 'logs')
   if(!fs.existsSync(appLogsPath)){
@@ -94,10 +108,44 @@ const checkAppConfig = () => {
 checkAppConfig()
 
 const checkAppLibData = () => {
-  // copy lib/main, lib/rpa to [appDataPath]
   // 为后续增量更新，以及更新浏览器和插件做准备
+  // 可能需要比较长的时间，需要另起线程处理
 }
 checkAppLibData()
+
+
+var electronApi = require('./help/electronApi')
+
+
+const copyResourceFile = ({destPath, srcPath, fileName}) => {
+  let srcFile = path.join(srcPath, fileName)
+  let destFile = path.join(destPath, fileName)
+  if(fs.existsSync(srcFile)){
+    let destParentDir = path.resolve(destFile, '..')
+    if(!fs.existsSync(destParentDir)){
+      fs.mkdirSync(destParentDir)
+    }
+    fs.copyFileSync(srcFile, destFile)
+  }
+}
+
+const checkRpaCommonFile = () => {
+  // 从安装后资源包中复制rpa脚本运行依赖js
+  // src => dist
+  let distPath = path.join(appDataPath, 'src')
+  if(!fs.existsSync(distPath)){
+    fs.mkdirSync(distPath)
+  }
+  // dist/rpa/browser.js
+  // dist/rpa/dataUtil.js
+  let appResRoot = path.resolve(...[path.join(appResourcesPath, 'app.asar') , 
+  path.join(appResourcesPath, 'app') , process.cwd()])
+  if(appResRoot){
+    copyResourceFile({destPath: appDataPath,srcPath: appResRoot,fileName:'src/rpa/browser.js'})
+    copyResourceFile({destPath: appDataPath,srcPath: appResRoot,fileName:'src/rpa/dataUtil.js'})
+  }
+}
+checkRpaCommonFile()
 
 if(app.isPackaged){
   // TODO

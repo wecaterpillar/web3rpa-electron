@@ -3,14 +3,6 @@
 const log = require('electron-log')
 const { app, ipcMain, Menu, MenuItem, BrowserWindow, shell } = require('electron')
 //const store = require('electron-store');
-
-// fix Squirrel.Windows will spawn your app an additional time with some special arguments
-// https://www.electronforge.io/config/makers/squirrel.windows
-if (require('electron-squirrel-startup')) {
-  log.warn('you need restart app again. (electron-squirrel-startup)')
-  app.quit()
-}
-
 // os: mac vs linux vs win
 const isMac = process.platform === 'darwin'
 const isLinux = process.platform === 'linux'

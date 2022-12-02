@@ -250,8 +250,11 @@ const execRpaTask = async (taskConfig) => {
   if(!fs.existsSync(scriptFilePath)){
     // todo 可能会替换脚本中开发和生产环境不同的路径
     if(rpaConfig.isPackaged){
-      // ../../dev/rpa/ => ../../lib/rpa/
-      // ../../src/rpa/ => ../../lib/rpa/
+      // must copy dist from packaged resource to w3rpa directrion
+      // ../../dev/rpa/ => ../../dist/rpa/
+      scriptContext = scriptContext.replaceAll('../../dev/rpa/','../../src/rpa/')
+      // ../../src/rpa/ => ../../dist/rpa/
+      //scriptContext = scriptContext.replaceAll('../../src/rpa/','../../dist/rpa/')
     }else{
       // ../../dev/rpa/ => ../../src/rpa/
       scriptContext = scriptContext.replaceAll('../../dev/rpa/','../../src/rpa/')

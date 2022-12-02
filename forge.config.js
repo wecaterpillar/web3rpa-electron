@@ -10,7 +10,7 @@ const config = {
     ignore: [
       '.env','.idea','.vscode','yarn.lock','.yarnclean','.gitignore','web3rpa-electron.iml'
       ,'webpack.*.config.js','webpack.rules.js','forge.config.js','README.md'
-      ,'w3rpa','ref_rpa','doc','src','fix_make','dist/native_modules'
+      ,'w3rpa','ref_rpa','doc','fix_make','dist/native_modules'
     ],
     extraResources:[''] 
   },
