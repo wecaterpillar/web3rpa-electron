@@ -1,24 +1,32 @@
-const os = require('os')
-const platform = os.platform()
+//const os = require('os')
+//const platform = os.platform()
+//const { WebpackPlugin } = require('@electron-forge/plugin-webpack')
+
 const config = {
   packagerConfig: {
     name: 'Web3RPA',
-    icon: './src/images/icon/icon',
+    icon: './public/images/icon/icon',
+    platform: 'all',
     ignore: [
       '.env','.idea','.vscode','yarn.lock','.yarnclean','.gitignore','web3rpa-electron.iml'
       ,'webpack.*.config.js','webpack.rules.js','forge.config.js','README.md'
-      ,'appLoginUser','nodeName','ref_adspow','ref_multilogin'
-      ,'doc','flowscript','userData','logs'
-      ,'lib/chrome_105','lib/extensions'
+      ,'w3rpa','ref_rpa','doc','src','dist/native_modules'
     ],
-    extraResources:['./src/']
+    extraResources:[''] 
   },
   rebuildConfig: {},
   makers: [
     {
       // all
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin']
+      name: '@electron-forge/maker-zip'
+    },{
+      name: '@electron-forge/maker-dmg',
+      config: {
+      }
+    }, {
+      name: '@electron-forge/maker-squirrel',
+      config: {
+      }
     }
   ],
   publishers:[
@@ -31,14 +39,8 @@ const config = {
       }
     }
   ],
-  // plugins: [
-  //   {
-  //     name: '@electron-forge/plugin-webpack',
-  //     config: {
-  //       mainConfig: './webpack.main.config.js'
-  //     }
-  //   }
-  // ]
+  plugins: [
+  ]
 }
 
 module.exports = config

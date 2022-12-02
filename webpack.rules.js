@@ -1,3 +1,4 @@
+const path = require('path')
 module.exports = [
   // Add support for native node modules
   {

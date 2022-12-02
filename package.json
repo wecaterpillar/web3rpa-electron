@@ -2,17 +2,18 @@
   "name": "Web3RPA",
   "productName": "Web3RPA",
   "version": "1.0.0",
-  "description": "Web3 RPA client",
-  "main1": "src/entry/appEntry.js",
-  "main": "src/main/main.js",
   "author": "gold",
+  "description": "Web3 RPA client",
+  "main": "dist/appEntry.js",
+  "main2": "src/main.js",
   "license": "MIT",
   "config": {
     "forge": "./forge.config.js"
   },
   "scripts": {
+    "build": "webpack --progress --config webpack.config.js",
     "start": "electron-forge start",
-    "package": "electron-forge package",
+    "package": "webpack --progress && electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish"
   },
@@ -20,7 +21,7 @@
     "axios": "^0.20.0",
     "child_process": "^1.0.2",
     "crypto-js": "^4.1.1",
-    "electron-log": "^4.2.4",
+    "electron-log": "^4.4.8",
     "electron-notarize": "^0.3.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
@@ -36,18 +37,22 @@
     "rimraf": "^3.0.2"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.70",
-    "@electron-forge/maker-deb": "^6.0.0-beta.70",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.70",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.70",
-    "@electron-forge/maker-zip": "^6.0.0-beta.70",
-    "@electron-forge/plugin-webpack": "^6.0.1",
+    "@electron-forge/cli": "^6.0.4",
+    "@electron-forge/maker-deb": "^6.0.4",
+    "@electron-forge/maker-dmg": "^6.0.4",
+    "@electron-forge/maker-rpm": "^6.0.4",
+    "@electron-forge/maker-squirrel": "^6.0.4",
+    "@electron-forge/maker-zip": "^6.0.4",
+    "@electron-forge/publisher-electron-release-server": "^6.0.4",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "css-loader": "^6.0.0",
     "electron": "^21.2.0",
     "express": "^4.18.2",
     "md5": "^2.3.0",
     "node-loader": "^2.0.0",
-    "style-loader": "^3.0.0"
+    "null-loader": "^4.0.1",
+    "style-loader": "^3.0.0",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.0"
   }
 }

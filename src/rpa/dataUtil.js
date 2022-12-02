@@ -35,7 +35,7 @@ const getAccountCryptkey = async (params) => {
         })
         return result
     }else{
-        let {getAccountCryptkeyRemote} = require('./remoteServer')
+        let {getAccountCryptkeyRemote} = require('../help/remoteServer')
         return await getAccountCryptkeyRemote(params)
     }
 }
@@ -52,7 +52,7 @@ const  getListData = async (tableKey, queryParams = {}) => {
         })
         return result
     }else{
-        let {getListDataRemote} = require('./remoteServer')
+        let {getListDataRemote} = require('../help/remoteServer')
         return await getListDataRemote(tableKey, queryParams)
     }  
 }
@@ -68,7 +68,7 @@ const  getDetailData = async (tableKey, detailId) => {
         })
         return result
     }else{
-        let {getDetailDataRemote} = require('./remoteServer')
+        let {getDetailDataRemote} = require('../help/remoteServer')
         return await getDetailDataRemote(tableKey, detailId)
     }
 }
@@ -84,7 +84,7 @@ const updateDetailData = async (tableKey, data) => {
         })
         return result
     }else{
-        let {updateDetailDataRemote} = require('./remoteServer')
+        let {updateDetailDataRemote} = require('../help/remoteServer')
         return await updateDetailDataRemote(tableKey, data)
     }   
 }
@@ -100,7 +100,7 @@ const createDetailData = async (tableKey, data) => {
         })
         return result
     }else{
-        let {createDetailDataRemote} = require('./remoteServer')
+        let {createDetailDataRemote} = require('../help/remoteServer')
         return await createDetailDataRemote(tableKey, data)
     }   
 }

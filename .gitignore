@@ -137,18 +137,11 @@ dist
 .yarnclean
 
 ## ref
-ref_adspow/**
-ref_multilogin/**
+ref_rpa/**
 
 # user data
 default/*
-lib/chrome_*/*
-lib/extensions/*
-flowscript/*
-!flowscript/demo/script_demo.js
-userData/*
-!userData/.gitkeep
-logs
-nodeName
-appLoginUser
+w3rpa/*
+!w3rpa/flowscript/demo/script_demo.js
+!w3rpa/userData/.gitkeep
 

@@ -3,7 +3,7 @@ const app = express()
 const port = 3500
 
 
-const {getAccountCryptkeyRemote, getListDataRemote, getDetailDataRemote, updateDetailDataRemote, createDetailDataRemote} = require('./remoteServer')
+const {getAccountCryptkeyRemote, getListDataRemote, getDetailDataRemote, updateDetailDataRemote, createDetailDataRemote} = require('../help/remoteServer')
 const {openBrowser, frontBrowser, closeBrowser} = require('./browser')
 
 

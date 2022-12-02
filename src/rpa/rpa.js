@@ -1,3 +1,4 @@
+const log = require('electron-log')
 const playwright = require('playwright')
 console.debug("rpa load playwright")
 const schedule = require('node-schedule')
@@ -41,7 +42,7 @@ const startRpa = () => {
 
     // 2. init
     // 2.1 remote server
-    const { remoteServerInit } = require('./remoteServer')
+    const { remoteServerInit } = require('../help/remoteServer')
     remoteServerInit(rpaConfig)
     
     // 2.2 local api
