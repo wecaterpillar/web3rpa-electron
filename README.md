@@ -9,6 +9,7 @@ git clone https://e.coding.net/defitool/w3rpa/web3rpa-electron.git
 
 ## yarn
 - yarn install
+- yarn build
 - yarn start
 
 ## vscode

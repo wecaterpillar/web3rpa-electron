@@ -10,7 +10,7 @@ const config = {
     ignore: [
       '.env','.idea','.vscode','yarn.lock','.yarnclean','.gitignore','web3rpa-electron.iml'
       ,'webpack.*.config.js','webpack.rules.js','forge.config.js','README.md'
-      ,'w3rpa','ref_rpa','doc','src','dist/native_modules'
+      ,'w3rpa','ref_rpa','doc','src','fix_make','dist/native_modules'
     ],
     extraResources:[''] 
   },
@@ -33,7 +33,7 @@ const config = {
     {
       name: '@electron-forge/publisher-electron-release-server',
       config: {
-        baseUrl: 'https://rpa-update.w3bb.cc',
+        baseUrl: 'https://update-rpa.w3bb.cc',
         username: 'rpaadmin',
         password: process.env.AUTOUPDATE_PASSWORD // string
       }

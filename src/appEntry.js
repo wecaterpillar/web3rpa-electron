@@ -37,7 +37,7 @@ const checkDataPath = () => {
   let appLogsPath = path.join(appDataPath, 'logs')
   if(!fs.existsSync(appLogsPath)){
     fs.mkdirSync(appLogsPath)
-    log.debug("mkdir logs:"+ flowScriptPath)
+    log.debug("mkdir logs:"+ appLogsPath)
   }
   app.setPath('logs', appLogsPath)
   app.setAppLogsPath(appLogsPath)
@@ -48,7 +48,7 @@ const checkDataPath = () => {
   let appUserLib = path.join(appDataPath, 'lib')
   if(!fs.existsSync(appUserLib)){
     fs.mkdirSync(appUserLib)
-    log.debug("mkdir lib:"+ flowScriptPath)
+    log.debug("mkdir lib:"+ appUserLib)
   }
 
   // flowscript
@@ -95,6 +95,7 @@ checkAppConfig()
 
 const checkAppLibData = () => {
   // copy lib/main, lib/rpa to [appDataPath]
+  // 为后续增量更新，以及更新浏览器和插件做准备
 }
 checkAppLibData()
 
