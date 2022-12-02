@@ -132,17 +132,25 @@ const copyResourceFile = ({destPath, srcPath, fileName}) => {
 const checkRpaCommonFile = () => {
   // 从安装后资源包中复制rpa脚本运行依赖js
   // src => dist
-  let distPath = path.join(appDataPath, 'src')
+  let dist = 'src'
+  let distPath = path.join(appDataPath, dist)
   if(!fs.existsSync(distPath)){
     fs.mkdirSync(distPath)
   }
   // dist/rpa/browser.js
   // dist/rpa/dataUtil.js
-  let appResRoot = path.resolve(...[path.join(appResourcesPath, 'app.asar') , 
-  path.join(appResourcesPath, 'app') , process.cwd()])
+  // let appResRoot = path.resolve(...[path.join(appResourcesPath, 'app.asar') , path.join(appResourcesPath, 'app') , process.cwd()])
+  let appResRoot = path.join(appResourcesPath, 'app.asar')
+  if(!fs.existsSync(appResRoot)){
+    appResRoot = path.join(appResourcesPath, 'app')
+  }
+  if(!fs.existsSync(appResRoot)){
+    appResRoot = process.cwd()
+  }
+  log.debug("appResRoot="+appResRoot)
   if(appResRoot){
-    copyResourceFile({destPath: appDataPath,srcPath: appResRoot,fileName:'src/rpa/browser.js'})
-    copyResourceFile({destPath: appDataPath,srcPath: appResRoot,fileName:'src/rpa/dataUtil.js'})
+    copyResourceFile({destPath: appDataPath,srcPath: appResRoot,fileName: dist+'/rpa/browser.js'})
+    copyResourceFile({destPath: appDataPath,srcPath: appResRoot,fileName: dist+'/rpa/dataUtil.js'})
   }
 }
 checkRpaCommonFile()
