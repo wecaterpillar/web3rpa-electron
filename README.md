@@ -7,10 +7,16 @@ electron + playwright + brave
 
 git clone https://e.coding.net/defitool/w3rpa/web3rpa-electron.git
 
-## yarn
+## yarn dev
 - yarn install
 - yarn build
 - yarn start
+
+
+## yarn relase
+- yarn package
+- yarn make
+
 
 ## vscode
  debug
