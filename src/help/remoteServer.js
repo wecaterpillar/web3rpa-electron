@@ -9,8 +9,11 @@ const init = (config) => {
 const getLoginToken = async () => {
     let token = await rpaConfig.appCurrentUser['token'] 
     if(!token){
-      await rpaConfig.callbackGetAppCurrentUser()
-      token = await rpaConfig.appCurrentUser['token']
+      let userInfo = await rpaConfig.callbackGetAppCurrentUser()
+      if(!!userInfo && 'token' in userInfo){
+        rpaConfig.appCurrentUser = userInfo
+        token = await rpaConfig.appCurrentUser['token']
+      } 
     }
     return token
 } 
