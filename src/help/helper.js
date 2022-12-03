@@ -119,7 +119,7 @@ const copyResourceFile = ({destPath, srcPath, fileName}) => {
     // webpack编译前 src   待处理 src => dist
     appResRoot = path.join(appResRoot, 'src')
     if(appResRoot){
-      copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'rpa/browser.js'})
+      copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'rpa/browserUtil.js'})
       copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'rpa/dataUtil.js'})
     }
   }

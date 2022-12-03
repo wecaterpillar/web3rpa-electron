@@ -267,8 +267,8 @@ const execRpaTask = async (taskConfig) => {
     }else{
       // 注意下载后代码在w3rpa/flowscript目录下, 同dev和src代码不在同一级目录
       // ../../dev/rpa/ => ../../../src/rpa/
-      scriptContext = scriptContext.replaceAll('../../dev/rpa/','../../../src/rpa/')
-      scriptContext = scriptContext.replaceAll('../../src/rpa/','../../../src/rpa/')
+      scriptContext = scriptContext.replaceAll('../../dev/rpa/','../../dist/rpa/')
+      scriptContext = scriptContext.replaceAll('../../src/rpa/','../../dist/rpa/')
     }
     fs.writeFileSync(scriptFilePath, scriptContext)
   }

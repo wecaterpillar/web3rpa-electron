@@ -144,4 +144,7 @@ default/*
 w3rpa/*
 !w3rpa/flowscript/demo/script_demo.js
 !w3rpa/userData/.gitkeep
+flowscript/*
+!flowscript/demo/script_demo.js
+
 
