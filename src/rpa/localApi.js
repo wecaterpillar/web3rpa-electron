@@ -15,8 +15,8 @@ app.get('/', (req, res) => {
   res.send('Hello World! Local API')
 })
 
-app.get('/api/getAccountCryptkey', async (req, res) => {
-  let key = await remoteServer.getAccountCryptkeyRemote(req.params)
+app.post('/api/getAccountCryptkey', async (req, res) => {
+  let key = await remoteServer.getAccountCryptkeyRemote(req.body)
   res.send(key)
 })
 

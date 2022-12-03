@@ -107,14 +107,14 @@ const getRpaServerFormApiBase = () => {
  const getAccountCryptkeyRemote = async (params) => {
     let result
     await checkToken()
-    let queryUrl = getRpaServerBase()+'account/api/getCryptKey?client=e';
+    let queryUrl = getRpaServerBase()+'account/api/getEncryptKey?client=e';
     await axios.request({
             method: 'get',
             url: queryUrl,
             params: params
         }).then(function (response){
-            if(response.status === 200 && response.data.success){
-                result = response.data.result
+            if(response.status === 200 && response.data){
+                result = response.data
             }else if(response.status === 401){
                 resetToken()
             }    

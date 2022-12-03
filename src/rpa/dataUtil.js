@@ -37,7 +37,7 @@ const getAccountCryptkey = async (params) => {
     }else{
         let url = localApiBase + '/api/getAccountCryptkey?w3'
         let result
-        await axios.get(url, params).then(function (response){
+        await axios.post(url, params).then(function (response){
             if(response.status === 200){
                 result = response.data
             } 
