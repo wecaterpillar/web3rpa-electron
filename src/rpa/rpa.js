@@ -63,12 +63,14 @@ const startRpa = () => {
 
 
     // 3 rpa 
-    // 3.1 check task
+    // 3.1 node status
+    sleep(10000)
+    // 先调用心跳检查更新token
+    updateNodeStatus()
+
+    // 3.2 check task
     sleep(10000)
     checkPlanTask()
-    // 3.2 node status
-    sleep(10000)
-    updateNodeStatus()
 
     if(!rpaConfig.isPackaged){
       
@@ -85,8 +87,8 @@ const callbackGetAppCurrentUser = async () => {
   if('username' in userInfo && !!userInfo['username']){
     rpaConfig.appCurrentUser = userInfo
     // save to local file, for dev only
-    const appCurrentUserPath = path.join(rpaConfig.appDataPath, 'appLoginUser')
-    fs.writeFileSync(appCurrentUserPath, JSON.stringify(rpaConfig.appCurrentUser))
+    //const appCurrentUserPath = path.join(rpaConfig.appDataPath, 'appLoginUser')
+    //fs.writeFileSync(appCurrentUserPath, JSON.stringify(rpaConfig.appCurrentUser))
   }
 }
 

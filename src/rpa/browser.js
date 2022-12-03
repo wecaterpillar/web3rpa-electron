@@ -6,6 +6,13 @@ const path = require('path')
 
 var rpaConfig
 
+const launchBrowserContext2 = async ({browserInfo, rpaConfigJson}) => {
+    rpaConfig = rpaConfigJson
+    let browserConfig = await getBrowserConfig(browserInfo)
+    let context = await launchBrowserContext(browserConfig)
+    return context
+}
+
 const getBrowserExtensions = (extensions) => {
   // TODO 插件配置检查,以及配置文件是否存在
   // 插件服务下载后解压
@@ -134,7 +141,7 @@ const getBrowserConfig = async (config) => {
     return browserConfig
 }
 
-const launchBrowserContext =  async (browserConfig) => {
+const launchBrowserContext = async (browserConfig) => {
     // load context
     let context
     let browserKey
@@ -145,25 +152,25 @@ const launchBrowserContext =  async (browserConfig) => {
         browserUserDataDir = browserConfig.userDataDir
       }    
     }  
-    console.debug(browserConfig);
+    //console.debug(browserConfig);
     if(!!browserUserDataDir){
-        context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
-      }else{
-        const browser = await playwright.chromium.launch(browserConfig.options)
-        context = await browser.newContext()
+      context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
+    }else{
+      const browser = await playwright.chromium.launch(browserConfig.options)
+      context =  await browser.newContext()
     }
     return context
 }
 
 const closeBrowserContext = async (context) => {
   // https://playwright.dev/docs/api/class-browsercontext#browser-context-close
-  if(!!context){
-    let browser = context.browser()
-    context.close()
-    if(!!browser){
-      browser.close()
+    if(!!context){
+      let browser = context.browser()
+      await context.close()
+      if(!!browser){
+        await  browser.close()
+      }
     }
-  }
 }
 
 //////////////////////////////////////////
@@ -172,7 +179,7 @@ const closeBrowserContext = async (context) => {
 // context pool
 const mapBrowser = new Map();  // browserKey -> browserContext
 
-const getBrowserContext =  async (browserConfig) => {
+const getBrowserContext = async (browserConfig) => {
   // load context
   let context
   let browserKey
@@ -196,13 +203,13 @@ const getBrowserContext =  async (browserConfig) => {
   return context
 }
 
-const openBrowser = async (config) => {
-
-  let browserConfig = await getBrowserConfig(config)
-  let context = await getBrowserContext(browserConfig)
-  await visitSogouDemo({context, browserConfig})
-  // context.close()
-
+const openBrowser = (config) => {
+  (async () => {
+    let browserConfig = await getBrowserConfig(config)
+    let context = await getBrowserContext(browserConfig)
+    await visitSogouDemo({context, browserConfig})
+    await context.close()
+  })()
 }
 
 const frontBrowser = (browserId) => {
@@ -225,7 +232,7 @@ const createBrowser = () => {
     const page = await context.newPage()
     await page.goto('https://www.baidu.com')
     await page.screenshot({path:'test1-baidu.png'})
-    //await browser.close()
+    await browser.close()
   })()
 }
 
@@ -235,6 +242,7 @@ exports = module.exports = {
   browserInit: browserInit,
   getBrowserConfig : getBrowserConfig,
   launchBrowserContext : launchBrowserContext,
+  launchBrowserContext2: launchBrowserContext2,
   closeBrowserContext : closeBrowserContext,
   getBrowserContext : getBrowserContext,
   openBrowser : openBrowser,

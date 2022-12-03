@@ -1,4 +1,5 @@
-const { browserInit, getBrowserConfig, launchBrowserContext, closeBrowserContext} = require('../../src/rpa/browser')
+const log = require('electron-log')
+const { launchBrowserContext2, browserInit, getBrowserConfig, launchBrowserContext, closeBrowserContext} = require('../../src/rpa/browser')
 const { getListData, getDetailData, updateDetailData, getDateTime} = require('../../src/rpa/dataUtil')
 
 // 浏览器帮助类
@@ -8,9 +9,12 @@ const flow_start = ({item, rpaConfig}) => {
     (async () => {
         console.debug("invoke flow_start")
         console.debug(item)
-        browserInit(rpaConfig)
-        let browserConfig = await getBrowserConfig(item['browser'])
-        let context = await launchBrowserContext(browserConfig)
+        // // 浏览器参数初始化
+        // browserInit(rpaConfig)
+        // let browserConfig = await getBrowserConfig(item['browser'])
+        // // 启动浏览器
+        // let context = await launchBrowserContext(browserConfig)
+        let context = await launchBrowserContext2({browserInfo:item['browser'],rpaConfigJson:rpaConfig})
         //console.debug("context")
         //console.debug(context)
         const page = await context.newPage();
@@ -18,7 +22,9 @@ const flow_start = ({item, rpaConfig}) => {
         //console.debug(indexUrl)
         await page.goto(indexUrl)
         //await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
+        // 回写数据到项目明细
         item['update_time'] = getDateTime()
+        log.debug('will update item:'+ JSON.stringify(item))
         await updateDetailData('w3_project_account', item)
         await closeBrowserContext(context)
     })()

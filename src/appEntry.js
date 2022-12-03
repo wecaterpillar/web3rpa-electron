@@ -13,7 +13,6 @@ if(!isMac && !isLinux){
   }
 }
 
-
 // app path
 const fs = require("fs");
 const path = require('path');
@@ -100,6 +99,10 @@ const checkAppConfig = () => {
     appConfig['localApiPort'] = localApiPortDefault
     needWriteConfig = true
   }
+  // download
+  if(!('downloadUrl' in appConfig)){
+    appConfig['downloadUrl'] = 'https://lib-rpa.w3bb.cc'
+  }
   if(needWriteConfig){
     fs.writeFileSync(configPath, JSON.stringify(appConfig))
     log.info("write app config: "+ JSON.stringify(appConfig))
@@ -107,9 +110,15 @@ const checkAppConfig = () => {
 }
 checkAppConfig()
 
+// 关于升级 a.b.c a为大版本, b和c为小版本
+// 大版本收集采用electron升级，小版本升级为热更新
+
 const checkAppLibData = () => {
   // 为后续增量更新，以及更新浏览器和插件做准备
   // 可能需要比较长的时间，需要另起线程处理
+
+  // extract-zip
+
 }
 checkAppLibData()
 
