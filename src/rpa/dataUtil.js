@@ -262,6 +262,12 @@ const loadAccountMnemonic = async (accountItem = {}) => {
     return mnemonic
 }
 
+function getDateTime() {
+    const d_t = new Date()
+    return d_t.getFullYear() + "-" + ("0"+(d_t.getMonth()+1)).slice(-2)+ "-" + ("0"+d_t.getDate()).slice(-2) 
+     + " " + ("0"+d_t.getHours()).slice(-2) + ":" + d_t.getMinutes() + ":" + d_t.getSeconds()
+}
+
 exports = module.exports = {
     dataUtilInit : init,
     getListData : getListData,
@@ -274,5 +280,6 @@ exports = module.exports = {
     loadProjectUserPassword: loadProjectUserPassword,
     loadAccountUserPassword: loadAccountUserPassword,
     loadAccountPrivateKey: loadAccountPrivateKey,
-    loadAccountMnemonic: loadAccountMnemonic
+    loadAccountMnemonic: loadAccountMnemonic,
+    getDateTime: getDateTime
   }

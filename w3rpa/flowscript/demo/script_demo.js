@@ -1,5 +1,5 @@
 const { browserInit, getBrowserConfig, launchBrowserContext, closeBrowserContext} = require('../../src/rpa/browser')
-const { getListData, getDetailData, updateDetailData} = require('../../src/rpa/dataUtil')
+const { getListData, getDetailData, updateDetailData, getDateTime} = require('../../src/rpa/dataUtil')
 
 // 浏览器帮助类
 // 数据帮助类，可考虑调用localAPI来同rpaServer交互
@@ -18,6 +18,8 @@ const flow_start = ({item, rpaConfig}) => {
         //console.debug(indexUrl)
         await page.goto(indexUrl)
         //await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
+        item['update_time'] = getDateTime()
+        await updateDetailData('w3_project_account', item)
         await closeBrowserContext(context)
     })()
 }

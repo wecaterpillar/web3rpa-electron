@@ -69,6 +69,10 @@ const startRpa = () => {
     // 3.2 node status
     sleep(10000)
     updateNodeStatus()
+
+    if(!rpaConfig.isPackaged){
+      
+    }
 }
 
 const restartRpa = () =>{
@@ -286,6 +290,8 @@ const execRpaTask = async (taskConfig) => {
        // project
        item['project'] = projectResult['code']
        item['project_code'] = projectResult['code']
+       // task
+       item['task_id'] = taskConfig['id']
        // 'w3_browser' - browserid
        let browser = await getBrowserInfo({browserId:item['browser_id']})
        if(browser){
@@ -322,7 +328,9 @@ const getSimpleRpaConfig = () => {
   let rpaConfigJson = {}
   rpaConfigJson.isMac = rpaConfig.isMac
   rpaConfigJson.isLinux = rpaConfig.isLinux
+  // 数据目录
   rpaConfigJson.appDataPath = rpaConfig.appDataPath 
+  // local api
   return rpaConfigJson
 }
 
