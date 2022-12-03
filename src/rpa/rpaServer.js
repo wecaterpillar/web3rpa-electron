@@ -58,8 +58,8 @@ const startRpa = () => {
     dataUtil.dataUtilInit(rpaConfig)
 
     // 2.4 browser
-    const browser = require('./browser')
-    browser.browserInit(rpaConfig) 
+    const browserUtil = require('./browserUtil')
+    browserUtil.browserInit(rpaConfig)
 
 
     // 3 rpa 
