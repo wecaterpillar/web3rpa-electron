@@ -22,7 +22,7 @@ app.post('/api/getAccountCryptkey', async (req, res) => {
 
 app.get('/api/getData/:tableKey', async (req, res) => {
   let tableKey = req.params.tableKey
-  let result = await remoteServer.getListDataRemote(tableKey, req.body)
+  let result = await remoteServer.getListDataRemote(tableKey, req.query)
   res.json(result)
 })
 

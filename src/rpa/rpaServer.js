@@ -257,18 +257,15 @@ const execRpaTask = async (taskConfig) => {
   let fileName = scriptResult['name'].slice(0,5)+'-'+encryptMd5(scriptContext).slice(-5)+'.js'
   var scriptFilePath =  path.join(projectFilePath, '/'+fileName);
   if(!fs.existsSync(scriptFilePath)){
-    // todo 可能会替换脚本中开发和生产环境不同的路径
+    // 可能会替换脚本中开发和生产环境不同的路径
+    // 统一开发和部署后目录到 [appDataPath]/dist
+    let destPath = '../../dist/rpa/'
+    scriptContext = scriptContext.replaceAll('../../dev/rpa/',destPath)
+    scriptContext = scriptContext.replaceAll('../../src/rpa/',destPath)
     if(rpaConfig.isPackaged){
       // must copy dist from packaged resource to w3rpa directrion
-      // ../../dev/rpa/ => ../../dist/rpa/
-      scriptContext = scriptContext.replaceAll('../../dev/rpa/','../../dist/rpa/')
-      // ../../src/rpa/ => ../../dist/rpa/
-      scriptContext = scriptContext.replaceAll('../../src/rpa/','../../dist/rpa/')
     }else{
       // 注意下载后代码在w3rpa/flowscript目录下, 同dev和src代码不在同一级目录
-      // ../../dev/rpa/ => ../../../src/rpa/
-      scriptContext = scriptContext.replaceAll('../../dev/rpa/','../../dist/rpa/')
-      scriptContext = scriptContext.replaceAll('../../src/rpa/','../../dist/rpa/')
     }
     fs.writeFileSync(scriptFilePath, scriptContext)
   }

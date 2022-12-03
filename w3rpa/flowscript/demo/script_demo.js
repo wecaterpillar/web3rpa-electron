@@ -1,6 +1,6 @@
 const log = require('electron-log')
-const browserUtil = require('../../src/rpa/browserUtil')
-const dataUtil = require('../../src/rpa/dataUtil')
+const browserUtil = require('../../dist/rpa/browserUtil')
+const dataUtil = require('../../dist/rpa/dataUtil')
 
 // 浏览器帮助类
 // 数据帮助类，可考虑调用localAPI来同rpaServer交互
