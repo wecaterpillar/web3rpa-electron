@@ -6,7 +6,7 @@ const Piscina = require('piscina')
 // 线程池初始化先按默认值，后期考虑根据机器情况做优化
 const piscina = new Piscina()
 
-const { dataUtilInit, getListData, getDetailData, updateDetailData, createDetailData, getRpaPlanTaskList,getBrowserInfo} = require('./dataUtil')
+const dataUtil = require('./dataUtil')
 
 const os = require('os')
 const fs = require('fs')
@@ -45,8 +45,8 @@ const startRpa = () => {
 
     // 2. init
     // 2.1 remote server
-    const { remoteServerInit } = require('../help/remoteServer')
-    remoteServerInit(rpaConfig)
+    let remoteServer = require('../help/remoteServer')
+    remoteServer.remoteServerInit(rpaConfig)
     
     // 2.2 local api
     // localAPI server
@@ -55,11 +55,11 @@ const startRpa = () => {
 
     // 2.3 dataUtil
     rpaConfig['localApi'] = false
-    dataUtilInit(rpaConfig)
+    dataUtil.dataUtilInit(rpaConfig)
 
     // 2.4 browser
-    const { browserInit } = require('./browser')
-    browserInit(rpaConfig)    
+    const browser = require('./browser')
+    browser.browserInit(rpaConfig) 
 
 
     // 3 rpa 
@@ -160,7 +160,7 @@ const updateNodeStatus = () => {
     // 2. query nodeData, if no exist then create 
     if(!!nodeName){
         // 2. query node  查询优先级？ node_name, username,update_by, create_by
-        let nodeResult = await getListData('rpa_runnode',{'node_name':nodeName})
+        let nodeResult = await dataUtil.getListData('rpa_runnode',{'node_name':nodeName})
         //console.debug(nodeResult)    
         if(!!nodeResult){
           if(nodeResult.records.length>0){
@@ -186,7 +186,7 @@ const updateNodeStatus = () => {
        // todo add  ip
       nodeData['status'] = 'running'
       nodeData['update_time'] = getDateTime()
-      await updateDetailData('rpa_runnode', nodeData)
+      await dataUtil.updateDetailData('rpa_runnode', nodeData)
     }
   })
 }
@@ -206,7 +206,7 @@ const checkPlanTask = () => {
   schedule.scheduleJob('0 */2 * * * *', async ()=>{
     log.debug('checkPlanTask:' + new Date());
     // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
-    let result = await getRpaPlanTaskList({runnode: nodeName, status: 'todo'})
+    let result = await dataUtil.getRpaPlanTaskList({runnode: nodeName, status: 'todo'})
     if(result && result.records){
       // for tasks
       for(i in result.records){
@@ -233,13 +233,13 @@ const execRpaTask = async (taskConfig) => {
   // 1 锁定当前任务，防止重复执行
   taskConfig['status'] = 'doing'
   taskConfig['start_time'] = getDateTime()
-  await updateDetailData('rpa_plan_task', taskConfig)
+  await dataUtil.updateDetailData('rpa_plan_task', taskConfig)
 
 
   // 2 获取通用任务
   // 2.1 项目信息
   let projectId = taskConfig['project_id']
-  let projectResult = await getDetailData('w3_project_auto', projectId);
+  let projectResult = await dataUtil.getDetailData('w3_project_auto', projectId);
 
   var projectFilePath = path.join(rpaConfig.appDataPath, '/flowscript/'+projectResult['code'])
   if(!fs.existsSync(projectFilePath)){
@@ -247,7 +247,7 @@ const execRpaTask = async (taskConfig) => {
   }
 
   // 2.2 执行脚本
-  let scriptResult = await getDetailData('rpa_flow_script', taskConfig['script_id']);
+  let scriptResult = await dataUtil.getDetailData('rpa_flow_script', taskConfig['script_id']);
   if(!scriptResult || !'script' in scriptResult){
     log.error('can not get script:' + taskConfig['script_id'])
     return
@@ -261,9 +261,9 @@ const execRpaTask = async (taskConfig) => {
     if(rpaConfig.isPackaged){
       // must copy dist from packaged resource to w3rpa directrion
       // ../../dev/rpa/ => ../../dist/rpa/
-      scriptContext = scriptContext.replaceAll('../../dev/rpa/','../../src/rpa/')
+      scriptContext = scriptContext.replaceAll('../../dev/rpa/','../../dist/rpa/')
       // ../../src/rpa/ => ../../dist/rpa/
-      //scriptContext = scriptContext.replaceAll('../../src/rpa/','../../dist/rpa/')
+      scriptContext = scriptContext.replaceAll('../../src/rpa/','../../dist/rpa/')
     }else{
       // ../../dev/rpa/ => ../../src/rpa/
       scriptContext = scriptContext.replaceAll('../../dev/rpa/','../../src/rpa/')
@@ -279,7 +279,7 @@ const execRpaTask = async (taskConfig) => {
   queryParams['project_id'] = projectId
   // 是否还有其他筛选条件？ 如何防止重复执行？
   // 根据任务配置中确定的最大数量查询
-  let result = await getListData('w3_project_account',queryParams)
+  let result = await dataUtil.getListData('w3_project_account',queryParams)
 
   //console.debug(result)
   // 4 每个账号独立运行（结果更新到项目明细记录中）
@@ -295,7 +295,7 @@ const execRpaTask = async (taskConfig) => {
        // task
        item['task_id'] = taskConfig['id']
        // 'w3_browser' - browserid
-       let browser = await getBrowserInfo({browserId:item['browser_id']})
+       let browser = await dataUtil.getBrowserInfo({browserId:item['browser_id']})
        if(browser){
         browser['browserKey'] = browser['name']
         item['browser'] = browser
@@ -336,7 +336,7 @@ const getSimpleRpaConfig = () => {
   return rpaConfigJson
 }
 
-exports = module.exports = {
-    rpaConfig: rpaConfig,
-    startRpaServer: startRpa
-};
+exports = module.exports = {}
+
+exports.rpaConfig = rpaConfig
+exports.startRpa = startRpa

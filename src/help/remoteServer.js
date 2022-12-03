@@ -1,10 +1,15 @@
 // 远程服务器交互
 const axios = require('axios')
 
+exports = module.exports = {}
+
+
+
 var rpaConfig
 const init = (config) => {
     rpaConfig = config
 }
+exports.remoteServerInit = init
 
 const getLoginToken = async () => {
     let token = await rpaConfig.appCurrentUser['token'] 
@@ -122,6 +127,7 @@ const getRpaServerFormApiBase = () => {
         })
     return result
 }
+exports.getAccountCryptkeyRemote = getAccountCryptkeyRemote
 
 const  getListDataRemote = async (tableKey, queryParams = {}) => {  
     //  https://rpa.w3bb.cc/rpa-server/online/cgform/api/getData/[tableId]
@@ -158,6 +164,7 @@ const  getListDataRemote = async (tableKey, queryParams = {}) => {
         })
     return result
 }
+exports.getListDataRemote = getListDataRemote
 
 const  getDetailDataRemote = async (tableKey, detailId) => {
     // https://rpa.w3bb.cc/rpa-server/online/cgform/api/detail/[tableId]/[id]
@@ -192,6 +199,7 @@ const  getDetailDataRemote = async (tableKey, detailId) => {
         })
     return result
 } 
+exports.getDetailDataRemote = getDetailDataRemote
 
 const updateDetailDataRemote = async (tableKey, data) => {
     // https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/[tableId]?tabletype=1
@@ -223,6 +231,7 @@ const updateDetailDataRemote = async (tableKey, data) => {
     })
     return result
 }
+exports.updateDetailDataRemote = updateDetailDataRemote
 
 const createDetailDataRemote = async (tableKey, data) => {
     // https://rpa.w3bb.cc/rpa-server/online/cgform/api/form/[tableId]?tabletype=1
@@ -254,13 +263,4 @@ const createDetailDataRemote = async (tableKey, data) => {
     })
     return result
 }
-
-
-exports = module.exports = {
-    remoteServerInit : init,
-    getAccountCryptkeyRemote: getAccountCryptkeyRemote,
-    getListDataRemote : getListDataRemote,
-    getDetailDataRemote : getDetailDataRemote,
-    updateDetailDataRemote : updateDetailDataRemote,
-    createDetailDataRemote : createDetailDataRemote
-  }
+exports.createDetailDataRemote = createDetailDataRemote

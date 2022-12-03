@@ -237,16 +237,15 @@ const createBrowser = () => {
 }
 
 
+exports = module.exports = {}
 
-exports = module.exports = {
-  browserInit: browserInit,
-  getBrowserConfig : getBrowserConfig,
-  launchBrowserContext : launchBrowserContext,
-  launchBrowserContext2: launchBrowserContext2,
-  closeBrowserContext : closeBrowserContext,
-  getBrowserContext : getBrowserContext,
-  openBrowser : openBrowser,
-  frontBrowser : frontBrowser,
-  closeBrowser : closeBrowser,
-  createBrowser : createBrowser
-}
+exports.browserInit = browserInit
+exports.getBrowserConfig = getBrowserConfig
+exports.launchBrowserContext = launchBrowserContext
+exports.launchBrowserContext2 = launchBrowserContext2
+exports.closeBrowserContext = closeBrowserContext
+exports.getBrowserContext = getBrowserContext
+exports.openBrowser = openBrowser
+exports.frontBrowser = frontBrowser
+exports.closeBrowser = closeBrowser
+exports.createBrowser = createBrowser

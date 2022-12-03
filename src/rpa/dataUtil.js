@@ -8,6 +8,13 @@ var rpaConfig
 let useLocalApi = true
 let localApiBase 
 
+let remoteServer
+try{
+    remoteServer = require('../help/remoteServer')
+}catch(e){
+}
+
+
 const init = (config) => {
     rpaConfig = config
     if( 'isLocalDev' in rpaConfig){
@@ -25,7 +32,9 @@ const init = (config) => {
 /// commmon API with w3rpa server
 
 const getAccountCryptkey = async (params) => {
-    if(useLocalApi){
+    if(!useLocalApi && remoteServer){
+        return await remoteServer.getAccountCryptkeyRemote(params)
+    }else{
         let url = localApiBase + '/api/getAccountCryptkey?w3'
         let result
         await axios.get(url, params).then(function (response){
@@ -34,15 +43,13 @@ const getAccountCryptkey = async (params) => {
             } 
         })
         return result
-    }else{
-        let {getAccountCryptkeyRemote} = require('../help/remoteServer')
-        return await getAccountCryptkeyRemote(params)
     }
 }
 
-
 const  getListData = async (tableKey, queryParams = {}) => {  
-    if(useLocalApi){
+    if(!useLocalApi && remoteServer){
+        return await remoteServer.getListDataRemote(tableKey, queryParams)
+    }else{
         let url = localApiBase + '/api/getData/'+tableKey
         let result
         await axios.post(url, queryParams).then(function (response){
@@ -51,14 +58,13 @@ const  getListData = async (tableKey, queryParams = {}) => {
             } 
         })
         return result
-    }else{
-        let {getListDataRemote} = require('../help/remoteServer')
-        return await getListDataRemote(tableKey, queryParams)
-    }  
+    }
 }
 
 const  getDetailData = async (tableKey, detailId) => {
-    if(useLocalApi){
+    if(!useLocalApi && remoteServer){
+        return await remoteServer.getDetailDataRemote(tableKey, detailId)
+    }else{
         let url = localApiBase + '/api/detail/'+tableKey+'/'+detailId
         let result
         await axios.get(url).then(function (response){
@@ -67,14 +73,13 @@ const  getDetailData = async (tableKey, detailId) => {
             } 
         })
         return result
-    }else{
-        let {getDetailDataRemote} = require('../help/remoteServer')
-        return await getDetailDataRemote(tableKey, detailId)
     }
 }
 
 const updateDetailData = async (tableKey, data) => {
-    if(useLocalApi){
+    if(!useLocalApi && remoteServer){
+        return await remoteServer.updateDetailDataRemote(tableKey, data)
+    }else{
         let url = localApiBase + '/api/form/'+tableKey
         let result
         await axios.put(url, data).then(function (response){
@@ -83,14 +88,13 @@ const updateDetailData = async (tableKey, data) => {
             } 
         })
         return result
-    }else{
-        let {updateDetailDataRemote} = require('../help/remoteServer')
-        return await updateDetailDataRemote(tableKey, data)
-    }   
+    } 
 }
 
 const createDetailData = async (tableKey, data) => {
-    if(useLocalApi){
+    if(!useLocalApi && remoteServer){
+        return await remoteServer.createDetailDataRemote(tableKey, data)
+    }else{
         let url = localApiBase + '/api/form/'+tableKey
         let result
         await axios.post(url, data).then(function (response){
@@ -99,10 +103,7 @@ const createDetailData = async (tableKey, data) => {
             } 
         })
         return result
-    }else{
-        let {createDetailDataRemote} = require('../help/remoteServer')
-        return await createDetailDataRemote(tableKey, data)
-    }   
+    } 
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -268,18 +269,18 @@ function getDateTime() {
      + " " + ("0"+d_t.getHours()).slice(-2) + ":" + d_t.getMinutes() + ":" + d_t.getSeconds()
 }
 
-exports = module.exports = {
-    dataUtilInit : init,
-    getListData : getListData,
-    getDetailData : getDetailData,
-    updateDetailData : updateDetailData,
-    createDetailData : createDetailData,
-    getRpaPlanTaskList : getRpaPlanTaskList,
-    getBrowserInfo: getBrowserInfo,
-    getAccountInfo: getAccountInfo,
-    loadProjectUserPassword: loadProjectUserPassword,
-    loadAccountUserPassword: loadAccountUserPassword,
-    loadAccountPrivateKey: loadAccountPrivateKey,
-    loadAccountMnemonic: loadAccountMnemonic,
-    getDateTime: getDateTime
-  }
+exports = module.exports = {}
+
+exports.dataUtilInit = init
+exports.getListData = getListData
+exports.getDetailData = getDetailData
+exports.updateDetailData = updateDetailData
+exports.createDetailData = createDetailData
+exports.getRpaPlanTaskList = getRpaPlanTaskList
+exports.getBrowserInfo = getBrowserInfo
+exports.getAccountInfo = getAccountInfo
+exports.loadProjectUserPassword = loadProjectUserPassword
+exports.loadAccountUserPassword = loadAccountUserPassword
+exports.loadAccountPrivateKey = loadAccountPrivateKey
+exports.loadAccountMnemonic = loadAccountMnemonic
+exports.getDateTime = getDateTime

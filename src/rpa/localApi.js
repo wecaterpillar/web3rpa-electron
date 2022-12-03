@@ -3,8 +3,8 @@ const app = express()
 const port = 3500
 
 
-const {getAccountCryptkeyRemote, getListDataRemote, getDetailDataRemote, updateDetailDataRemote, createDetailDataRemote} = require('../help/remoteServer')
-const {openBrowser, frontBrowser, closeBrowser} = require('./browser')
+const remoteServer = require('../help/remoteServer')
+const browser = require('./browser')
 
 
 var bodyParser = require('body-parser')
@@ -16,40 +16,40 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/getAccountCryptkey', async (req, res) => {
-  let key = await getAccountCryptkeyRemote(req.params)
+  let key = await remoteServer.getAccountCryptkeyRemote(req.params)
   res.send(key)
 })
 
 app.get('/api/getData/:tableKey', async (req, res) => {
   let tableKey = req.params.tableKey
-  let result = await getListDataRemote(tableKey, req.body)
+  let result = await remoteServer.getListDataRemote(tableKey, req.body)
   res.json(result)
 })
 
 app.post('/api/getData/:tableKey', async (req, res) => {
   let tableKey = req.params.tableKey
-  let result = await getListDataRemote(tableKey, req.body)
+  let result = await remoteServer.getListDataRemote(tableKey, req.body)
   res.json(result)
 })
 
 app.get('/api/detail/:tableKey/:id', async (req, res) => {
   let tableKey = req.params.tableKey
   let id = req.params.id
-  let result = await getDetailDataRemote(tableKey, id)
+  let result = await remoteServer.getDetailDataRemote(tableKey, id)
   res.json(result)
 })
 
 app.put('/api/form/:tableKey', async (req, res) => {
   let tableKey = req.params.tableKey
   let data = req.body
-  let result = await updateDetailDataRemote(tableKey, data)
+  let result = await remoteServer.updateDetailDataRemote(tableKey, data)
   res.json(result)
 })
 
 app.post('/api/form/:tableKey', async (req, res) => {
   let tableKey = req.params.tableKey
   let data = req.body
-  let result = await createDetailDataRemote(tableKey, data)
+  let result = await remoteServer.createDetailDataRemote(tableKey, data)
   res.json(result)
 })
 
@@ -62,7 +62,7 @@ app.get('/api/browsers', async (req, res) => {
 app.post('/api/browser/open', async (req, res) => {
   // 打开浏览器
   // req.body => json
-  openBrowser({})
+  browser.openBrowser({})
   res.send('createBrowser done')
 })
 
@@ -74,7 +74,7 @@ app.post('/api/browser/front', async (req, res) => {
 // for test
 app.get('/api/browser/open', async (req, res) => {
   // 打开浏览器, test only
-  openBrowser(req.query)
+  browser.openBrowser(req.query)
   res.send('createBrowser done')
 })
 

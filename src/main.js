@@ -2,108 +2,41 @@
 //require('update-electron-app')()
 const log = require('electron-log')
 const { app, ipcMain, Menu, MenuItem, BrowserWindow, shell } = require('electron')
-//const store = require('electron-store');
-// os: mac vs linux vs win
+
 const isMac = process.platform === 'darwin'
 const isLinux = process.platform === 'linux'
+
+if(!isMac && !isLinux){
+  // fix Squirrel.Windows will spawn your app an additional time with some special arguments
+  // https://www.electronforge.io/config/makers/squirrel.windows
+  if (require('electron-squirrel-startup')) {
+    log.warn('you need restart app again. (electron-squirrel-startup)')
+    app.quit()
+  }
+}
+
+// helper
+const helper = require('./help/helper')
+helper.checkDataPath()
 
 // app path
 const fs = require("fs");
 const path = require('path');
 
 let appExecPath = app.getAppPath();
-let appDataPath = appExecPath;
-appDataPath = path.join(appExecPath, 'w3rpa')
+let appDataPath = path.join(appExecPath, 'w3rpa')
 if(app.isPackaged){
   appExecPath = path.dirname(app.getPath('exe'))
   appDataPath = path.join(app.getPath('userData'), 'w3rpa')
 }
-let appLogPath = path.join(appDataPath, 'logs')
-app.setAppLogsPath(appLogPath)
-
 
 // looad config 
-// configFilePath = [appDataPath]/config.json
 const appConfig = {};
-const checkAppConfig = ({config = {}, bWrite = false}) =>{
-  const configPath = path.join(appDataPath, 'config.json');
-  if(fs.existsSync(configPath)){
-    let configStr = fs.readFileSync(configPath);
-    let appConfig2 = JSON.parse(configStr);
-    if(!!appConfig2){
-      Object.assign(appConfig, appConfig2)
-    }
-  }
-  if(!!config){
-    Object.assign(appConfig, config)
-  } 
-  if(bWrite){
-    let nodeName = appConfig['nodeName']
-    if(!!nodeName){
-      delete appConfig['nodeName']
-      fs.writeFileSync(configPath, JSON.stringify(appConfig))
-      appConfig['nodeName'] = nodeName
-    }else{
-      fs.writeFileSync(configPath, JSON.stringify(appConfig))
-    }
-  }
-  log.info(appConfig)
-}
+appConfig.appExecPath = appExecPath
+appConfig.appDataPath = appDataPath
+// configFilePath = [appDataPath]/config.json
+helper.checkAppConfig(appConfig)
 
-
-const resetAppUrl = (appUrl) => {
-  appConfig['appUrl'] = appUrl
-  mainWindow.loadURL(appUrl)
-  //reset token
-  if(rpaConfig.resetLoginToken){
-    rpaConfig.resetLoginToken()
-  }
-  const configPath = path.join(appDataPath, 'config.json');
-  if(fs.existsSync(configPath)){
-    let nodeName = appConfig['nodeName']
-    if(!!nodeName){
-      delete appConfig['nodeName']
-      fs.writeFileSync(configPath, JSON.stringify(appConfig))
-      appConfig['nodeName'] = nodeName
-    }else{
-      fs.writeFileSync(configPath, JSON.stringify(appConfig))
-    }
-  }
-}
-const openUserData = (subDir) => {
-  let openDir = path.join(appDataPath, subDir)
-  if("applogs" === subDir){
-    openDir = app.getPath('logs')
-  }
-  log.debug("open dir:"+openDir)
-  shell.showItemInFolder(openDir)
-}
-
-// will fix with cloudflare certification
-//app.commandLine.appendSwitch('ignore-certificate-errors') // 忽略证书检测
-
-// helper
-const {helperInit, getAppCurrentUser, getValueFromMainWindowStorage} = require('./help/helper')
-
-// RPA server
-const {rpaConfig, startRpaServer} = require("./rpa/rpa")
-const loadRpaServer = () => {
-  // config
-  rpaConfig.appExecPath = appExecPath
-  rpaConfig.appDataPath = appDataPath
-  rpaConfig.appConfig = appConfig
-  rpaConfig.isPackaged = app.isPackaged
-  rpaConfig.isMac = isMac
-  rpaConfig.isLinux = isLinux
-
-  // callback
-  //rpaConfig.callbackCheckAppConfig = checkAppConfig
-  rpaConfig.callbackGetAppCurrentUser = getAppCurrentUser
-  rpaConfig.callbackGetValueFromMainWindowStorage = getValueFromMainWindowStorage
-
-  // start rpa
-  startRpaServer()
-}
 
 var mainWindow
 const createWindow = () => {
@@ -135,17 +68,37 @@ const createWindow = () => {
   //mainWindow.webContents.openDevTools()
 
   // helper init
-  helperInit({mainWindow})
+  helper.helperInit({mainWindow})
 }
 
+// RPA server
+const rpaServer  = require("./rpa/rpaServer")
+const loadRpaServer = () => {
+  // config
+  let rpaConfig = rpaServer.rpaConfig
+  rpaConfig.appExecPath = appExecPath
+  rpaConfig.appDataPath = appDataPath
+  rpaConfig.appConfig = appConfig
+  rpaConfig.isPackaged = app.isPackaged
+  rpaConfig.isMac = isMac
+  rpaConfig.isLinux = isLinux
 
+  // callback
+  //rpaConfig.callbackCheckAppConfig = checkAppConfig
+  rpaConfig.callbackGetAppCurrentUser = helper.getAppCurrentUser
+  rpaConfig.callbackGetValueFromMainWindowStorage = helper.getValueFromMainWindowStorage
+
+  // prepare in helper
+  helper.checkRpaCommonFile(appConfig)
+
+  // start rpa
+  rpaServer.startRpa()
+}
 
 // 这段程序将会在 Electron 结束初始化
 // 和创建浏览器窗口的时候调用
 // 部分 API 在 ready 事件触发后才能使用。
 app.whenReady().then(() => {
-
-  checkAppConfig({bWrite:true})
 
   createWindow()
 
@@ -166,11 +119,37 @@ app.on('window-all-closed', () => {
   if (!isMac) app.quit()
 })
 
-
-
 process.on('uncaughtException', (err) => {
   log.error(err)
 })
+
+const resetAppUrl = (appUrl) => {
+  appConfig['appUrl'] = appUrl
+  mainWindow.loadURL(appUrl)
+  //reset token
+  if(rpaConfig.resetLoginToken){
+    rpaConfig.resetLoginToken()
+  }
+  const configPath = path.join(appDataPath, 'config.json');
+  if(fs.existsSync(configPath)){
+    let nodeName = appConfig['nodeName']
+    if(!!nodeName){
+      delete appConfig['nodeName']
+      fs.writeFileSync(configPath, JSON.stringify(appConfig))
+      appConfig['nodeName'] = nodeName
+    }else{
+      fs.writeFileSync(configPath, JSON.stringify(appConfig))
+    }
+  }
+}
+const openUserData = (subDir) => {
+  let openDir = path.join(appDataPath, subDir)
+  if("applogs" === subDir){
+    openDir = app.getPath('logs')
+  }
+  log.debug("open dir:"+openDir)
+  shell.showItemInFolder(openDir)
+}
 
 const loadMenu = () => {
   let menuTemplate = [

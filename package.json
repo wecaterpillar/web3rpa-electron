@@ -4,8 +4,7 @@
   "version": "1.0.0",
   "author": "gold",
   "description": "Web3 RPA client",
-  "main": "src/appEntry.js",
-  "main2": "src/main.js",
+  "main": "src/main.js",
   "license": "MIT",
   "config": {
     "forge": "./forge.config.js"
