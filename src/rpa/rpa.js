@@ -3,6 +3,7 @@ const schedule = require('node-schedule')
 
 // 线程池
 const Piscina = require('piscina')
+// 线程池初始化先按默认值，后期考虑根据机器情况做优化
 const piscina = new Piscina()
 
 const { dataUtilInit, getListData, getDetailData, updateDetailData, createDetailData, getRpaPlanTaskList,getBrowserInfo} = require('./dataUtil')
