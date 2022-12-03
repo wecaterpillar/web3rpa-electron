@@ -1,7 +1,9 @@
 const log = require('electron-log')
-const playwright = require('playwright')
-log.debug("rpa load playwright")
 const schedule = require('node-schedule')
+
+// 线程池
+const Piscina = require('piscina')
+const piscina = new Piscina()
 
 const { dataUtilInit, getListData, getDetailData, updateDetailData, createDetailData, getRpaPlanTaskList,getBrowserInfo} = require('./dataUtil')
 
@@ -51,6 +53,7 @@ const startRpa = () => {
     let localApi = require("./localApi")
 
     // 2.3 dataUtil
+    rpaConfig['localApi'] = false
     dataUtilInit(rpaConfig)
 
     // 2.4 browser
@@ -267,7 +270,8 @@ const execRpaTask = async (taskConfig) => {
   // 3 根据任务所属项目获取项目账号信息(包含浏览器及代理信息)
   let queryParams = {}
   queryParams['project_id'] = projectId
-  // 是否还有其他筛选条件？
+  // 是否还有其他筛选条件？ 如何防止重复执行？
+  // 根据任务配置中确定的最大数量查询
   let result = await getListData('w3_project_account',queryParams)
 
   //console.debug(result)
@@ -291,11 +295,7 @@ const execRpaTask = async (taskConfig) => {
        // try exec project custmized script
        //let browserConfig = await getBrowserConfig(item['browser'])
        //let browserContext = await getBrowserContext(browserConfig)
-
-       // test dynamic load script file
-       const {flow_start} = require(scriptFilePath) 
-       log.debug({item})
-       flow_start({item})
+       invokeFlowScript({item, scriptFilePath})
     }
   }
   // 5 更新任务状态，解锁任务
@@ -304,6 +304,25 @@ const execRpaTask = async (taskConfig) => {
   //taskConfig['end_time'] = getDateTime()
   //taskConfig['end_time'] = new Date()
   //await updateDetailData('rpa_plan_task', taskConfig)
+}
+
+const invokeFlowScript = ({item, scriptFilePath}) =>{
+
+  piscina.run({item:item, rpaConfig:getSimpleRpaConfig()},{filename: scriptFilePath, name: 'flow_start'} )
+  
+  // test dynamic load script file
+  //  const {flow_start} = require(scriptFilePath) 
+  //  log.debug({item})
+  //  flow_start({item})
+}
+
+const getSimpleRpaConfig = () => {
+  // 复制必要的rpaConfig 配置信息
+  let rpaConfigJson = {}
+  rpaConfigJson.isMac = rpaConfig.isMac
+  rpaConfigJson.isLinux = rpaConfig.isLinux
+  rpaConfigJson.appDataPath = rpaConfig.appDataPath 
+  return rpaConfigJson
 }
 
 exports = module.exports = {

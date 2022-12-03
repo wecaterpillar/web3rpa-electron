@@ -4,8 +4,8 @@ const axios = require('axios')
 
 
 var rpaConfig
-// TODO 
-let useLocalApi = false
+// 默认使用localAPI
+let useLocalApi = true
 let localApiBase 
 
 const init = (config) => {

@@ -1,10 +1,10 @@
+const log = require('electron-log')
 const playwright = require('playwright')
 
 const fs = require("fs")
 const path = require('path')
 
 var rpaConfig
-var browserDefaultConfig = {}
 
 const getBrowserExtensions = (extensions) => {
   // TODO 插件配置检查,以及配置文件是否存在
@@ -64,26 +64,21 @@ const getBrowserUserDataDir = (browserKey) => {
   return
 }
 
-const browserInitDefaultConfig = () => {
-  browserDefaultConfig = {
-    indexUrl: 'https://www.sogou.com',  //主页地址
-    options: {
-      headless: false, //是否无头浏览器
-      ignoreDefaultArgs: ['--enable-automation']
-    }
-  }
-}
-
 const browserInit = (config) => {
   console.debug('browser init')
   rpaConfig = config
-  browserInitDefaultConfig()
   // browser pool init?
 }
 
 const getBrowserConfig = async (config) => {
-    var browserConfig = {}
-    Object.assign(browserConfig, browserDefaultConfig)
+   // default 
+    var browserConfig = {
+      options: {
+        headless: false, //是否无头浏览器
+        ignoreDefaultArgs: ['--enable-automation']
+      }
+    }
+    // will change with deep merge
     if(config){
       Object.assign(browserConfig, config)
     }
@@ -103,8 +98,13 @@ const getBrowserConfig = async (config) => {
 
 
     // check headless
-    browserConfig.options.headless = false
-
+    if(browserConfig && !('options' in browserConfig)){
+      browserConfig.options = {}
+    }
+    if(browserConfig.options && !('headless' in browserConfig.options)){
+       browserConfig.options.headless = false
+    }
+    log.debug('browserConfig='+browserConfig)
     // check extension
     let extensions = getBrowserExtensions()
     if(!!extensions && extensions.length>0){
@@ -129,7 +129,7 @@ const getBrowserConfig = async (config) => {
       browserConfig.userDataDir = browserUserDataDir
     }
 
-    console.debug(browserConfig);
+    log.debug(browserConfig);
 
     return browserConfig
 }

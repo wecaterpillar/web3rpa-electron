@@ -116,7 +116,7 @@ checkAppLibData()
 
 var electronApi = require('./help/electronApi')
 
-
+// will replace by rollup-plugin-copy
 const copyResourceFile = ({destPath, srcPath, fileName}) => {
   let srcFile = path.join(srcPath, fileName)
   let destFile = path.join(destPath, fileName)
@@ -140,7 +140,8 @@ const checkRpaCommonFile = () => {
   // dist/rpa/browser.js
   // dist/rpa/dataUtil.js
   // let appResRoot = path.resolve(...[path.join(appResourcesPath, 'app.asar') , path.join(appResourcesPath, 'app') , process.cwd()])
-  let appResRoot = path.join(appResourcesPath, 'app.asar')
+  //   app.asar.unpacked -> app
+  let appResRoot = path.join(appResourcesPath, 'app.asar.unpacked')
   if(!fs.existsSync(appResRoot)){
     appResRoot = path.join(appResourcesPath, 'app')
   }
