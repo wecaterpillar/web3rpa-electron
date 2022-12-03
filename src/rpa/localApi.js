@@ -4,7 +4,7 @@ const port = 3500
 
 
 const remoteServer = require('../help/remoteServer')
-const browser = require('./browser')
+const browserUtil = require('./browserUtil')
 
 
 var bodyParser = require('body-parser')
@@ -62,7 +62,7 @@ app.get('/api/browsers', async (req, res) => {
 app.post('/api/browser/open', async (req, res) => {
   // 打开浏览器
   // req.body => json
-  browser.openBrowser({})
+  browserUtil.openBrowser({})
   res.send('createBrowser done')
 })
 
@@ -74,7 +74,7 @@ app.post('/api/browser/front', async (req, res) => {
 // for test
 app.get('/api/browser/open', async (req, res) => {
   // 打开浏览器, test only
-  browser.openBrowser(req.query)
+  browserUtil.openBrowser(req.query)
   res.send('createBrowser done')
 })
 

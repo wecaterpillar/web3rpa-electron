@@ -1,5 +1,5 @@
 const log = require('electron-log')
-const browser = require('../../src/rpa/browser')
+const browserUtil = require('../../src/rpa/browserUtil')
 const dataUtil = require('../../src/rpa/dataUtil')
 
 // 浏览器帮助类
@@ -14,7 +14,7 @@ const flow_start = ({item, rpaConfig}) => {
         // let browserConfig = await browser.getBrowserConfig(item['browser'])
         // // 启动浏览器
         // let context = await browser.launchBrowserContext(browserConfig)
-        let context = await browser.launchBrowserContext2({browserInfo:item['browser'],rpaConfigJson:rpaConfig})
+        let context = await browserUtil.launchBrowserContext2({browserInfo:item['browser'],rpaConfigJson:rpaConfig})
         //console.debug("context")
         //console.debug(context)
         const page = await context.newPage();
@@ -26,7 +26,7 @@ const flow_start = ({item, rpaConfig}) => {
         item['update_time'] = getDateTime()
         log.debug('will update item:'+ JSON.stringify(item))
         await dataUtil.updateDetailData('w3_project_account', item)
-        await browser.closeBrowserContext(context)
+        await browserUtil.closeBrowserContext(context)
     })()
 }
 
