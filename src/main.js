@@ -1,6 +1,8 @@
 // Modules to control application life and create native browser window
 //require('update-electron-app')()
 const log = require('electron-log')
+Object.assign(console, log.functions)
+
 const { app, ipcMain, Menu, MenuItem, BrowserWindow, shell } = require('electron')
 
 const isMac = process.platform === 'darwin'

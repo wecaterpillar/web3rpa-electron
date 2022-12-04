@@ -20,13 +20,15 @@ const checkDataPath = () => {
     log.info("appDataPath="+appDataPath)
   
     // check logs
+    // default log path
+    //on Linux: ~/.config/{app name}/logs/{process type}.log
+    //on macOS: ~/Library/Logs/{app name}/{process type}.log
+    //on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\{process type}.log
     let appLogsPath = path.join(appDataPath, 'logs')
     if(!fs.existsSync(appLogsPath)){
       fs.mkdirSync(appLogsPath)
     }
-    app.setPath('logs', appLogsPath)
-    app.setAppLogsPath(appLogsPath)
-    log.transports.file = appLogsPath
+    log.transports.file.resolvePathFn = () => path.join(appDataPath, 'logs' ,'main.log')
   
     // check lib
     let appUserLib = path.join(appDataPath, 'lib')

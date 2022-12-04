@@ -1,6 +1,8 @@
-const log = require('electron-log')
-const schedule = require('node-schedule')
+const log = require('electron-log').create('rpa')
+Object.assign(console, log.functions)
+log.transports.file.resolvePathFn = () => path.join(rpaConfig.appDataPath, 'logs' ,'rpa.log')
 
+const schedule = require('node-schedule')
 // 线程池
 const Piscina = require('piscina')
 // 线程池初始化先按默认值，后期考虑根据机器情况做优化
