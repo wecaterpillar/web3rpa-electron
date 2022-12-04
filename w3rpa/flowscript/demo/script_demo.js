@@ -9,6 +9,7 @@ const flow_start = ({item, rpaConfig}) => {
     (async () => {
         console.debug("invoke flow_start")
         console.debug(item)
+        dataUtil.dataUtilInit(rpaConfig)
         // // 浏览器参数初始化
         // browser.browserInit(rpaConfig)
         // let browserConfig = await browser.getBrowserConfig(item['browser'])
