@@ -28,7 +28,8 @@ const checkDataPath = () => {
     if(!fs.existsSync(appLogsPath)){
       fs.mkdirSync(appLogsPath)
     }
-    log.transports.file.resolvePathFn = () => path.join(appDataPath, 'logs' ,'main.log')
+    log.transports.file.resolvePath = () => path.join(appDataPath, 'logs' ,'main.log')
+    //log.initialize({ preload: true })
   
     // check lib
     let appUserLib = path.join(appDataPath, 'lib')

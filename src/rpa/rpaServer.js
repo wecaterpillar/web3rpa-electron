@@ -1,6 +1,7 @@
 const log = require('electron-log').create('rpa')
 Object.assign(console, log.functions)
-log.transports.file.resolvePathFn = () => path.join(rpaConfig.appDataPath, 'logs' ,'rpa.log')
+log.transports.file.resolvePath = () => path.join(rpaConfig.appDataPath, 'logs' ,'rpa.log')
+//log.initialize({ preload: true })
 
 const schedule = require('node-schedule')
 // 线程池
