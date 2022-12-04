@@ -6,7 +6,6 @@ log.transports.file.resolvePath = () => path.join(rpaConfig.appDataPath, 'logs' 
 const schedule = require('node-schedule')
 // 线程池
 const Piscina = require('piscina')
-// 线程池初始化先按默认值，后期考虑根据机器情况做优化
 const piscina = new Piscina()
 
 const dataUtil = require('./dataUtil')
@@ -311,38 +310,63 @@ const execRpaTask = async (taskConfig) => {
   }
 
   // 3 根据任务所属项目获取项目账号信息(包含浏览器及代理信息)
+  // 线程池初始化先按默认值，后期考虑根据机器情况做优化
+  let threads = taskConfig['threads']
+  if(!threads){
+    threads = piscina.options.maxThreads
+  }
+  let taskPiscina = new Piscina({
+    maxThreads: threads
+  })
   let queryParams = {}
   queryParams['project_id'] = projectId
+  
   // 是否还有其他筛选条件？ 如何防止重复执行？
   // 根据任务配置中确定的最大数量查询
-  let result = await dataUtil.getListData('w3_project_account',queryParams)
+  let pageSize = 100
+  let pageNo = 1
+  while(true){
+    queryParams['pageNo'] = pageNo
+    queryParams['pageSize'] = pageSize
+    let result = await dataUtil.getListData('w3_project_account',queryParams)
 
-  //console.debug(result)
-  // 4 每个账号独立运行（结果更新到项目明细记录中）
-  // 需要增加分页机制
-  if(result && result.records){
-    // for 账号明细
-    for(i in result.records){
-       // 账号处理
-       let item = result.records[i]
-       // project
-       item['project'] = projectResult['code']
-       item['project_code'] = projectResult['code']
-       // task
-       item['task_id'] = taskConfig['id']
-       // 'w3_browser' - browserid
-       let browser = await dataUtil.getBrowserInfo({browserId:item['browser_id']})
-       if(browser){
-        browser['browserKey'] = browser['name']
-        item['browser'] = browser
-       }
-       //console.debug(item)    
-       // try exec project custmized script
-       //let browserConfig = await getBrowserConfig(item['browser'])
-       //let browserContext = await getBrowserContext(browserConfig)
-       invokeFlowScript({item, scriptFilePath})
+    //console.debug(result)
+    // 4 每个账号独立运行（结果更新到项目明细记录中）
+    // 需要增加分页机制
+    if(result && result.records){
+      // for 账号明细
+      for(i in result.records){
+        // 账号处理
+        let item = result.records[i]
+        // project
+        item['project'] = projectResult['code']
+        item['project_code'] = projectResult['code']
+        // task
+        item['task_id'] = taskConfig['id']
+        // 'w3_browser' - browserid
+        let browser = await dataUtil.getBrowserInfo({browserId:item['browser_id']})
+        if(browser){
+          browser['browserKey'] = browser['name']
+          item['browser'] = browser
+        }
+        //console.debug(item)    
+        // try exec project custmized script
+        //let browserConfig = await getBrowserConfig(item['browser'])
+        //let browserContext = await getBrowserContext(browserConfig)
+        invokeFlowScript({item, scriptFilePath, piscina:taskPiscina})
+      }
+      // 检查是否满页，不满则是最后一页
+      if(i<pageSize-1){
+        break;
+      }
+    }else{
+      break
     }
-  }
+    pageNo += 1
+  } //end while
+  
+
+  
   // 5 更新任务状态，解锁任务
   // 异步需要额外方式检查是否已经完成任务
   //taskConfig['status'] = 'done'
@@ -351,9 +375,11 @@ const execRpaTask = async (taskConfig) => {
   //await updateDetailData('rpa_plan_task', taskConfig)
 }
 
-const invokeFlowScript = ({item, scriptFilePath}) =>{
-
-  piscina.run({item:item, rpaConfig:getSimpleRpaConfig()},{filename: scriptFilePath, name: 'flow_start'} )
+const invokeFlowScript = ({item, scriptFilePath, taskPiscina}) =>{
+  if(!taskPiscina){
+    taskPiscina = piscina
+  }
+  taskPiscina.run({item:item, rpaConfig:getSimpleRpaConfig()},{filename: scriptFilePath, name: 'flow_start'} )
   
   // test dynamic load script file
   //  const {flow_start} = require(scriptFilePath) 
