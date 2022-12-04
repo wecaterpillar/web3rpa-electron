@@ -336,7 +336,7 @@ const execRpaTask = async (taskConfig) => {
     // 需要增加分页机制
     if(result && result.records){
       // for 账号明细
-      for(i in result.records){
+      for (let i = 0; i < result.records.length; i++) {
         // 账号处理
         let item = result.records[i]
         // project
@@ -354,7 +354,7 @@ const execRpaTask = async (taskConfig) => {
         // try exec project custmized script
         //let browserConfig = await getBrowserConfig(item['browser'])
         //let browserContext = await getBrowserContext(browserConfig)
-        await invokeFlowScript({item, scriptFilePath, piscina:taskPiscina})
+        await invokeFlowScript({item, scriptFilePath, taskPiscina:taskPiscina})
         sleep(20000)
       }
       // 检查是否满页，不满则是最后一页
@@ -379,16 +379,16 @@ const execRpaTask = async (taskConfig) => {
   //await updateDetailData('rpa_plan_task', taskConfig)
 }
 
-const invokeFlowScript =  async ({item, scriptFilePath, taskPiscina}) =>{
+const invokeFlowScript = ({item, scriptFilePath, taskPiscina}) =>{
   if(!taskPiscina){
     taskPiscina = piscina
   }
-  await taskPiscina.run({item:item, rpaConfig:getSimpleRpaConfig()},{filename: scriptFilePath, name: 'flow_start'} )
+   taskPiscina.run({item: item, rpaConfig: getSimpleRpaConfig()}, {filename: scriptFilePath, name: 'flow_start'})
   
   // test dynamic load script file
-  //  const {flow_start} = require(scriptFilePath) 
+  //  const {flow_start} = require(scriptFilePath)
   //  log.debug({item})
-  //  flow_start({item})
+  //  await flow_start({item,rpaConfig})
 }
 
 const getSimpleRpaConfig = () => {
