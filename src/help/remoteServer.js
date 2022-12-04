@@ -119,7 +119,7 @@ const getRpaServerFormApiBase = () => {
                 resetToken()
             }    
         }).catch(function (error){
-            console.log(error)
+            console.error(error.message)
             if(!!error.response && error.response.status === 401){
                 resetToken()
             }
@@ -156,7 +156,7 @@ const  getListDataRemote = async (tableKey, queryParams = {}) => {
                 //result = getListData(listKey, pageNo, pageSize)
             }    
         }).catch(function (error){
-            console.log(error)
+            console.error(error.message)
             if(!!error.response && error.response.status === 401){
                 resetToken()
             }
@@ -191,7 +191,7 @@ const  getDetailDataRemote = async (tableKey, detailId) => {
                 //result = getListData(listKey, pageNo, pageSize)
             }    
         }).catch(function (error){
-            console.log(error)
+            console.error(error.message)
             if(!!error.response && error.response.status === 401){
                 resetToken()
             }
@@ -223,7 +223,7 @@ const updateDetailDataRemote = async (tableKey, data) => {
             //result = getListData(listKey, pageNo, pageSize)
         }    
     }).catch(function (error){
-        console.log(error)
+        console.error(error.message)
         if(!!error.response && error.response.status === 401){
             resetToken()
         }
@@ -255,7 +255,7 @@ const createDetailDataRemote = async (tableKey, data) => {
             //result = getListData(listKey, pageNo, pageSize)
         }    
     }).catch(function (error){
-        console.log(error)
+        console.error(error.message)
         if(!!error.response && error.response.status === 401){
             resetToken()
         }
