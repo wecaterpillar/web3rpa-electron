@@ -354,15 +354,15 @@ const execRpaTask = async (taskConfig) => {
         // try exec project custmized script
         //let browserConfig = await getBrowserConfig(item['browser'])
         //let browserContext = await getBrowserContext(browserConfig)
-        invokeFlowScript({item, scriptFilePath, piscina:taskPiscina})
+        await invokeFlowScript({item, scriptFilePath, piscina:taskPiscina})
       }
       // 检查是否满页，不满则是最后一页
       if(i<pageSize-1){
-        log.debug("task("+taskConfig['task_id']+") last page")
+        log.debug("task("+taskConfig['id']+") last page")
         break
       }
     }else{
-      log.debug("task("+taskConfig['task_id']+") last page or error")
+      log.debug("task("+taskConfig['id']+") last page or error")
       break
     }
     pageNo += 1
@@ -378,11 +378,11 @@ const execRpaTask = async (taskConfig) => {
   //await updateDetailData('rpa_plan_task', taskConfig)
 }
 
-const invokeFlowScript = ({item, scriptFilePath, taskPiscina}) =>{
+const invokeFlowScript =  async ({item, scriptFilePath, taskPiscina}) =>{
   if(!taskPiscina){
     taskPiscina = piscina
   }
-  taskPiscina.run({item:item, rpaConfig:getSimpleRpaConfig()},{filename: scriptFilePath, name: 'flow_start'} )
+  await taskPiscina.run({item:item, rpaConfig:getSimpleRpaConfig()},{filename: scriptFilePath, name: 'flow_start'} )
   
   // test dynamic load script file
   //  const {flow_start} = require(scriptFilePath) 
