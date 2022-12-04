@@ -111,7 +111,7 @@ const getBrowserConfig = async (config) => {
     if(browserConfig.options && !('headless' in browserConfig.options)){
        browserConfig.options.headless = false
     }
-    log.debug('browserConfig='+browserConfig)
+    log.debug('browserConfig=',browserConfig)
     // check extension
     let extensions = getBrowserExtensions()
     if(!!extensions && extensions.length>0){

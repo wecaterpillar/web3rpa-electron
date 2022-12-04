@@ -177,7 +177,7 @@ const updateNodeStatus = () => {
             if(!!username){
               nodeData['username'] = username  
               console.info(nodeData)
-              await createDetailData('rpa_runnode', nodeData)
+              await dataUtil.createDetailData('rpa_runnode', nodeData)
             }       
           }
         }      
