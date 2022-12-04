@@ -122,9 +122,15 @@ const copyResourceFile = ({destPath, srcPath, fileName}) => {
     // webpack编译前 src   待处理 src => dist
     appResRoot = path.join(appResRoot, 'src')
     if(appResRoot){
+      // js
       copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'rpa/browserUtil.js'})
       copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'rpa/dataUtil.js'})
+
+      // python
+      copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'py/Pipfile'})
       copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'py/rpaTask.py'})
+      copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'py/browserUtil.py'})
+      copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'py/dataUtil.py'})
     }
   }
   exports.checkRpaCommonFile = checkRpaCommonFile 

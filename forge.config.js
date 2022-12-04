@@ -12,7 +12,7 @@ const config = {
       ,'webpack.*.config.js','webpack.rules.js','forge.config.js','README.md'
       ,'w3rpa','ref_rpa','doc','fix_make','dist/native_modules'
     ],
-    asar: false,
+    asar: true,
     // asarUnpack: [
     //   './src/rpa/browser.js',
     //   './src/rpa/dataUtil.js'
