@@ -246,19 +246,25 @@ const execRpaTask = async (taskConfig) => {
     fs.mkdirSync(projectFilePath)
   }
 
-  // 2.2 执行脚本
+  // 2.2 执行脚本下载到本地
+  let scriptFileExt = 'js'
   let scriptResult = await dataUtil.getDetailData('rpa_flow_script', taskConfig['script_id']);
   if(!scriptResult || !'script' in scriptResult){
     log.error('can not get script:' + taskConfig['script_id'])
     return
   }
+  let scriptType = scriptResult['type']
+  if('playwright-py' === scriptType || 'playwright-python' === scriptType){
+    scriptFileExt = 'py'
+  }
   let scriptContext = scriptResult['script']
   //console.debug(scriptResult)
-  let fileName = scriptResult['name'].slice(0,5)+'-'+encryptMd5(scriptContext).slice(-5)+'.js'
+  let fileName = scriptResult['name'].slice(0,5)+'-'+encryptMd5(scriptContext).slice(-5)+'.'+scriptFileExt
   var scriptFilePath =  path.join(projectFilePath, '/'+fileName);
   if(!fs.existsSync(scriptFilePath)){
     // 可能会替换脚本中开发和生产环境不同的路径
     // 统一开发和部署后目录到 [appDataPath]/dist
+    // 目前为js替换规则，py可能规则不一样
     let destPath = '../../dist/rpa/'
     scriptContext = scriptContext.replaceAll('../../dev/rpa/',destPath)
     scriptContext = scriptContext.replaceAll('../../src/rpa/',destPath)
@@ -269,7 +275,37 @@ const execRpaTask = async (taskConfig) => {
     }
     fs.writeFileSync(scriptFilePath, scriptContext)
   }
+  taskConfig['scriptFilePath'] = scriptFilePath
   
+  // TODO 根据scriptFileExt的类型选择进入 nodejs 或者 python 执行任务
+  if('py' === scriptFileExt){
+    // TODO 判断环境是否支持python，支持则调用python的任务处理程序
+    try{      
+      let rpaTaskPy = path.join(rpaConfig.appDataPath, 'dist/py/rpaTask.py')
+      if(fs.existsSync(rpaTaskPy)){
+        const spawn = require('child_process').spawn
+        // TODO 参数准备
+        const py = spawn('python3', [rpaTaskPy, JSON.stringify(taskConfig)])
+        py.stdout.on('data', function(data){
+          console.debug('stdout:'+data)
+        })
+        py.stderr.on('data', function(data){
+          console.debug('stderr:'+data)
+        })
+        py.on('close', function(code){
+          console.debug('python have exist, code='+code)
+        })
+      }     
+    }catch(err){
+      console.warn(err)
+      log.warn(err)
+      taskConfig['status'] = 'fail'
+      taskConfig['end_time'] = getDateTime()
+      taskConfig['last_msg'] = err
+      await dataUtil.updateDetailData('rpa_plan_task', taskConfig)
+    }
+    return
+  }
 
   // 3 根据任务所属项目获取项目账号信息(包含浏览器及代理信息)
   let queryParams = {}

@@ -110,6 +110,9 @@ const copyResourceFile = ({destPath, srcPath, fileName}) => {
     let appResourcesPath = process.resourcesPath
     let appResRoot = path.join(appResourcesPath, 'app.asar.unpacked')
     if(!fs.existsSync(appResRoot)){
+      appResRoot = path.join(appResourcesPath, 'app.asar')
+    }
+    if(!fs.existsSync(appResRoot)){
       appResRoot = path.join(appResourcesPath, 'app')
     }
     if(!fs.existsSync(appResRoot)){
@@ -121,9 +124,16 @@ const copyResourceFile = ({destPath, srcPath, fileName}) => {
     if(appResRoot){
       copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'rpa/browserUtil.js'})
       copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'rpa/dataUtil.js'})
+      copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'py/rpaTask.py'})
     }
   }
   exports.checkRpaCommonFile = checkRpaCommonFile 
+
+// 检查browser和插件
+
+// 检查python环境
+// 是否自动安装python3和pipenv?
+
 /////////////////////////////////////////
 var CryptoJS = require("crypto-js")
 
