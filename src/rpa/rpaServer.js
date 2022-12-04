@@ -315,7 +315,7 @@ const execRpaTask = async (taskConfig) => {
   if(!threads){
     threads = piscina.options.maxThreads
   }
-  log.debug("task("+taskConfig['task_id']+") taskPiscina with maxThreads="+threads)
+  log.debug("task("+taskConfig['id']+") taskPiscina with maxThreads="+threads)
   let taskPiscina = new Piscina({
     maxThreads: threads
   })
@@ -355,6 +355,7 @@ const execRpaTask = async (taskConfig) => {
         //let browserConfig = await getBrowserConfig(item['browser'])
         //let browserContext = await getBrowserContext(browserConfig)
         await invokeFlowScript({item, scriptFilePath, piscina:taskPiscina})
+        sleep(20000)
       }
       // 检查是否满页，不满则是最后一页
       if(i<pageSize-1){
