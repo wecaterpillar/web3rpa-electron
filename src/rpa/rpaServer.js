@@ -315,7 +315,7 @@ const execRpaTask = async (taskConfig) => {
   if(!threads){
     threads = piscina.options.maxThreads
   }
-  log.debug("task("+item['task_id']+") taskPiscina with maxThreads="+threads)
+  log.debug("task("+taskConfig['task_id']+") taskPiscina with maxThreads="+threads)
   let taskPiscina = new Piscina({
     maxThreads: threads
   })
@@ -326,7 +326,6 @@ const execRpaTask = async (taskConfig) => {
   // 根据任务配置中确定的最大数量查询
   let pageSize = 100
   let pageNo = 1
-  let 
   while(true){
     queryParams['pageNo'] = pageNo
     queryParams['pageSize'] = pageSize
@@ -359,11 +358,11 @@ const execRpaTask = async (taskConfig) => {
       }
       // 检查是否满页，不满则是最后一页
       if(i<pageSize-1){
-        log.debug("task("+item['task_id']+") last page")
+        log.debug("task("+taskConfig['task_id']+") last page")
         break
       }
     }else{
-      log.debug("task("+item['task_id']+") last page or error")
+      log.debug("task("+taskConfig['task_id']+") last page or error")
       break
     }
     pageNo += 1
