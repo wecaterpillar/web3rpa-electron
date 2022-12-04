@@ -23,7 +23,7 @@ const init = (config) => {
     if( 'localApi' in rpaConfig){
         localApiBase = rpaConfig['localApi']
     }
-    if(useLocalApi && !localApiBase){
+    if(!localApiBase){
         localApiBase = 'http://localhost:3500'
     }    
 }

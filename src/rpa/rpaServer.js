@@ -399,6 +399,8 @@ const getSimpleRpaConfig = () => {
   // 数据目录
   rpaConfigJson.appDataPath = rpaConfig.appDataPath 
   // local api
+  rpaConfigJson.isLocalDev = true
+  rpaConfigJson.localApi = 'http://localhost:3500'
   return rpaConfigJson
 }
 

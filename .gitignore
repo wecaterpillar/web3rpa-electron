@@ -147,4 +147,5 @@ w3rpa/*
 flowscript/*
 !flowscript/demo/script_demo.js
 
-
+dist
+release
