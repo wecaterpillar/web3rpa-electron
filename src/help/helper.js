@@ -75,8 +75,8 @@ const checkAppConfig = (appConfig) => {
   //   appConfig['downloadUrlBase'] = 'https://lib-rpa.w3bb.cc'
   // }
   if(needWriteConfig){
-    fs.writeFileSync(configPath, JSON.stringify(appConfig))
-    log.info("write app config: "+ JSON.stringify(appConfig))
+    fs.writeFileSync(configPath, JSON.stringify(appConfig, null, 2))
+    log.info("write app config: "+ JSON.stringify(appConfig, null, 2))
   }
 
   // 3. check user data directions

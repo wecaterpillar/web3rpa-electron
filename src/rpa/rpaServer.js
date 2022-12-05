@@ -79,7 +79,11 @@ const startRpa = () => {
 }
 
 const checkBrowserComponent = async () => {
-  schedule.scheduleJob('10 */20 * * * *', async ()=>{
+  let interalMin = rpaConfig.appConfig['rpaCheckBrowserComponentInteralMin']
+  if(!interalMin || interalMin>60){
+    interalMin = 20
+  }
+  schedule.scheduleJob(`10 */${interalMin} * * * *`, async ()=>{
   
   log.info("check browser component")
   let downloadList = []
@@ -151,7 +155,11 @@ const getUsername = async () => {
 }
 
 const updateNodeStatus = () => {
-  schedule.scheduleJob('10 */1 * * * *', async ()=>{
+  let interalMin = rpaConfig.appConfig['rpaUpdateNodeStatusInteralMin']
+  if(!interalMin || interalMin>60){
+    interalMin = 2
+  }
+  schedule.scheduleJob(`10 */${interalMin} * * * *`, async ()=>{
     console.debug('updateNodeStatus:' + new Date());
     let nodeData
     // 1. get nodeName from config
@@ -247,7 +255,11 @@ const checkPlanTask = () => {
       nodeName = fs.readFileSync(nodeNamePath).toString();
     }
   }
-  schedule.scheduleJob('0 */5 * * * *', async ()=>{
+  let interalMin = rpaConfig.appConfig['rpaCheckTaskInteralMin']
+  if(!interalMin || interalMin>60){
+    interalMin = 10
+  }
+  schedule.scheduleJob(`0 */${interalMin} * * * *`, async ()=>{
     log.debug('checkPlanTask:' + new Date());
     // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
     let result = await dataUtil.getRpaPlanTaskList({runnode: nodeName, status: 'todo'})
