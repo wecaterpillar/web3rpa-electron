@@ -79,7 +79,7 @@ const startRpa = () => {
 }
 
 const checkBrowserComponent = async () => {
-  schedule.scheduleJob('10 */2 * * * *', async ()=>{
+  schedule.scheduleJob('10 */20 * * * *', async ()=>{
   
   log.info("check browser component")
   let downloadList = []
@@ -247,7 +247,7 @@ const checkPlanTask = () => {
       nodeName = fs.readFileSync(nodeNamePath).toString();
     }
   }
-  schedule.scheduleJob('0 */2 * * * *', async ()=>{
+  schedule.scheduleJob('0 */5 * * * *', async ()=>{
     log.debug('checkPlanTask:' + new Date());
     // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
     let result = await dataUtil.getRpaPlanTaskList({runnode: nodeName, status: 'todo'})
