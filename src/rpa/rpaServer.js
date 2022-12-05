@@ -63,25 +63,67 @@ const startRpa = () => {
     const browserUtil = require('./browserUtil')
     browserUtil.browserInit(rpaConfig)
 
-
     // 3 rpa 
     // 3.1 node status
     sleep(10000)
     // 先调用心跳检查更新token
     updateNodeStatus()
 
-    // 3.2 check task
+    // 3.2 check download list
+    checkBrowserComponent()
+
+    // 3.3 check task
     sleep(10000)
     checkPlanTask()
 
-    if(!rpaConfig.isPackaged){
-      
+}
+
+const checkBrowserComponent = async () => {
+  schedule.scheduleJob('10 */2 * * * *', async ()=>{
+  
+  log.info("check browser component")
+  let downloadList = []
+  // 不支持下载URL有空格，请提前处理 %20f
+  let result =await dataUtil.getListData('w3_browser_component',{})
+  if(result && result.records){
+    for(i in result.records){
+      let item = result.records[i]
+      let type = item['type']
+      let name = item['name']
+       // 根据操作系统筛选浏览器，注意需要命名规则
+      if('browser' === type){
+        if(rpaConfig.isMac){
+          if(!name.endsWith('-mac')){
+            continue
+          }
+        }else if(rpaConfig.isLinux){
+
+        }else{
+          if(!name.endsWith('-win')){
+            continue
+          }
+        }
+      }
+      // 检查目标目录或文件是否已存在
+      let dist = item['filepath']
+      if(fs.existsSync(path.join(rpaConfig.appConfig.appDataPath, dist))){
+        continue
+      }
+      let downloadUrl = item['download_url']      
+      downloadList.push({name, dist, downloadUrl})
     }
+    // invoke download
+    if(downloadList && downloadList.length>0){
+      const helper = require('../help/helper')
+      helper.addDownloads(downloadList)
+    }
+  } // end if
+  })
 }
 
 const restartRpa = () =>{
-  log.debug('restart rpa ...')
-  console.debug(rpaConfig)
+  log.debug('restart rpa ... unsupport')
+  //console.debug(rpaConfig)
 }
 
 const callbackGetAppCurrentUser = async () => {
