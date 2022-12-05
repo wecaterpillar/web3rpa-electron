@@ -274,6 +274,7 @@ const checkPlanTask = () => {
      
     }
     //console.debug(result)
+    testWorker()
 }); 
 }
 
@@ -437,12 +438,25 @@ const invokeFlowScript = ({item, scriptFilePath, taskPiscina}) =>{
   if(!taskPiscina){
     taskPiscina = piscina
   }
-   taskPiscina.run({item: item, rpaConfig: getSimpleRpaConfig()}, {filename: scriptFilePath, name: 'flow_start'})
+   taskPiscina.run({item: item, rpaConfig: getSimpleRpaConfig()},
+    {filename: scriptFilePath, name: 'flow_start'})
   
   // test dynamic load script file
   //  const {flow_start} = require(scriptFilePath)
   //  log.debug({item})
   //  await flow_start({item,rpaConfig})
+}
+
+const testWorker = () => {
+  let tryTest = rpaConfig.appConfig['tryTest']
+  if(!tryTest){
+    return
+  }
+  let demoFile = 'flowscript/demo/script_demo.js'
+  let scriptFilePath = path.join(rpaConfig.appDataPath, demoFile)
+  console.debug(scriptFilePath)
+  piscina.run({item: {"borwserKey":"demo11"}, rpaConfig: getSimpleRpaConfig()},
+  {filename: scriptFilePath, name: 'flow_start'})
 }
 
 const getSimpleRpaConfig = () => {
