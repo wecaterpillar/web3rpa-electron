@@ -157,11 +157,11 @@ const loadMenu = () => {
             openUserData('logs')
           }
         },
-        { label: 'App Logs',
-        click: function() {
-          openUserData('applogs')
-        }
-      },
+        // { label: 'App Logs',
+        //   click: function() {
+        //     openUserData('applogs')
+        //   }
+        // },
         { label: 'Browser UserData',
           click: function() {
             openUserData('userData')
