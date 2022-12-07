@@ -129,9 +129,9 @@ const checkAppConfig = (appConfig) => {
     
     let basePath
     let appResourcesPath = process.resourcesPath
-    basePath = fs.join(appResourcesPath,'app.asar')
+    basePath = path.join(appResourcesPath,'app.asar')
     if(!fs.existsSync(basePath)){
-      basePath = fs.join(appResourcesPath,'app')
+      basePath = path.join(appResourcesPath,'app')
     }
     if(fs.existsSync(path.join(basePath, 'node_modules'))){
       modulesPath = path.join(basePath, 'node_modules')
