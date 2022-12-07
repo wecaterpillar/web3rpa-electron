@@ -120,6 +120,27 @@ const checkAppConfig = (appConfig) => {
     fs.mkdirSync(browserUserData)
     log.debug("mkdir "+ browserUserData)
   }    
+
+  // 3.4 softlink to node_modules
+  // [appExePath]/Resources/(app.asar|app)/node_modules => [appDataPath]/node_modules
+  let modulesPath = path.resolve('node_modules')
+  if(!modulesPath || !fs.existsSync(modulesPath)){
+    modulesPath = null
+    
+    let basePath
+    let appResourcesPath = process.resourcesPath
+    basePath = fs.join(appResourcesPath,'app.asar')
+    if(!fs.existsSync(basePath)){
+      basePath = fs.join(appResourcesPath,'app')
+    }
+    if(fs.existsSync(path.join(basePath, 'node_modules'))){
+      modulesPath = path.join(basePath, 'node_modules')
+    }
+  }
+  log.debug(modulesPath)
+  if(!!modulesPath){
+    fs.symlinkSync(modulesPath, path.join(appDataPath, 'node_moudules'))
+  }
 }
 exports.checkAppConfig = checkAppConfig
 
@@ -214,7 +235,7 @@ exports.addDownloads = addDownloads
 
 const checkExistDistFile = async ({distFile}) => {
   // 检查目录文件是否存在
-  let appDataPath =ngetAppDataPath()
+  let appDataPath =getAppDataPath()
   if(fs.existsSync(path.join(appDataPath, distFile))){
      return true
   }
@@ -237,7 +258,8 @@ const extractZipFile = async ({zipFile}) => {
         fs.mkdirSync(basePath)
       }
       let distPath = basePath
-      let filename = fs.getFilename(zipFile)
+      let filename = path.basename(zipFile)
+      // 解压规则，假定除app和exe外其他zip都包含同zip文件名的目录，可能需要调整优化
       if(!filename.endsWith('.app.zip') && !filename.endsWith('.exe.zip')){
         distPath = path.join(basePath, filename.replace('.zip',''))
         if(!fs.existsSync(distPath)){

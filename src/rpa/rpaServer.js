@@ -96,6 +96,7 @@ const checkBrowserComponent = async () => {
   // 不支持下载URL有空格，请提前处理 %20f
   let result =await dataUtil.getListData('w3_browser_component',{})
   if(result && result.records){
+    let helper = require('../help/helper')
     for(i in result.records){
       let item = result.records[i]
       let type = item['type']
@@ -125,7 +126,6 @@ const checkBrowserComponent = async () => {
     }
     // invoke download
     if(downloadList && downloadList.length>0){
-      const helper = require('../help/helper')
       helper.addDownloads(downloadList)
     }
   } // end if
@@ -445,6 +445,8 @@ const invokeFlowScript = ({item, scriptFilePath, taskPiscina}) =>{
   if(!taskPiscina){
     taskPiscina = piscina
   }
+  // 运行环境子任务不能载入模块问题，需要引用父进程的软链接或者新建软链接到node_modules
+  // --preserve-symlinks
    taskPiscina.run({item: item, rpaConfig: getSimpleRpaConfig()},
     {filename: scriptFilePath, name: 'flow_start'})
   
