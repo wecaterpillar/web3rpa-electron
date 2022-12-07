@@ -24,13 +24,13 @@ const flow_start = async ({item, rpaConfig}) => {
         //await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
         // 回写数据到项目明细
         item['update_time'] = dataUtil.getDateTime()
-        context.addCookies({'update_time':item['update_time']})
         log.debug('will update item:'+ JSON.stringify(item))
         if('id' in item){
             await dataUtil.updateDetailData('w3_project_account', item)
         }
-        
         await browserUtil.closeBrowserContext(context)
+        log.debug('task flow complete')
+        return 0
 }
 
 exports = module.exports = {

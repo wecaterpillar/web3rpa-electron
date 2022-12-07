@@ -178,36 +178,43 @@ const launchBrowserContext = async (browserConfig) => {
     }catch(err){
       log.error(err)
     }finally{
-      log.debug('lauch context:', context.pages)
+      log.debug('lauch context with cookie:', JSON.stringify(context.cookies(),null,2))
     }
 
     // prepare for context event
     if(context){
-      context.on('close', (browserContext) =>{
-        // 关闭前需要保存数据
-        log.debug('context close, try to save cookie')
-        if(browserContext){
-          try{
-            log.debug('cookies:'+JSON.stringify(browserContext.cookies(),null,2))
-          }catch(err){
-            log.warn(err)
-          }         
-        }
+      context.on('close', async (context2) =>{
+         // nothing 
       })
     }
     return context
 }
 
+const actionBeforeCloseContext = async (console) => {
+  try{
+    // 关闭前需要保存数据
+    log.debug('context close, try to save cookie')
+    log.debug('cookies:'+JSON.stringify(console.cookies(),null,2))
+  }catch(err){
+    log.warn(err)
+  }finally{
+  }
+}
+
 const closeBrowserContext = async (context) => {
   // https://playwright.dev/docs/api/class-browsercontext#browser-context-close
-  // save cookie before save
+  try{
     if(!!context){
       let browser = context.browser()
+      await actionBeforeCloseContext(context)
       await context.close()
       if(!!browser){
         await  browser.close()
       }
     }
+  }catch(err){
+    log.warn(err)
+  }
 }
 
 //////////////////////////////////////////

@@ -274,14 +274,14 @@ const checkPlanTask = () => {
       // for tasks
       for(i in result.records){
          // 调用 任务处理
-        execRpaTask(result.records[i])
+        await execRpaTask(result.records[i])
         // sleep
         sleep(30000)
       }
      
     }
     //console.debug(result)
-    testWorker()
+    await testWorker()
 }); 
 }
 
@@ -441,13 +441,13 @@ const execRpaTask = async (taskConfig) => {
   //await updateDetailData('rpa_plan_task', taskConfig)
 }
 
-const invokeFlowScript = ({item, scriptFilePath, taskPiscina}) =>{
+const invokeFlowScript = async ({item, scriptFilePath, taskPiscina}) =>{
   if(!taskPiscina){
     taskPiscina = piscina
   }
   // 运行环境子任务不能载入模块问题，需要引用父进程的软链接或者新建软链接到node_modules
   // --preserve-symlinks
-   taskPiscina.run({item: item, rpaConfig: getSimpleRpaConfig()},
+  await taskPiscina.run({item: item, rpaConfig: getSimpleRpaConfig()},
     {filename: scriptFilePath, name: 'flow_start'})
   
   // test dynamic load script file
@@ -456,7 +456,7 @@ const invokeFlowScript = ({item, scriptFilePath, taskPiscina}) =>{
   //  await flow_start({item,rpaConfig})
 }
 
-const testWorker = () => {
+const testWorker = async () => {
   let tryTest = rpaConfig.appConfig['tryTest']
   if(!tryTest){
     return
@@ -464,7 +464,7 @@ const testWorker = () => {
   let demoFile = 'flowscript/demo/script_demo.js'
   let scriptFilePath = path.join(rpaConfig.appDataPath, demoFile)
   console.debug(scriptFilePath)
-  piscina.run({item: {"browser":{"browserKey":"demo01"}}, rpaConfig: getSimpleRpaConfig()},
+  await piscina.run({item: {"browser":{"browserKey":"demo01"}}, rpaConfig: getSimpleRpaConfig()},
   {filename: scriptFilePath, name: 'flow_start'})
 }
 
