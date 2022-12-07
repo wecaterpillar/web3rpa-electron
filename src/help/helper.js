@@ -139,7 +139,7 @@ const checkAppConfig = (appConfig) => {
   }
   log.debug(modulesPath)
   if(!!modulesPath){
-    fs.symlinkSync(modulesPath, path.join(appDataPath, 'node_moudules'))
+    fs.symlinkSync(modulesPath, path.join(appDataPath, 'node_modules'))
   }
 }
 exports.checkAppConfig = checkAppConfig
