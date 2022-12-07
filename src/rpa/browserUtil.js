@@ -184,17 +184,17 @@ const launchBrowserContext = async (browserConfig) => {
     // prepare for context event
     if(context){
       context.on('close', (browserContext) =>{
+        // 关闭前需要保存数据
         log.debug('context close, try to save cookie')
         if(browserContext){
           try{
-            log.debug('cookies:'+browserContext.cookies())
+            log.debug('cookies:'+JSON.stringify(browserContext.cookies(),null,2))
           }catch(err){
             log.warn(err)
           }         
         }
       })
     }
-
     return context
 }
 
