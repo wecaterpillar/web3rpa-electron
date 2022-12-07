@@ -295,10 +295,17 @@ const handleDownload = ({mainWindow, appDataPath}) => {
       return
     }
     //拼接要存储的路径
+    let savePath
     let dist = downloadingItem['dist']
-    var zipFile = path.join(appDataPath, dist, '..', item.getFilename())
+    // 需要先判断是否为zip文件，若为zip择改为.zip.download 完成后改回.zip 避免解压不完整文件
+    let filename = item.getFilename()
+    if(filename.endsWith('.zip')){
+      savePath = path.join(appDataPath, dist, '..', filename+'.download')
+    }else{
+      savePath = path.join(appDataPath, dist)
+    }
     //设置存储路径 否则会弹出对话框
-    item.setSavePath(zipFile)
+    item.setSavePath(savePath)
     //监听下载过程
     item.on('updated', (event, state) => {
         //下载意外中断，可以恢复
@@ -318,16 +325,25 @@ const handleDownload = ({mainWindow, appDataPath}) => {
             }
         }
     })
-  
     //监听完成
     item.once('done', (event, state) => {
         // 下载完成后处理
         console.log("done:"+item.getFilename())
+        // 如为.zip.download需要改成为.zip
+        let savePath =item.getSavePath()
         let filename = item.getFilename()
-        if(filename.endsWith('.zip')){
-          try{
-            let savePath =item.getSavePath()
-            extractZipFile({zipFile:savePath})
+        let zipFile
+        if(savePath.endsWith('.zip.download')){
+          //rename
+          zipFile = savePath.substring(0, savePath.length-9)
+          log.debug('zipFile='+zipFile)
+          fs.renameSync(savePath, zipFile)
+        }else if(savePath.endsWith('.zip')){
+          zipFile = savePath
+        }
+        if(zipFile && filename.endsWith('.zip')){
+          try{     
+            extractZipFile({zipFile:zipFile})
           }catch(err){
             log.warn(err)
           }       
