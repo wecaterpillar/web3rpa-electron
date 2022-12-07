@@ -20,7 +20,7 @@ const path = require('path');
 
 // 1. load config and check 
 // helper
-const helper = require('./help/helper')
+const helper = require('../help/helper')
 
 const appConfig = {}
 let appDataPath = helper.getAppDataPath()
@@ -65,7 +65,7 @@ const createWindow = () => {
 }
 
 // 3. RPA server
-const rpaServer  = require("./rpa/rpaServer")
+const rpaServer  = require("../rpa/rpaServer")
 const loadRpaServer = () => {
   // config
   let rpaConfig = rpaServer.rpaConfig
