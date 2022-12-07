@@ -4,6 +4,8 @@ const playwright = require('playwright')
 const fs = require("fs")
 const path = require('path')
 
+const dataUtil = require('./dataUtil')
+
 var rpaConfig
 
 const launchBrowserContext2 = async ({browserInfo, rpaConfigJson}) => {
@@ -159,11 +161,26 @@ const launchBrowserContext = async (browserConfig) => {
       const browser = await playwright.chromium.launch(browserConfig.options)
       context =  await browser.newContext()
     }
+    // prepare for context event
+    if(context){
+      context.on('close', (browserContext) =>{
+        log.debug('context close, try to save cookie')
+        if(browserContext){
+          try{
+            log.debug(browserContext.cookies())
+          }catch(err){
+            log.warn(err)
+          }         
+        }
+      })
+    }
+
     return context
 }
 
 const closeBrowserContext = async (context) => {
   // https://playwright.dev/docs/api/class-browsercontext#browser-context-close
+  // save cookie before save
     if(!!context){
       let browser = context.browser()
       await context.close()

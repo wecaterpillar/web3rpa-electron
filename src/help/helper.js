@@ -123,24 +123,28 @@ const checkAppConfig = (appConfig) => {
 
   // 3.4 softlink to node_modules
   // [appExePath]/Resources/(app.asar|app)/node_modules => [appDataPath]/node_modules
-  let modulesPath = path.resolve('node_modules')
-  if(!modulesPath || !fs.existsSync(modulesPath)){
-    modulesPath = null
-    
-    let basePath
-    let appResourcesPath = process.resourcesPath
-    basePath = path.join(appResourcesPath,'app.asar')
-    if(!fs.existsSync(basePath)){
-      basePath = path.join(appResourcesPath,'app')
+  let symlinkMoudlesPath = path.join(appDataPath, 'node_modules')
+  if(!fs.existsSync(symlinkMoudlesPath)){
+    let modulesPath = path.resolve('node_modules')
+    if(!modulesPath || !fs.existsSync(modulesPath)){
+      modulesPath = null
+      
+      let basePath
+      let appResourcesPath = process.resourcesPath
+      basePath = path.join(appResourcesPath,'app.asar')
+      if(!fs.existsSync(basePath)){
+        basePath = path.join(appResourcesPath,'app')
+      }
+      if(fs.existsSync(path.join(basePath, 'node_modules'))){
+        modulesPath = path.join(basePath, 'node_modules')
+      }
     }
-    if(fs.existsSync(path.join(basePath, 'node_modules'))){
-      modulesPath = path.join(basePath, 'node_modules')
+    log.debug(modulesPath)
+    if(!!modulesPath){
+      fs.symlinkSync(modulesPath, symlinkMoudlesPath)
     }
   }
-  log.debug(modulesPath)
-  if(!!modulesPath){
-    fs.symlinkSync(modulesPath, path.join(appDataPath, 'node_modules'))
-  }
+  
 }
 exports.checkAppConfig = checkAppConfig
 

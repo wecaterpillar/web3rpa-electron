@@ -10,7 +10,8 @@ const config = {
     ignore: [
       '.env','.idea','.vscode','yarn.lock','.yarnclean','.gitignore','web3rpa-electron.iml'
       ,'webpack.*.config.js','webpack.rules.js','forge.config.js','README.md'
-      ,'/w3rpa','/ref_rpa','doc','/fix_make','dist/native_modules','/release'
+      ,'/w3rpa','/ref_rpa','doc','/fix_make','/release'
+      ,'/dist','/userData','/lib','/logs','/flowscript','/appLoginUser','/nodeName'   // 防止老版本垃圾数据进入打包
     ],
     asar: false,
     // asarUnpack: [
