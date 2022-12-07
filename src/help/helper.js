@@ -237,7 +237,7 @@ const addDownloads = (addDownloads) => {
 exports.addDownloads = addDownloads
 
 
-const checkExistDistFile = async ({distFile}) => {
+const checkExistDistFile =  ({distFile}) => {
   // 检查目录文件是否存在
   let appDataPath =getAppDataPath()
   if(fs.existsSync(path.join(appDataPath, distFile))){
@@ -246,10 +246,8 @@ const checkExistDistFile = async ({distFile}) => {
   // 检查是否存在zip待解压？
   let zipFile = path.join(appDataPath, distFile+'.zip')
   if(fs.existsSync(zipFile)){
-    await extractZipFile({zipFile})
-    if(fs.existsSync(path.join(appDataPath, distFile))){
-      return true
-    }
+    extractZipFile({zipFile})
+    return true
   }
   return false
 }

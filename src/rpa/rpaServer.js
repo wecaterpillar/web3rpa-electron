@@ -76,6 +76,9 @@ const startRpa = () => {
     updateNodeStatus()
 
     // 3.2 check download list
+    // 先调用一次后再启动定时任务
+    // 下载方法已过滤重复URL下载
+    checkBrowserComponentJob()
     checkBrowserComponent()
 
     // 3.3 check task
@@ -89,8 +92,9 @@ const checkBrowserComponent = async () => {
   if(!interalMin || interalMin>60){
     interalMin = 20
   }
-  schedule.scheduleJob(`10 */${interalMin} * * * *`, async ()=>{
-  
+  schedule.scheduleJob(`10 */${interalMin} * * * *`, checkBrowserComponentJob)
+}
+const checkBrowserComponentJob = async () => {
   log.info("check browser component")
   let downloadList = []
   // 不支持下载URL有空格，请提前处理 %20f
@@ -129,8 +133,9 @@ const checkBrowserComponent = async () => {
       helper.addDownloads(downloadList)
     }
   } // end if
-  })
 }
+
+
 
 const restartRpa = () =>{
   log.debug('restart rpa ... unsupport')
