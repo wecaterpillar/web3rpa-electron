@@ -127,20 +127,15 @@ const resetAppUrl = (appUrl) => {
   appConfig['appUrl'] = appUrl
   mainWindow.loadURL(appUrl)
   //reset token
-  if(rpaConfig.resetLoginToken){
-    rpaConfig.resetLoginToken()
-  }
-  const configPath = path.join(appDataPath, 'config.json');
-  if(fs.existsSync(configPath)){
-    let nodeName = appConfig['nodeName']
-    if(!!nodeName){
-      delete appConfig['nodeName']
-      fs.writeFileSync(configPath, JSON.stringify(appConfig))
-      appConfig['nodeName'] = nodeName
-    }else{
-      fs.writeFileSync(configPath, JSON.stringify(appConfig))
+  try{
+    if(rpaServer.resetLoginToken){
+      rpaServer.resetLoginToken()
     }
+  }catch(err){
+    log.warn(err)
   }
+  helper.saveAppConfig(appConfig)
+  const configPath = path.join(appDataPath, 'config.json');
 }
 const openUserData = (subDir) => {
   let openDir = path.join(appDataPath, subDir)

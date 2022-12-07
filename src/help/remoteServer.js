@@ -41,6 +41,7 @@ const resetToken = async () => {
     delete axios.defaults.headers.common['authorization']
     delete axios.defaults.headers.common['x-access-token']
 }
+exports.resetToken = resetToken
 
 // authorization 
 // = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2Njg5NDgwODQsInVzZXJuYW1lIjoiYWRtaW4ifQ.tZ9SxjNUGtzGK4n4cAu6wTf8zoFxrhHJIY1qE7IKxzU'

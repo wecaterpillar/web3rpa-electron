@@ -28,6 +28,27 @@ const getAppDataPath = () => {
 
 exports.getAppDataPath = getAppDataPath
 
+const saveAppConfig = (appConfig) => {
+  let appDataPath  = appConfig.appDataPath
+  if(!appDataPath){
+    appDataPath = getAppDataPath(app)
+  } 
+  const configPath = path.join(appDataPath, 'config.json');
+
+  // remove some properties??
+  let nodeName = appConfig['nodeName']
+  if(!!nodeName){
+    delete appConfig['nodeName']
+    fs.writeFileSync(configPath, JSON.stringify(appConfig, null, 2))
+    appConfig['nodeName'] = nodeName
+  }else{
+    fs.writeFileSync(configPath, JSON.stringify(appConfig, null, 2))
+  }
+  log.info("write app config: "+ JSON.stringify(appConfig, null, 2))
+
+}
+exports.saveAppConfig = saveAppConfig
+
 const checkAppConfig = (appConfig) => {
   // 1. check app data path and logs path
   let appDataPath  = appConfig.appDataPath
@@ -75,8 +96,7 @@ const checkAppConfig = (appConfig) => {
   //   appConfig['downloadUrlBase'] = 'https://lib-rpa.w3bb.cc'
   // }
   if(needWriteConfig){
-    fs.writeFileSync(configPath, JSON.stringify(appConfig, null, 2))
-    log.info("write app config: "+ JSON.stringify(appConfig, null, 2))
+    saveAppConfig(appConfig)
   }
 
   // 3. check user data directions
@@ -192,12 +212,50 @@ const addDownloads = (addDownloads) => {
 exports.addDownloads = addDownloads
 
 
+const checkExistDistFile = async ({distFile}) => {
+  // 检查目录文件是否存在
+  let appDataPath =ngetAppDataPath()
+  if(fs.existsSync(path.join(appDataPath, distFile))){
+     return true
+  }
+  // 检查是否存在zip待解压？
+  let zipFile = path.join(appDataPath, distFile+'.zip')
+  if(fs.existsSync(zipFile)){
+    await extractZipFile({zipFile})
+    if(fs.existsSync(path.join(appDataPath, distFile))){
+      return true
+    }
+  }
+  return false
+}
+exports.checkExistDistFile = checkExistDistFile
+
+const extractZipFile = async ({zipFile}) => {
+    try{  
+      let basePath = path.join(zipFile,'..')
+      if(!fs.existsSync(basePath)){
+        fs.mkdirSync(basePath)
+      }
+      let distPath = basePath
+      let filename = fs.getFilename(zipFile)
+      if(!filename.endsWith('.app.zip') && !filename.endsWith('.exe.zip')){
+        distPath = path.join(basePath, filename.replace('.zip',''))
+        if(!fs.existsSync(distPath)){
+          fs.mkdirSync(distPath)
+        }
+      }   
+      const extract = require('extract-zip')
+      await extract(zipFile, {dir: distPath}) 
+    }catch(err){
+      log.warn(err)
+    }  
+}
+
 const handleDownload = ({mainWindow, appDataPath}) => {
   if(!appDataPath){
     appDataPath = getAppDataPath()
   }
   mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
-
     // 对比清单是否需要后台下载？
     let downloadUrl = item.getURL()
     let downloadingItem
@@ -242,26 +300,16 @@ const handleDownload = ({mainWindow, appDataPath}) => {
         // 下载完成后处理
         console.log("done:"+item.getFilename())
         let filename = item.getFilename()
-        if(!filename.endsWith('.zip')){
-          return
+        if(filename.endsWith('.zip')){
+          try{
+            let savePath =item.getSavePath()
+            extractZipFile({zipFile:savePath})
+          }catch(err){
+            log.warn(err)
+          }       
         }
-       
-        const extract = require('extract-zip')
+ 
         try{  
-          let savePath =item.getSavePath()
-          let basePath = path.join(savePath,'..')
-          if(!fs.existsSync(basePath)){
-            fs.mkdirSync(basePath)
-          }
-          let distPath = basePath
-          if(!filename.endsWith('.app.zip') && !filename.endsWith('.exe.zip')){
-            distPath = path.join(basePath, filename.replace('.zip',''))
-            if(!fs.existsSync(distPath)){
-              fs.mkdirSync(distPath)
-            }
-          }   
-          extract(item.getSavePath(), {dir: distPath})
-
           // delete from download list
           let downloadUrl = item.getURL()
           let downloadingItem
@@ -273,10 +321,6 @@ const handleDownload = ({mainWindow, appDataPath}) => {
               break
             }
           }
-          // delete zip file
-          // if(fs.existsSync(savePath)){
-          //   fs.rmSync(savePath)
-          // }
         }catch(err){
           log.warn(err)
         }      

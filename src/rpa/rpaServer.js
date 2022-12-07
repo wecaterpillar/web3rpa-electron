@@ -47,8 +47,14 @@ const startRpa = () => {
 
     // 2. init
     // 2.1 remote server
-    let remoteServer = require('../help/remoteServer')
-    remoteServer.remoteServerInit(rpaConfig)
+    try{
+      let remoteServer = require('../help/remoteServer')
+      remoteServer.remoteServerInit(rpaConfig)
+      exports.resetToken = remoteServer.resetToken
+    }catch(err){
+      log.warn(err)
+    }
+ 
     
     // 2.2 local api
     // localAPI server
@@ -110,9 +116,10 @@ const checkBrowserComponent = async () => {
       }
       // 检查目标目录或文件是否已存在
       let dist = item['filepath']
-      if(fs.existsSync(path.join(rpaConfig.appConfig.appDataPath, dist))){
+      if(helper.checkExistDistFile({distFile:dist})){
         continue
       }
+      // 检查是否存在目标文件或目录的zip？
       let downloadUrl = item['download_url']      
       downloadList.push({name, dist, downloadUrl})
     }
