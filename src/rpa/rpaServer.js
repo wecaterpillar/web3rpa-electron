@@ -464,7 +464,7 @@ const testWorker = () => {
   let demoFile = 'flowscript/demo/script_demo.js'
   let scriptFilePath = path.join(rpaConfig.appDataPath, demoFile)
   console.debug(scriptFilePath)
-  piscina.run({item: {"borwserKey":"demo11"}, rpaConfig: getSimpleRpaConfig()},
+  piscina.run({item: {"browser":{"browserKey":"demo01"}}, rpaConfig: getSimpleRpaConfig()},
   {filename: scriptFilePath, name: 'flow_start'})
 }
 

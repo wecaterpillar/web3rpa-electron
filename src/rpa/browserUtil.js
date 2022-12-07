@@ -138,7 +138,7 @@ const getBrowserConfig = async (config) => {
       browserConfig.userDataDir = browserUserDataDir
     }
 
-    log.debug(browserConfig);
+    //log.debug(browserConfig);
 
     return browserConfig
 }
@@ -154,20 +154,40 @@ const launchBrowserContext = async (browserConfig) => {
         browserUserDataDir = browserConfig.userDataDir
       }    
     }  
-    //console.debug(browserConfig);
-    if(!!browserUserDataDir){
-      context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
-    }else{
-      const browser = await playwright.chromium.launch(browserConfig.options)
-      context =  await browser.newContext()
+    let resetFingerPrint = true
+    if(!!browserUserDataDir && fs.existsSync(browserUserDataDir)){
+      resetFingerPrint = false
     }
+    if(resetFingerPrint){
+      // TODO 待处理指纹和cookie
+      // 指纹设置 userAgent
+      // 载入后需要加载之前的cookie
+
+      // 如何根据IP更新区域设置？
+    }
+    // TODO 检查代理配置 options.proxy
+
+    console.debug('launchBrowserContext with browserConfig:',browserConfig);
+    try{
+      if(!!browserUserDataDir){
+        context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
+      }else{
+        const browser = await playwright.chromium.launch(browserConfig.options)
+        context =  await browser.newContext()
+      }
+    }catch(err){
+      log.error(err)
+    }finally{
+      log.debug('lauch context:', context.pages)
+    }
+
     // prepare for context event
     if(context){
       context.on('close', (browserContext) =>{
         log.debug('context close, try to save cookie')
         if(browserContext){
           try{
-            log.debug(browserContext.cookies())
+            log.debug('cookies:'+browserContext.cookies())
           }catch(err){
             log.warn(err)
           }         

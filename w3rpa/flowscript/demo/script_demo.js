@@ -5,8 +5,7 @@ const dataUtil = require('../../dist/rpa/dataUtil')
 // 浏览器帮助类
 // 数据帮助类，可考虑调用localAPI来同rpaServer交互
 
-const flow_start = ({item, rpaConfig}) => {
-    (async () => {
+const flow_start = async ({item, rpaConfig}) => {
         log.debug("invoke flow_start")
         log.debug(item)
         dataUtil.dataUtilInit(rpaConfig)
@@ -24,11 +23,13 @@ const flow_start = ({item, rpaConfig}) => {
         await page.goto(indexUrl)
         //await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
         // 回写数据到项目明细
-        item['update_time'] = getDateTime()
+        item['update_time'] = dataUtil.getDateTime()
         log.debug('will update item:'+ JSON.stringify(item))
-        await dataUtil.updateDetailData('w3_project_account', item)
+        if('id' in item){
+            await dataUtil.updateDetailData('w3_project_account', item)
+        }
+        
         await browserUtil.closeBrowserContext(context)
-    })()
 }
 
 exports = module.exports = {
