@@ -255,8 +255,8 @@ const openBrowser = (config) => {
   (async () => {
     let browserConfig = await getBrowserConfig(config)
     let context = await getBrowserContext(browserConfig)
-    await visitSogouDemo({context, browserConfig})
-    await context.close()
+    //await visitSogouDemo({context, browserConfig})
+    //await context.close()
   })()
 }
 
