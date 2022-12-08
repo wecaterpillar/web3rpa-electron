@@ -61,8 +61,12 @@ app.get('/api/browsers', async (req, res) => {
 
 app.post('/api/browser/open', async (req, res) => {
   // 打开浏览器
+  let config = {}
+  let browserKey = req.query['key']
   // req.body => json
-  browserUtil.openBrowser({})
+  config['browserKey'] = browserKey
+  config['browser'] = req.body 
+  browserUtil.openBrowser(config)
   res.send('createBrowser done')
 })
 

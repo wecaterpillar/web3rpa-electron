@@ -38,7 +38,8 @@ const createWindow = () => {
     width: 1200,
     height: 900,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      webSecurity: false, //取消跨域限制
+      preload: path.join(__dirname, '../renderer/preload.js')
     }
   })
 
@@ -229,10 +230,10 @@ const loadMenu = () => {
       label: 'Window',
       submenu: [
         { label: 'reload', role: 'forceReload' },
-        { label: 'reload RPA', click: function (){
-          //startRpaServer()
-        }},
-        { role: 'toggleDevTools', visible: false},
+        // { label: 'reload RPA', click: function (){
+        //   //startRpaServer()
+        // }},
+        { role: 'toggleDevTools', visible: true},
         { role: 'reload', visible: false },
         { role: 'togglefullscreen'},
         { type: 'separator' },

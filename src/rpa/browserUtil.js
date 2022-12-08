@@ -16,6 +16,10 @@ const launchBrowserContext2 = async ({browserInfo, rpaConfigJson}) => {
 }
 
 const getBrowserExtensions = (extensions) => {
+
+  // 获取浏览器和项目配置的插件清单
+  // 检查本地是否存在插件
+
   // TODO 插件配置检查,以及配置文件是否存在
   // 插件服务下载后解压
   // https://playwright.dev/docs/chrome-extensions
@@ -236,7 +240,7 @@ const getBrowserContext = async (browserConfig) => {
         context = null
       }
     } 
-    console.debug(browserUserDataDir);
+    //console.debug(browserUserDataDir);
   }
   if(!context){
     context = await launchBrowserContext(browserConfig)
