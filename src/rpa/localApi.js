@@ -53,7 +53,9 @@ app.post('/api/form/:tableKey', async (req, res) => {
   res.json(result)
 })
 
-
+app.get('/api/check', (req, res) => {
+  res.send('1')
+})
 
 app.get('/api/browsers', async (req, res) => {
   // 查看浏览器状态，可指定某个或全部

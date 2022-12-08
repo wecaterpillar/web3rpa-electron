@@ -1,5 +1,5 @@
 // 0. check update
-const { app, ipcMain, Menu, BrowserWindow, shell } = require('electron')
+const { app, protocol, Menu, BrowserWindow, shell } = require('electron')
 const isMac = process.platform === 'darwin'
 const isLinux = process.platform === 'linux'
 
@@ -14,6 +14,10 @@ if(!isMac && !isLinux){
     app.quit()
   }
 }
+
+protocol.registerSchemesAsPrivileged([
+  {scheme:'w3rpa', privileges:{bypassCSP:true}}
+])
 
 const fs = require("fs");
 const path = require('path');
