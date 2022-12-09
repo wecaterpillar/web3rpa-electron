@@ -149,11 +149,14 @@ const getBrowserConfig = async (config) => {
     if(!!extensions && extensions.length>0){
       browserConfig.options.args = [
               '--disable-blink-features=AutomationControlled',
+              '--no-default-browser-check',
+              '--no-first-run',
               `--disable-extensions-except=${extensions}`,
               `--load-extension=${extensions}`
         ]
-    }else{
-      browserConfig.options.args = ['--disable-blink-features=AutomationControlled']
+    } else {
+        browserConfig.options.args = ['--disable-blink-features=AutomationControlled',
+            '--no-default-browser-check','--no-first-run']
     }
 
     // check executablePath
