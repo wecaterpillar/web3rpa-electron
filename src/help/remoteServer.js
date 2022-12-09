@@ -265,3 +265,22 @@ const createDetailDataRemote = async (tableKey, data) => {
     return result
 }
 exports.createDetailDataRemote = createDetailDataRemote
+
+
+const getVisitorIpRemote = async () => {
+    let result
+    let queryUrl = 'https://rpa2b.w3bb.cc/sys/config/ip/get-visitor-ip'
+    await axios.request({
+        method: 'get',
+        url: queryUrl
+    }).then(function (response){
+        if(response.status === 200 && response.data){
+            result = response.data
+        }
+    }).catch(function (error){
+        console.error(error.message)
+    }).finally(function (){
+    })
+    return result
+}
+exports.getVisitorIpRemote = getVisitorIpRemote

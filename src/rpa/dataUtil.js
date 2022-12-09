@@ -2,6 +2,7 @@
 // 本地文件交互（包含本地数据库）
 const axios = require('axios')
 
+exports = module.exports = {}
 
 var rpaConfig
 // 默认使用localAPI
@@ -27,6 +28,7 @@ const init = (config) => {
         localApiBase = 'http://localhost:3500'
     }    
 }
+exports.dataUtilInit = init
 
 /////////////////////////////////////////////////////////////
 /// commmon API with w3rpa server
@@ -106,6 +108,29 @@ const createDetailData = async (tableKey, data) => {
     } 
 }
 
+exports.getListData = getListData
+exports.getDetailData = getDetailData
+exports.updateDetailData = updateDetailData
+exports.createDetailData = createDetailData
+
+const getVisitorIp = async () => {
+    let result
+    if(!useLocalApi && remoteServer){
+        result = await remoteServer.getVisitorIpRemote()
+    }else{
+        let url = localApiBase + '/api/get-visitor-ip'
+        await axios.get(url).then(function (response){
+            if(response.status === 200){
+                result = response.data        
+            } 
+        })
+    } 
+    if(result && 'data' in result){
+        result = result['data']
+    }
+    return result
+}
+exports.getVisitorIp = getVisitorIp
 ///////////////////////////////////////////////////////////////////////////
 ////  specail API fro web3 RPA
 const AES = require('mysql-aes')
@@ -150,6 +175,8 @@ const getRpaPlanTaskList = (filterJson) => {
     }
     return getListData('rpa_plan_task', queryParams)
 }
+
+exports.getRpaPlanTaskList = getRpaPlanTaskList
 
 /**
  * 获取RPA服务器浏览器配置信息
@@ -268,19 +295,13 @@ function getDateTime() {
     return d_t.getFullYear() + "-" + ("0"+(d_t.getMonth()+1)).slice(-2)+ "-" + ("0"+d_t.getDate()).slice(-2) 
      + " " + ("0"+d_t.getHours()).slice(-2) + ":" + d_t.getMinutes() + ":" + d_t.getSeconds()
 }
+exports.getDateTime = getDateTime
 
-exports = module.exports = {}
 
-exports.dataUtilInit = init
-exports.getListData = getListData
-exports.getDetailData = getDetailData
-exports.updateDetailData = updateDetailData
-exports.createDetailData = createDetailData
-exports.getRpaPlanTaskList = getRpaPlanTaskList
+
 exports.getBrowserInfo = getBrowserInfo
 exports.getAccountInfo = getAccountInfo
 exports.loadProjectUserPassword = loadProjectUserPassword
 exports.loadAccountUserPassword = loadAccountUserPassword
 exports.loadAccountPrivateKey = loadAccountPrivateKey
 exports.loadAccountMnemonic = loadAccountMnemonic
-exports.getDateTime = getDateTime

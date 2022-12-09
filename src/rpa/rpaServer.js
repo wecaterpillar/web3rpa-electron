@@ -171,8 +171,13 @@ const updateNodeStatus = () => {
   if(!interalMin || interalMin>60){
     interalMin = 2
   }
+  let visitor
   schedule.scheduleJob(`10 */${interalMin} * * * *`, async ()=>{
     console.debug('updateNodeStatus:' + new Date());
+    if(!visitor){
+      visitor =  await dataUtil.getVisitorIp()
+    }
+    
     let nodeData
     // 1. get nodeName from config
     let nodeName
@@ -249,6 +254,9 @@ const updateNodeStatus = () => {
     if(!!nodeData && 'id' in nodeData){
        // todo add  ip
       nodeData['status'] = 'running'
+      if(visitor && 'ip' in visitor){
+        nodeData['ip'] = visitor['ip']
+      }
       nodeData['update_time'] = getDateTime()
       await dataUtil.updateDetailData('rpa_runnode', nodeData)
     }

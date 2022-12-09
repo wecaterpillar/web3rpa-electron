@@ -57,6 +57,11 @@ app.get('/api/check', (req, res) => {
   res.send('1')
 })
 
+app.get('/api/get-visitor-ip', async (req, res) => {
+  let result = await remoteServer.getVisitorIpRemote()
+  res.json(result)
+})
+
 app.get('/api/browsers', async (req, res) => {
   // 查看浏览器状态，可指定某个或全部
 })
