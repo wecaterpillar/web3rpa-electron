@@ -7,7 +7,7 @@ const dataUtil = require('../../dist/rpa/dataUtil')
 
 const flow_start = async ({item, rpaConfig}) => {
         log.debug("invoke flow_start")
-        log.debug(item)
+        //log.debug(item)
         dataUtil.dataUtilInit(rpaConfig)
         // // 浏览器参数初始化
         // browser.browserInit(rpaConfig)
