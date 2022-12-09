@@ -111,6 +111,14 @@ const getBrowserConfig = async (config) => {
     if(config && 'browser' in config){
       browser = config['browser']
     }
+
+    // cookie
+    let cookie
+    if(browser && browser['cookie']){
+      cookie = JSON.parse(browser['cookie'])
+      //log.debug(cookie)
+    }
+
     // 指纹设置
     let fingerprint = {}   
     if(browser && browser['fingerprint_json']){
