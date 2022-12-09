@@ -14,7 +14,7 @@ const flow_start = async ({item, rpaConfig}) => {
         // let browserConfig = await browser.getBrowserConfig(item['browser'])
         // // 启动浏览器
         // let context = await browser.launchBrowserContext(browserConfig)
-        let context = await browserUtil.launchBrowserContext2({browserInfo:item['browser'],rpaConfigJson:rpaConfig})
+        let context = await browserUtil.launchBrowserContext2({browserInfo:item,rpaConfigJson:rpaConfig})
         //console.debug("context")
         //console.debug(context)
         const page = await context.newPage();

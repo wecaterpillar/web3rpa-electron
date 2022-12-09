@@ -106,9 +106,27 @@ const getBrowserConfig = async (config) => {
       browserKey = browserConfig['name']
       browserConfig['browserKey'] = browserKey
     }
-
+    let  browser = config
+    // 兼容传入参数为 item 或 item['browser']
+    if(config && 'browser' in config){
+      browser = config['browser']
+    }
+    // 指纹设置
+    let fingerprint = {}   
+    if(browser && browser['fingerprint_json']){
+      fingerprint = JSON.parse(browser['fingerprint_json'])
+      log.debug(fingerprint)
+    }
     // 输入config转换为指纹的options,参考ads
 
+    // 在brave环境中优先检查UA设置
+
+    // 代理设置
+    let proxyconfig = {}
+    if(browser && browser['proxy_json']){
+      proxyconfig = JSON.parse(browser['proxy_json'])
+      log.debug(proxyconfig)
+    }
 
     // check headless
     if(browserConfig && !('options' in browserConfig)){

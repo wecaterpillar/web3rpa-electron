@@ -176,6 +176,7 @@ const updateNodeStatus = () => {
     console.debug('updateNodeStatus:' + new Date());
     if(!visitor){
       visitor =  await dataUtil.getVisitorIp()
+      log.debug(visitor)
     }
     
     let nodeData
@@ -309,6 +310,10 @@ const execRpaTask = async (taskConfig) => {
   log.debug("execRpaTask:" + JSON.stringify(taskConfig))
   // 1 锁定当前任务，防止重复执行
   taskConfig['status'] = 'doing'
+  let visitor = dataUtil.getVisitorIp()
+  if(visitor && visitor['ip']){
+    taskConfig['ip'] = visitor['ip']
+  }
   taskConfig['start_time'] = getDateTime()
   await dataUtil.updateDetailData('rpa_plan_task', taskConfig)
 
@@ -422,6 +427,7 @@ const execRpaTask = async (taskConfig) => {
         // 'w3_browser' - browserid
         let browser = await dataUtil.getBrowserInfo({browserId:item['browser_id']})
         if(browser){
+          item['browserKey'] = browser['name']
           browser['browserKey'] = browser['name']
           item['browser'] = browser
         }
