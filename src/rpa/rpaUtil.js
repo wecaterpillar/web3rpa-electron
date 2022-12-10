@@ -14,9 +14,7 @@ const flowSetup = async ({item, rpaConfig}) => {
     browserUtil.browserInit(rpaConfig)
     flowArgs['rpaConfig'] = rpaConfig
     flowArgs['item'] = item
-
-    await checkPrepareAction()
-   
+    //await checkPrepareAction()
 }
 exports.flowSetup = flowSetup
 
@@ -30,7 +28,13 @@ const checkPrepareAction = async () => {
         context = await browserUtil.launchBrowserContext(browserConfig)
     }
     if(!page){
-        page = await context.newPage()
+        let pages = context.pages()
+        if(pages && pages.length>0){
+            page = pages[0]
+        }
+        if(!page){
+            page = await context.newPage()
+        }
     } 
 }
 
@@ -47,6 +51,11 @@ exports.flowClose = flowClose
 
 const flowAction = async (actionName, callback) => {
     // checkCallback
+    if(!callback || typeof callback !== 'function' ){
+        log.error('callback must is function')
+        //throw new Error('callback must is function')
+        return
+    }
     await checkPrepareAction()
     log.debug('start action: '+actionName)
     let item = flowArgs['item'] || {}
