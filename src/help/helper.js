@@ -191,6 +191,7 @@ const copyResourceFile = ({destPath, srcPath, fileName}) => {
       // js
       copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'rpa/browserUtil.js'})
       copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'rpa/dataUtil.js'})
+      copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'rpa/rpaUtil.js'})
 
       // python
       copyResourceFile({destPath: distPath,srcPath: appResRoot,fileName: 'py/Pipfile'})

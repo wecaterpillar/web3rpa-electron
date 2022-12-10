@@ -126,10 +126,26 @@ const getBrowserConfig = async (config) => {
       log.debug(fingerprint)
     }
     // 输入config转换为指纹的options,参考ads
+    // http://apidoc.adspower.net/localapi/local-api-v1.html#fingerprintConfig
 
     // 在brave环境中优先检查UA设置
 
+    //https://playwright.dev/docs/api/class-browsertype#browser-type-launch
+    //https://playwright.dev/docs/api/class-browsertype#browser-type-launch-persistent-context
+    //--headless 无头模式
+    //--disable-gpu 禁用GPU加速
+    //--incognito 隐身模式
+    //--blink-settings=imagesEnabled=false 禁止图片加载 
+    //--disable-notifications 禁用通知
+    //--disable-blink-features=AutomationControlled 隐藏webDriver
+
+    
+    // clear_cache_after_closing 关闭浏览器后是否清除缓存 0:否（默认）1:是
+    // disable_password_filling 是否禁用填充账密功能 0:否（默认）1:是
+    // enable_password_saving 是否允许保存密码 0:否（默认）1:是
+
     // 代理设置
+    // http://apidoc.adspower.net/localapi/local-api-v1.html#userProxyConfig
     let proxyconfig = {}
     if(browser && browser['proxy_json']){
       proxyconfig = JSON.parse(browser['proxy_json'])

@@ -1,11 +1,31 @@
 const log = require('electron-log')
 const browserUtil = require('../../dist/rpa/browserUtil')
 const dataUtil = require('../../dist/rpa/dataUtil')
-
-// 浏览器帮助类
-// 数据帮助类，可考虑调用localAPI来同rpaServer交互
+const {flowAction, flowSetup, flowClose} = require('../../dist/rpa/rpaUtil')
 
 const flow_start = async ({item, rpaConfig}) => {
+    // first step
+    await flowSetup({item, rpaConfig})
+
+    // more actions
+    await flowAction('your name', async({item, page, context})=>{
+        let indexUrl = 'https://www.baidu.com/'
+        //console.debug(indexUrl)
+        await page.goto(indexUrl)
+        //await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
+        // 回写数据到项目明细
+        item['update_time'] = dataUtil.getDateTime()
+        log.debug('will update item:'+ JSON.stringify(item))
+        if('id' in item){
+            await dataUtil.updateDetailData('w3_project_account', item)
+        }
+    })
+
+    // last step
+    await flowClose()
+}
+
+const flow_start1 = async ({item, rpaConfig}) => {
         log.debug("invoke flow_start")
         //log.debug(item)
         dataUtil.dataUtilInit(rpaConfig)

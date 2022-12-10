@@ -483,9 +483,10 @@ const testWorker = async () => {
   let demoFile = 'flowscript/demo/script_demo.js'
   let scriptFilePath = path.join(rpaConfig.appDataPath, demoFile)
   console.debug(scriptFilePath)
-  await piscina.run({item: {"browser":{"browserKey":"demo01"}}, rpaConfig: getSimpleRpaConfig()},
+  await piscina.run({item: {"browser":{"browserKey":"demo01"},"browserKey":"demo01"}, rpaConfig: getSimpleRpaConfig()},
   {filename: scriptFilePath, name: 'flow_start'})
 }
+
 
 const getSimpleRpaConfig = () => {
   // 复制必要的rpaConfig 配置信息
