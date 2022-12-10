@@ -38,7 +38,7 @@ const getBrowserExecutablePath = (browserType, version, browserName) => {
     // 1 浏览器配置指定
     //executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_105/SunBrowser.app/Contents/MacOS/SunBrowser'),
     //executablePath: path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app/Contents/MacOS/Brave Browser'),
-    let bravePath = path.join(rpaConfig.appDataPath, 'lib/chrome_107/BraveBrowser.app/Contents/MacOS/Brave Browser')
+    let bravePath = path.join(rpaConfig.appDataPath, 'lib/chrome_107/Brave Browser.app/Contents/MacOS/Brave Browser')
     // 2 playwright默认配置
     // ~/Library/Caches/ms-playwright/chromium-1028/chrome-mac/Chromium.app
     // 3 系统默认配置
@@ -227,7 +227,11 @@ const launchBrowserContext = async (browserConfig) => {
     }catch(err){
       log.error(err)
     }finally{
-      log.debug('lauch context with cookie:', JSON.stringify(context.cookies(),null,2))
+      let cookie
+      if(context){
+        cookie = JSON.stringify(context.cookies(),null,2)
+      }
+      log.debug('lauch context with cookie:', cookie)
     }
 
     // prepare for context event

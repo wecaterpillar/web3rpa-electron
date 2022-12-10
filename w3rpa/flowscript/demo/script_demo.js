@@ -3,7 +3,7 @@ const browserUtil = require('../../dist/rpa/browserUtil')
 const dataUtil = require('../../dist/rpa/dataUtil')
 const {flowAction, flowSetup, flowClose} = require('../../dist/rpa/rpaUtil')
 
-const flow_start = async ({item, rpaConfig}) => {
+const flow_start2 = async ({item, rpaConfig}) => {
     // first step
     await flowSetup({item, rpaConfig})
 
@@ -25,7 +25,7 @@ const flow_start = async ({item, rpaConfig}) => {
     await flowClose()
 }
 
-const flow_start1 = async ({item, rpaConfig}) => {
+const flow_start = async ({item, rpaConfig}) => {
         log.debug("invoke flow_start")
         //log.debug(item)
         dataUtil.dataUtilInit(rpaConfig)
