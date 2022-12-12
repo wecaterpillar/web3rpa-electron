@@ -139,6 +139,10 @@ const getBrowserConfig = async (config) => {
     //--disable-notifications 禁用通知
     //--disable-blink-features=AutomationControlled 隐藏webDriver
 
+    // autofill
+    // brave  Password Manager default
+    // Offer to save passwords 
+    // Auto Sign-in
     
     // clear_cache_after_closing 关闭浏览器后是否清除缓存 0:否（默认）1:是
     // disable_password_filling 是否禁用填充账密功能 0:否（默认）1:是
@@ -285,7 +289,7 @@ const getBrowserContext = async (browserConfig) => {
     if(mapBrowser.has(browserKey)){
       context = mapBrowser.get(browserKey)
       // TODO 检查是否有效无效则剔除
-      if(context.pages().length==0){
+      if(!!context && context.pages().length==0){
         context = null
       }
     } 
