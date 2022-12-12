@@ -43,6 +43,7 @@ const createWindow = () => {
     height: 900,
     webPreferences: {
       webSecurity: false, //取消跨域限制
+      scrollBounce: true,
       preload: path.join(__dirname, '../renderer/preload.js')
     }
   })

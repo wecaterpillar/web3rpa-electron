@@ -62,6 +62,7 @@ const  getListData = async (tableKey, queryParams = {}) => {
         return result
     }
 }
+exports.getListData = getListData
 
 const  getDetailData = async (tableKey, detailId) => {
     if(!useLocalApi && remoteServer){
@@ -77,6 +78,7 @@ const  getDetailData = async (tableKey, detailId) => {
         return result
     }
 }
+exports.getDetailData = getDetailData
 
 const updateDetailData = async (tableKey, data) => {
     if(!useLocalApi && remoteServer){
@@ -92,6 +94,7 @@ const updateDetailData = async (tableKey, data) => {
         return result
     } 
 }
+exports.updateDetailData = updateDetailData
 
 const createDetailData = async (tableKey, data) => {
     if(!useLocalApi && remoteServer){
@@ -107,10 +110,6 @@ const createDetailData = async (tableKey, data) => {
         return result
     } 
 }
-
-exports.getListData = getListData
-exports.getDetailData = getDetailData
-exports.updateDetailData = updateDetailData
 exports.createDetailData = createDetailData
 
 const getVisitorIp = async () => {
@@ -204,6 +203,7 @@ const getBrowserInfo = async ({browserId, browserKey, withProxy=false}) => {
     }
     return browser 
 }
+exports.getBrowserInfo = getBrowserInfo
 
 const getAccountInfo = async ({type, account, isWeb3 = true, encryptKey}) => {
     let accountInfo 
@@ -221,6 +221,7 @@ const getAccountInfo = async ({type, account, isWeb3 = true, encryptKey}) => {
     }
     return accountInfo
 }
+exports.getAccountInfo = getAccountInfo
 
 /**
  * 获取项目明细的web2账号密码
@@ -238,6 +239,7 @@ const loadProjectUserPassword = async (projectItem = {}) =>{
     }
     return password
 }
+exports.loadProjectUserPassword = loadProjectUserPassword
 
 /**
  * 获取web2账号的密码
@@ -255,6 +257,7 @@ const loadAccountUserPassword = async (accountItem = {}) => {
     }
     return password
 }
+exports.loadAccountUserPassword = loadAccountUserPassword
 
 /**
  * 获取web3账号私钥
@@ -272,6 +275,7 @@ const loadAccountPrivateKey = async (accountItem = {}) => {
     }
     return privateKey
 }
+exports.loadAccountPrivateKey = loadAccountPrivateKey
 
 /**
  * 获取web3账号助记词
@@ -289,6 +293,7 @@ const loadAccountMnemonic = async (accountItem = {}) => {
     }
     return mnemonic
 }
+exports.loadAccountMnemonic = loadAccountMnemonic
 
 function getDateTime() {
     const d_t = new Date()
@@ -297,11 +302,3 @@ function getDateTime() {
 }
 exports.getDateTime = getDateTime
 
-
-
-exports.getBrowserInfo = getBrowserInfo
-exports.getAccountInfo = getAccountInfo
-exports.loadProjectUserPassword = loadProjectUserPassword
-exports.loadAccountUserPassword = loadAccountUserPassword
-exports.loadAccountPrivateKey = loadAccountPrivateKey
-exports.loadAccountMnemonic = loadAccountMnemonic
