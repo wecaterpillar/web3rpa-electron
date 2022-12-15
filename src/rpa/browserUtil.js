@@ -155,6 +155,9 @@ const getBrowserConfig = async (config) => {
       proxyconfig = JSON.parse(browser['proxy_json'])
       log.debug(proxyconfig)
     }
+    // 减少代理流量
+    // 如果设置代理，需要设置bypass
+    // 通用cdn、第三方资源、静态资源域名规则等
 
     // check headless
     if(browserConfig && !('options' in browserConfig)){
@@ -191,6 +194,9 @@ const getBrowserConfig = async (config) => {
       browserConfig.userDataDir = browserUserDataDir
     }
 
+    // 如无browserUserDataDir需要强制设置ua
+    // 服务器获取随机ua值
+
     //log.debug(browserConfig);
 
     return browserConfig
@@ -224,6 +230,8 @@ const launchBrowserContext = async (browserConfig) => {
     try{
       if(!!browserUserDataDir){
         context = await playwright.chromium.launchPersistentContext(browserUserDataDir, browserConfig.options); 
+        // 兼容历史数据
+        // 如未设置ua是否读取ua和cookie回写到浏览器配置中
       }else{
         const browser = await playwright.chromium.launch(browserConfig.options)
         context =  await browser.newContext()
