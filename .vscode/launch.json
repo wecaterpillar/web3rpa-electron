@@ -27,7 +27,7 @@
           "request": "launch",
           "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
         },
-        "args": [".", "--remote-debugging-port=9222"],
+        "args": [".", "--remote-debugging-port=9222","--trace-warnings"],
         "outputCapture": "std",
         "console": "integratedTerminal"
       }

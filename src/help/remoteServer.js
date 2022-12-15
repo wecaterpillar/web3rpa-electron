@@ -224,7 +224,7 @@ const updateDetailDataRemote = async (tableKey, data) => {
             //result = getListData(listKey, pageNo, pageSize)
         }    
     }).catch(function (error){
-        console.error(error.message)
+        console.error('updateDetailDataRemote',error.message)
         if(!!error.response && error.response.status === 401){
             resetToken()
         }

@@ -34,7 +34,7 @@ const flow_start = async ({item, rpaConfig}) => {
         // let browserConfig = await browser.getBrowserConfig(item['browser'])
         // // 启动浏览器
         // let context = await browser.launchBrowserContext(browserConfig)
-        let context = await browserUtil.launchBrowserContext2({browserInfo:item,rpaConfigJson:rpaConfig})
+        let context = await browserUtil.launchBrowserContext2({item,rpaConfig})
         //console.debug("context")
         //console.debug(context)
         const page = await context.newPage();
@@ -44,11 +44,16 @@ const flow_start = async ({item, rpaConfig}) => {
         //await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
         // 回写数据到项目明细
         item['update_time'] = dataUtil.getDateTime()
-        log.debug('will update item:'+ JSON.stringify(item))
+        //log.debug('will update item:'+ JSON.stringify(item))
         if('id' in item){
             await dataUtil.updateDetailData('w3_project_account', item)
         }
-        await browserUtil.closeBrowserContext(context)
+        try{
+        
+        }catch(err){
+            log.error(err)
+        }        
+        await browserUtil.closeBrowserContext(context, item)
         log.debug('task flow complete')
         return 0
 }

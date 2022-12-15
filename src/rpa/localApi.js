@@ -66,6 +66,20 @@ app.get('/api/get-visitor-ip', async (req, res) => {
   res.json(result)
 })
 
+app.get('/api/getLocalBrowser', async (req, res) => {
+  // 获取本地browser chrome/firefox 以及支持版本
+  // {"code":0,"data":{"chrome":["105"],"firefox":[]},"msg":"success"}
+  // 检查目录 /lib下 浏览器， 例如 chrome_107
+  let result = {}
+  result.set("chrome", 0, "107")
+  return res.json(result)
+})
+
+app.get('/api/getProxy', async (req, res) => {
+  // 获取proxy本地验证结果
+  // {"code":0,"data":{"list":[],"crash_ids":[]},"msg":"查询成功"}
+})
+
 app.get('/api/browsers', async (req, res) => {
   // 查看浏览器状态，可指定某个或全部
 })
