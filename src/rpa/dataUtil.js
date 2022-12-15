@@ -112,6 +112,26 @@ const createDetailData = async (tableKey, data) => {
 }
 exports.createDetailData = createDetailData
 
+const getRandUserAgent = async (params) => {
+    let result
+    if(!useLocalApi && remoteServer){
+        result = await remoteServer.getRandUserAgentRemote()
+    }else{
+        let url = localApiBase + '/api/rand-user-agent'
+        await axios.get(url, params).then(function (response){
+            if(response.status === 200){
+                result = response.data        
+            } 
+        })
+    } 
+    if(result && 'data' in result){
+        result = result['data']
+    }
+    return result
+}
+exports.getVisitorIp = getVisitorIp
+
+
 const getVisitorIp = async () => {
     let result
     if(!useLocalApi && remoteServer){

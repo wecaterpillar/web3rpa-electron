@@ -236,9 +236,10 @@ const getBrowserConfig = async (config) => {
        // 如无browserUserDataDir需要强制设置ua
       if(!browserUserDataDir){
         // 服务器获取随机ua值
-        //ua = ...
-        //browser['ua'] = ua
-        //browser['ua_changed'] = 1
+        ua = dataUtil.getRandUserAgent({"browser":"brave"})
+        if(!!ua){
+          browser['ua'] = ua
+        }
       }    
     }
     if(!!ua){

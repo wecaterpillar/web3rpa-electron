@@ -284,3 +284,29 @@ const getVisitorIpRemote = async () => {
     return result
 }
 exports.getVisitorIpRemote = getVisitorIpRemote
+
+const getRandUserAgentRemote = async (params) => {
+    let result
+    await checkToken()
+    let queryUrl = getRpaServerFormApiBase()+'browser/api/rand-user-agent';
+    await axios.request({
+        method: 'get',
+        url: queryUrl,
+        params: params
+    }).then(function (response){
+        if(response.status === 200 && response.data.success){
+            result = response.data.result
+        }else if(response.status === 401){
+            resetToken()
+            //result = getListData(listKey, pageNo, pageSize)
+        }    
+    }).catch(function (error){
+        console.error(error.message)
+        if(!!error.response && error.response.status === 401){
+            resetToken()
+        }
+    }).finally(function (){
+    })
+    return result
+}
+exports.getRandUserAgentRemote = getRandUserAgentRemote

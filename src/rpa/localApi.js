@@ -66,6 +66,11 @@ app.get('/api/get-visitor-ip', async (req, res) => {
   res.json(result)
 })
 
+app.get('/api/rand-user-agent', async (req, res) => {
+  let result = await remoteServer.getRandUserAgentRemote(req.query)
+  res.json(result)
+})
+
 app.get('/api/getLocalBrowser', async (req, res) => {
   // 获取本地browser chrome/firefox 以及支持版本
   // {"code":0,"data":{"chrome":["105"],"firefox":[]},"msg":"success"}
