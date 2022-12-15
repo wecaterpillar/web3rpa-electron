@@ -2,6 +2,9 @@
 ## 隐私浏览器/指纹浏览器
 ### 指纹检测
 
+无头浏览器反爬与反反爬  
+https://gaoconghui.github.io/2019/06/%E6%97%A0%E5%A4%B4%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%8D%E7%88%AC%E4%B8%8E%E5%8F%8D%E5%8F%8D%E7%88%AC/
+
 ### 指纹浏览器产品
 - MultiLogin  
 https://docs.multilogin.com/l/zh

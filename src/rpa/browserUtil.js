@@ -299,6 +299,20 @@ const launchBrowserContext = async (browserConfig) => {
     return context
 }
 
+const newPage = async (context) => {
+  try{
+    if(!!context){
+      let page = await context.newPage()
+      await page.addInitScript( {path: path.join(rpaConfig.appDataPath,'dist/rpa/preload.js')})
+      return page
+    }
+  }catch( err){
+    log.warn(err)
+  }
+}
+
+exports.newPage = newPage
+
 const actionBeforeCloseContext = async (context, item = {}) => {
   try{
     log.debug('actionBeforeCloseContext befor context close')

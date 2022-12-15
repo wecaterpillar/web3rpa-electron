@@ -129,7 +129,7 @@ const getRandUserAgent = async (params) => {
     }
     return result
 }
-exports.getVisitorIp = getVisitorIp
+exports.getRandUserAgent = getRandUserAgent
 
 
 const getVisitorIp = async () => {

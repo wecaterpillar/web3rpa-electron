@@ -35,9 +35,8 @@ const flow_start = async ({item, rpaConfig}) => {
         // // 启动浏览器
         // let context = await browser.launchBrowserContext(browserConfig)
         let context = await browserUtil.launchBrowserContext2({item,rpaConfig})
-        //console.debug("context")
-        //console.debug(context)
-        const page = await context.newPage();
+        // const page = await context.newPage();
+        const page = await browserUtil.newPage(context);
         let indexUrl = 'https://www.baidu.com/'
         //console.debug(indexUrl)
         await page.goto(indexUrl)
@@ -47,12 +46,7 @@ const flow_start = async ({item, rpaConfig}) => {
         //log.debug('will update item:'+ JSON.stringify(item))
         if('id' in item){
             await dataUtil.updateDetailData('w3_project_account', item)
-        }
-        try{
-        
-        }catch(err){
-            log.error(err)
-        }        
+        }     
         await browserUtil.closeBrowserContext(context, item)
         log.debug('task flow complete')
         return 0
