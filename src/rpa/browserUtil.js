@@ -298,7 +298,7 @@ const launchBrowserContext = async (browserConfig) => {
     return context
 }
 
-const actionBeforeCloseContext = async (context, item) => {
+const actionBeforeCloseContext = async (context, item = {}) => {
   try{
     log.debug('actionBeforeCloseContext befor context close')
     // 1. 业务数据检查？
@@ -348,7 +348,7 @@ const actionBeforeCloseContext = async (context, item) => {
   }
 }
 
-const closeBrowserContext = async (context, item) => {
+const closeBrowserContext = async (context, item = {}) => {
   // https://playwright.dev/docs/api/class-browsercontext#browser-context-close
   try{
     if(!!context){
