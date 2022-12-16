@@ -236,7 +236,13 @@ const getBrowserConfig = async (config) => {
        // 如无browserUserDataDir需要强制设置ua
       if(!browserUserDataDir){
         // 服务器获取随机ua值
-        ua = dataUtil.getRandUserAgent({"browser":"brave"})
+        let system = 'Windows'
+        if(rpaConfig.isMac){
+          system = 'Mac OS X'
+        }else if(rpaConfig.isLinux){
+          system = 'Linux'
+        }
+        ua = dataUtil.getRandUserAgent({"system":system,"browser":"brave"})
         if(!!ua){
           browser['ua'] = ua
         }
@@ -324,6 +330,18 @@ const actionBeforeCloseContext = async (context, item = {}) => {
       return
     }
     // 2.1 ua
+    let page
+    if(!!context.pages()){
+      page = context.pages()[0]
+    }else{
+      page = await newPage(context)
+    }
+    let navigator = {}
+    navigator['userAgent'] = await page.evaluate( ()=> navigator.userAgent)
+    navigator['language'] = await page.evaluate( ()=> navigator.language)
+    navigator['platform'] = await page.evaluate( ()=> navigator.platform)
+    navigator['oscpu'] = await page.evaluate( ()=> navigator.oscpu)
+    log.debug('navigator=', navigator)
     let ua = browser['ua']
     if(!ua){
       // 更新ua 
@@ -336,12 +354,6 @@ const actionBeforeCloseContext = async (context, item = {}) => {
       }
       // 获取当前ua后更新
       if(!ua){
-          let page
-          if(!!context.pages()){
-            page = context.pages()[0]
-          }else{
-            page = context.newPage()
-          }
           ua = await page.evaluate( ()=> navigator.userAgent)
           browser['ua'] = ua
       }
