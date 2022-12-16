@@ -338,9 +338,9 @@ const actionBeforeCloseContext = async (context, item = {}) => {
     }
     let navigator = {}
     navigator['userAgent'] = await page.evaluate( ()=> navigator.userAgent)
-    navigator['language'] = await page.evaluate( ()=> navigator.language)
     navigator['platform'] = await page.evaluate( ()=> navigator.platform)
     navigator['oscpu'] = await page.evaluate( ()=> navigator.oscpu)
+    navigator['language'] = await page.evaluate( ()=> navigator.language)
     log.debug('navigator=', navigator)
     let ua = browser['ua']
     if(!ua){
