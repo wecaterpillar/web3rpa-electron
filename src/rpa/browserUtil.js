@@ -290,6 +290,9 @@ const launchBrowserContext = async (browserConfig) => {
         let browser = await playwright.chromium.launch(browserConfig.options)
         context =  await browser.newContext()
       }
+      if(!!context){
+        await context.addInitScript( {path: path.join(rpaConfig.appDataPath,'dist/rpa/preload.js')})
+      }   
     }catch(err){
       log.error('launch error',err)
     }finally{
@@ -309,7 +312,7 @@ const newPage = async (context) => {
   try{
     if(!!context){
       let page = await context.newPage()
-      await page.addInitScript( {path: path.join(rpaConfig.appDataPath,'dist/rpa/preload.js')})
+      //await page.addInitScript( {path: path.join(rpaConfig.appDataPath,'dist/rpa/preload.js')})
       return page
     }
   }catch( err){
@@ -331,11 +334,12 @@ const actionBeforeCloseContext = async (context, item = {}) => {
     }
     // 2.1 ua
     let page
-    if(!!context.pages()){
+    if(context.pages() && context.pages().length>0){
       page = context.pages()[0]
-    }else{
-      page = await newPage(context)
     }
+    if(!page){
+      page = await newPage(context)
+    }   
     let navigator = {}
     navigator['userAgent'] = await page.evaluate( ()=> navigator.userAgent)
     navigator['platform'] = await page.evaluate( ()=> navigator.platform)
@@ -358,6 +362,7 @@ const actionBeforeCloseContext = async (context, item = {}) => {
           browser['ua'] = ua
       }
     }
+    page.close()
     // 2.2 cookie
     let cookie = JSON.stringify(context.cookies(),null,2)
     //log.debug('cookies:'+cookie)

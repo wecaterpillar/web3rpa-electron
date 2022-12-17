@@ -414,7 +414,7 @@ exports.encryptMd5 = encryptMd5
 const getMainWindowStorageValue = async ({mainWindow, key}) => {
     let value
     // check localStorage
-    if(!mainWindow){
+    if(!mainWindow ){
         return value
     }
     await mainWindow.webContents
