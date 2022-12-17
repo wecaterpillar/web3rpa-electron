@@ -6,6 +6,12 @@ const isLinux = process.platform === 'linux'
 const log = require('electron-log')
 Object.assign(console, log.functions)
 
+// try disable cros, but fail
+app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
+app.commandLine.appendSwitch('disable-site-isolation-trials') 
+app.commandLine.appendSwitch('disable-features','BlockInsecurePrivateNetworkRequests')
+app.commandLine.appendSwitch('InsecurePrivateNetworkRequestsAllowed','true')
+
 if(!isMac && !isLinux){
   // fix Squirrel.Windows will spawn your app an additional time with some special arguments
   // https://www.electronforge.io/config/makers/squirrel.windows
@@ -43,7 +49,7 @@ const createWindow = () => {
     height: 900,
     webPreferences: {
       webSecurity: false, //取消跨域限制
-      scrollBounce: true,
+      allowRunningInsecureContent: true,
       preload: path.join(__dirname, '../renderer/preload.js')
     }
   })
