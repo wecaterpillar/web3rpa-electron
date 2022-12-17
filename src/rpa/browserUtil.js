@@ -333,13 +333,7 @@ const actionBeforeCloseContext = async (context, item = {}) => {
       return
     }
     // 2.1 ua
-    let page
-    if(context.pages() && context.pages().length>0){
-      page = context.pages()[0]
-    }
-    if(!page){
-      page = await newPage(context)
-    }   
+    let page = await newPage(context)  
     let navigator = {}
     navigator['userAgent'] = await page.evaluate( ()=> navigator.userAgent)
     navigator['platform'] = await page.evaluate( ()=> navigator.platform)
