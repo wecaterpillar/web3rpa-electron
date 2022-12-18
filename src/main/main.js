@@ -6,6 +6,7 @@ const isLinux = process.platform === 'linux'
 const log = require('electron-log')
 Object.assign(console, log.functions)
 
+// can't vist http://localhost:3500/ in mainWindow
 // try disable cros, but fail
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
 app.commandLine.appendSwitch('disable-site-isolation-trials') 
@@ -67,19 +68,34 @@ const createWindow = () => {
   //mainWindow.loadFile('src/renderer/index.html')
   mainWindow.loadURL(appUrl)
 
-  mainWindow.maximize();    //打开时最大化打开，不是全屏，保留状态栏
+  mainWindow.maximize()    //打开时最大化打开，不是全屏，保留状态栏
 
   // 打开开发工具
   //mainWindow.webContents.openDevTools()
 
   // helper init
   helper.helperInit({mainWindow})
+
+  mainWindow.on('page-title-updated', (event, title, explicitSet) => {
+    log.debug('page-title-updated: title='+title)
+    // 第一次进入首页表示登录成功
+    // 首页 - Web3 RPA Platform
+    // 再次来到登录页面则意味退出，主动提出或被动退出？
+    // 登录 - Web3 RPA Platform
+    if(rpaServerStatus === 0){
+      if(title === '首页 - Web3 RPA Platform'){
+        loadRpaServer()
+      }     
+    }
+  })
 }
 
 // 3. RPA server
 const rpaServer  = require("../rpa/rpaServer")
+let rpaServerStatus = 0
 const loadRpaServer = () => {
   // config
+  rpaServerStatus = 1
   let rpaConfig = rpaServer.rpaConfig
   rpaConfig.appDataPath = appDataPath
   rpaConfig.appConfig = appConfig
@@ -100,7 +116,7 @@ const loadRpaServer = () => {
 
   // start rpa
   rpaServer.startRpa()
-  
+  rpaServerStatus = 2
 }
 
 // 4. app event - whenReady
@@ -111,7 +127,8 @@ app.whenReady().then(() => {
 
   createWindow()
 
-  loadRpaServer()
+  // move to first home page show
+  //loadRpaServer()
   
   app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
