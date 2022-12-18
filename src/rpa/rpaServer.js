@@ -419,7 +419,8 @@ const execRpaTask = async (taskConfig) => {
     // 需要增加分页机制
     if(result && result.records){
       // for 账号明细
-      for (let i = 0; i < result.records.length; i++) {
+      let i = 0;
+      for (i = 0; i < result.records.length; i++) {
         // 账号处理
         let item = result.records[i]
         // project
@@ -443,11 +444,11 @@ const execRpaTask = async (taskConfig) => {
       }
       // 检查是否满页，不满则是最后一页
       if(i<pageSize-1){
-        log.debug("task("+taskConfig['id']+") last page")
+        log.debug("task("+taskConfig['id']+") last page: "+pageNo)
         break
       }
     }else{
-      log.debug("task("+taskConfig['id']+") last page or error")
+      log.debug("task("+taskConfig['id']+") last page or error, page="+pageNo)
       break
     }
     pageNo += 1
