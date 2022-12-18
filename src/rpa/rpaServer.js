@@ -412,6 +412,15 @@ const execRpaTask = async (taskConfig) => {
   while(true){
     queryParams['pageNo'] = pageNo
     queryParams['pageSize'] = pageSize
+    // 需要增加查询条件，区分不同批次账号，方便多机器运行
+    // superQueryMatchType=and
+    // superQueryParams=
+    // [{"field":"filter","rule":"eq/like","val":"","type":"text","dbType":"string"}]
+    let detailFilter = taskConfig['detail_filter']
+    if(!!detailFilter){
+      queryParams['superQueryMatchType'] = 'and'
+      queryParams['superQueryParams'] = encodeURI(detailFilter)
+    }
     let result = await dataUtil.getListData('w3_project_account',queryParams)
 
     //console.debug(result)
@@ -454,14 +463,13 @@ const execRpaTask = async (taskConfig) => {
     pageNo += 1
   } //end while
   
-
-  
   // 5 更新任务状态，解锁任务
   // 异步需要额外方式检查是否已经完成任务
-  //taskConfig['status'] = 'done'
-  //taskConfig['end_time'] = getDateTime()
-  //taskConfig['end_time'] = new Date()
-  //await updateDetailData('rpa_plan_task', taskConfig)
+  // taskPiscina
+  taskConfig['status'] = 'done'
+  taskConfig['end_time'] = getDateTime()
+  taskConfig['end_time'] = new Date()
+  await dataUtil.updateDetailData('rpa_plan_task', taskConfig)
 }
 
 const invokeFlowScript = async ({item, scriptFilePath, taskPiscina}) =>{
