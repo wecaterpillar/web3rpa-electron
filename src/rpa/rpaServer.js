@@ -171,12 +171,11 @@ const updateNodeStatus = () => {
   if(!interalMin || interalMin>60){
     interalMin = 2
   }
-  let visitor
   schedule.scheduleJob(`10 */${interalMin} * * * *`, async ()=>{
     console.debug('updateNodeStatus:' + new Date());
-    if(!visitor){
-      visitor =  await dataUtil.getVisitorIp()
-      log.debug(visitor)
+    if(!rpaConfig.visitor){
+      rpaConfig.visitor =  await dataUtil.getVisitorIp()
+      log.debug(rpaConfig.visitor)
     }
     
     let nodeData
@@ -255,8 +254,8 @@ const updateNodeStatus = () => {
     if(!!nodeData && 'id' in nodeData){
        // todo add  ip
       nodeData['status'] = 'running'
-      if(visitor && 'ip' in visitor){
-        nodeData['ip'] = visitor['ip']
+      if(rpaConfig.visitor && 'ip' in rpaConfig.visitor){
+        nodeData['ip'] = rpaConfig.visitor['ip']
       }
       nodeData['update_time'] = getDateTime()
       await dataUtil.updateDetailData('rpa_runnode', nodeData)
@@ -310,7 +309,11 @@ const execRpaTask = async (taskConfig) => {
   log.debug("execRpaTask:" + JSON.stringify(taskConfig))
   // 1 锁定当前任务，防止重复执行
   taskConfig['status'] = 'doing'
-  let visitor = dataUtil.getVisitorIp()
+  let visitor = rpaConfig.visitor
+  if(!visitor){
+    visitor = dataUtil.getVisitorIp()
+    rpaConfig.visitor = visitor
+  } 
   if(visitor && visitor['ip']){
     taskConfig['ip'] = visitor['ip']
   }
