@@ -415,11 +415,13 @@ const execRpaTask = async (taskConfig) => {
     // 需要增加查询条件，区分不同批次账号，方便多机器运行
     // superQueryMatchType=and
     // superQueryParams=
+    // 规避数据库存放数组会导致界面编辑问题
     // [{"field":"filter","rule":"eq/like","val":"","type":"text","dbType":"string"}]
+    // {"field":"filter","rule":"eq","val":"filter2","type":"text","dbType":"string"}  需要这个版本
     let detailFilter = taskConfig['detail_filter']
     if(!!detailFilter){
       queryParams['superQueryMatchType'] = 'and'
-      queryParams['superQueryParams'] = encodeURI(detailFilter)
+      queryParams['superQueryParams'] = encodeURI('['+detailFilter+']')
     }
     let result = await dataUtil.getListData('w3_project_account',queryParams)
 
