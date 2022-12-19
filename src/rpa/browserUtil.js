@@ -260,7 +260,13 @@ const getBrowserConfig = async (config) => {
     let cookie
     if(browser && browser['cookie']){
       cookie = JSON.parse(browser['cookie'])
+      if(cookie && cookie['savedCookie']){
+        cookie = cookie['savedCookie']
+      }
       //log.debug(cookie)
+    }
+    if(!!cookie){
+      browserConfig['cookie'] = cookie
     }
 
     // 3.7 
@@ -292,6 +298,10 @@ const launchBrowserContext = async (browserConfig) => {
       }
       if(!!context){
         await context.addInitScript( {path: path.join(rpaConfig.appDataPath,'dist/rpa/preload.js')})
+        let cookie = browserConfig['cookie']
+        if(!!cookie){
+          context.addCookies(cookie)
+        }
       }   
     }catch(err){
       log.error('launch error',err)
@@ -358,10 +368,15 @@ const actionBeforeCloseContext = async (context, item = {}) => {
     }
     page.close()
     // 2.2 cookie
-    let cookie = JSON.stringify(context.cookies(),null,2)
+    // 需要兼容jeecg查看json数组异常问题
+    let cookie = context.cookies()
     //log.debug('cookies:'+cookie)
-    if(!!cookie && cookie.length>3){
-      browser['cookie'] = cookie
+    if(!!cookie && cookie.length>0){
+      // how to merge or append
+      if(! browser['cookie']){
+        browser['cookie'] = {}
+      }
+      browser['cookie']['savedCookie'] = cookie
     }
     // 2.3 ip/country/city
     

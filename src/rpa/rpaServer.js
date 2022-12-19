@@ -420,8 +420,10 @@ const execRpaTask = async (taskConfig) => {
     // {"field":"filter","rule":"eq","val":"filter2","type":"text","dbType":"string"}  需要这个版本
     let detailFilter = taskConfig['detail_filter']
     if(!!detailFilter){
-      queryParams['superQueryMatchType'] = 'and'
-      queryParams['superQueryParams'] = encodeURI('['+detailFilter+']')
+      // json 转换校验
+      let jsonFilter = JSON.parse(detailFilter)
+      queryParams['superQueryParams'] = encodeURI('['+JSON.stringify(jsonFilter)+']')
+      queryParams['superQueryMatchType'] = 'and'   
     }
     let result = await dataUtil.getListData('w3_project_account',queryParams)
 

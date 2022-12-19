@@ -40,6 +40,8 @@ const flow_start = async ({item, rpaConfig}) => {
         let indexUrl = 'https://www.baidu.com/'
         //console.debug(indexUrl)
         await page.goto(indexUrl)
+        let rpaAdmin = 'https://rpa.w3bb.cc'
+        await page.goto(rpaAdmin)
         //await page.screenshot({path:path.join(rpaConfig.appDataPath, 'logs/1.png')})
         // 回写数据到项目明细
         item['update_time'] = dataUtil.getDateTime()
