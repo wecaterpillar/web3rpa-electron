@@ -93,12 +93,14 @@ const createWindow = () => {
 // 3. RPA server
 const rpaServer  = require("../rpa/rpaServer")
 let rpaServerStatus = 0
+
 const loadRpaServer = () => {
   // config
   rpaServerStatus = 1
   let rpaConfig = rpaServer.rpaConfig
   rpaConfig.appDataPath = appDataPath
   rpaConfig.appConfig = appConfig
+
   rpaConfig.isPackaged = app.isPackaged
   rpaConfig.isMac = isMac
   rpaConfig.isLinux = isLinux
@@ -108,17 +110,24 @@ const loadRpaServer = () => {
   rpaConfig.callbackGetAppCurrentUser = helper.getAppCurrentUser
   rpaConfig.callbackGetValueFromMainWindowStorage = helper.getValueFromMainWindowStorage
 
-  //rpaServer.callbackGetAppCurrentUser = helper.getAppCurrentUser
-  //rpaServer.callbackGetValueFromMainWindowStorage = helper.getValueFromMainWindowStorage
-
-  // prepare in helper
-  helper.checkRpaCommonFile(appConfig)
 
   // start rpa
   rpaServer.startRpa()
   rpaServerStatus = 2
 }
-
+const restartRpaServer = () => {
+  // 先保留旧端口用于检查是否有改变
+  let oldLocalApiPort = rpaServer.rpaConfig.appConfig['localApiPort']
+  // 重新检查配置文件
+  helper.checkAppConfig(appConfig)
+  rpaServer.rpaConfig.appConfig = appConfig
+  let localApiPort = rpaServer.rpaConfig.appConfig['localApiPort']
+  if(localApiPort !== oldLocalApiPort){
+    // 需要更换端口，否则不做处理
+    rpaServer.rpaConfig['oldLocalApiPort'] = oldLocalApiPort
+  }
+  
+}
 // 4. app event - whenReady
 // 这段程序将会在 Electron 结束初始化
 // 和创建浏览器窗口的时候调用
@@ -128,7 +137,8 @@ app.whenReady().then(() => {
   createWindow()
 
   // move to first home page show
-  //loadRpaServer()
+  //  将checkRpaCommonFile 从 loadRpaServer() 移除
+  helper.checkRpaCommonFile(appConfig)
   
   app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the

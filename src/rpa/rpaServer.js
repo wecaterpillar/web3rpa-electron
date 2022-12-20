@@ -30,8 +30,14 @@ const encryptMd5 = (str) => {
 }
 
 /////////////////////////////////
+exports = module.exports = {}
+
+
 
 const rpaConfig = {}
+
+exports.rpaConfig = rpaConfig
+
 
 const startRpa = () => {
     log.debug('start rpa ...')
@@ -43,14 +49,19 @@ const startRpa = () => {
       rpaConfig.appCurrentUser = {}
     }
 
-    rpaConfig.getUsername = getUsername
-
+    if(!rpaConfig.getUsername){
+      rpaConfig.getUsername = getUsername
+    }
+    
     // 2. init
+    let remoteServer
     // 2.1 remote server
     try{
-      let remoteServer = require('../help/remoteServer')
-      remoteServer.remoteServerInit(rpaConfig)
-      exports.resetToken = remoteServer.resetToken
+      if(!remoteServer){
+        remoteServer = require('../help/remoteServer')
+        remoteServer.remoteServerInit(rpaConfig)
+        exports.resetToken = remoteServer.resetToken
+      }     
     }catch(err){
       log.warn(err)
     }
@@ -78,7 +89,7 @@ const startRpa = () => {
     // 3.2 check download list
     // 先调用一次后再启动定时任务
     // 下载方法已过滤重复URL下载
-    checkBrowserComponentJob()
+    checkBrowserComponentJobFunc()
     checkBrowserComponent()
 
     // 3.3 check task
@@ -87,14 +98,20 @@ const startRpa = () => {
 
 }
 
+exports.startRpa = startRpa
+
+let checkBrowserComponentJob
 const checkBrowserComponent = async () => {
   let interalMin = rpaConfig.appConfig['rpaCheckBrowserComponentInteralMin']
   if(!interalMin || interalMin>60){
     interalMin = 20
   }
-  schedule.scheduleJob(`10 */${interalMin} * * * *`, checkBrowserComponentJob)
+  if(!!checkBrowserComponentJob){
+    await checkBrowserComponentJob.cancel()
+  }
+  checkBrowserComponentJob = schedule.scheduleJob(`10 */${interalMin} * * * *`, checkBrowserComponentJobFunc)
 }
-const checkBrowserComponentJob = async () => {
+const checkBrowserComponentJobFunc = async () => {
   log.info("check browser component")
   let downloadList = []
   // 不支持下载URL有空格，请提前处理 %20f
@@ -166,12 +183,16 @@ const getUsername = async () => {
   return username
 }
 
-const updateNodeStatus = () => {
+let updateNodeStatusJob
+const updateNodeStatus = async () => {
   let interalMin = rpaConfig.appConfig['rpaUpdateNodeStatusInteralMin']
   if(!interalMin || interalMin>60){
     interalMin = 2
   }
-  schedule.scheduleJob(`10 */${interalMin} * * * *`, async ()=>{
+  if(!!updateNodeStatusJob){
+    await updateNodeStatusJob.cancel()
+  }
+  updateNodeStatusJob = schedule.scheduleJob(`10 */${interalMin} * * * *`, async ()=>{
     console.debug('updateNodeStatus:' + new Date());
     if(!rpaConfig.visitor){
       rpaConfig.visitor =  await dataUtil.getVisitorIp()
@@ -263,7 +284,8 @@ const updateNodeStatus = () => {
   })
 }
 
-const checkPlanTask = () => {
+let checkPlanTaskJob
+const checkPlanTask = async () => {
   // TODO 指定节点或者指定当前用户但无指定节点
   // 当前只查询分配给本节点的任务，且为待处理
   // username, runnode
@@ -279,7 +301,10 @@ const checkPlanTask = () => {
   if(!interalMin || interalMin>60){
     interalMin = 10
   }
-  schedule.scheduleJob(`0 */${interalMin} * * * *`, async ()=>{
+  if(!!checkPlanTaskJob){
+    await checkPlanTaskJob.cancle()
+  }
+  checkPlanTaskJob = schedule.scheduleJob(`0 */${interalMin} * * * *`, async ()=>{
     log.debug('checkPlanTask:' + new Date());
     // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
     let result = await dataUtil.getRpaPlanTaskList({runnode: nodeName, status: 'todo'})
@@ -517,7 +542,3 @@ const getSimpleRpaConfig = () => {
   return rpaConfigJson
 }
 
-exports = module.exports = {}
-
-exports.rpaConfig = rpaConfig
-exports.startRpa = startRpa
