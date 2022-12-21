@@ -126,6 +126,8 @@ const restartRpaServer = () => {
     // 需要更换端口，否则不做处理
     rpaServer.rpaConfig['oldLocalApiPort'] = oldLocalApiPort
   }
+  // 重新调用start
+  rpaServer.startRpa()
   
 }
 // 4. app event - whenReady
@@ -267,10 +269,10 @@ const loadMenu = () => {
     {
       label: 'Window',
       submenu: [
-        { label: 'reload', role: 'forceReload' },
-        // { label: 'reload RPA', click: function (){
-        //   //startRpaServer()
-        // }},
+        { label: 'reload window', role: 'forceReload' },
+        { label: 'restart RPA', click: function (){
+          restartRpaServer()
+        }},
         { role: 'toggleDevTools', visible: true},
         { role: 'reload', visible: false },
         { role: 'togglefullscreen'},

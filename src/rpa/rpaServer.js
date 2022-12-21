@@ -69,8 +69,12 @@ const startRpa = () => {
     
     // 2.2 local api
     // localAPI server
-    // set port??
-    let localApi = require("./localApi")
+    // set port??  暂不实现换端口机制
+    let localApi 
+    if(!localApi){
+      localApi = require("./localApi")
+    }
+    
 
     // 2.3 dataUtil
     rpaConfig['localApi'] = false
@@ -150,13 +154,6 @@ const checkBrowserComponentJobFunc = async () => {
       helper.addDownloads(downloadList)
     }
   } // end if
-}
-
-
-
-const restartRpa = () =>{
-  log.debug('restart rpa ... unsupport')
-  //console.debug(rpaConfig)
 }
 
 const callbackGetAppCurrentUser = async () => {
@@ -302,9 +299,13 @@ const checkPlanTask = async () => {
     interalMin = 10
   }
   if(!!checkPlanTaskJob){
-    await checkPlanTaskJob.cancle()
+    try{
+      await checkPlanTaskJob.cancel()
+    }catch(err){
+      log.warn(err)
+    }
   }
-  checkPlanTaskJob = schedule.scheduleJob(`0 */${interalMin} * * * *`, async ()=>{
+  checkPlanTaskJob = schedule.scheduleJob('checkPlanTaskJob',`0 */${interalMin} * * * *`, async ()=>{
     log.debug('checkPlanTask:' + new Date());
     // TODO 过滤，只获取已配置到当前节点或者归属当前用户的未分配节点任务
     let result = await dataUtil.getRpaPlanTaskList({runnode: nodeName, status: 'todo'})
